@@ -48,6 +48,21 @@
                     android:inputType="number" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <!-- Height -->
+        <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp">
+
+            <EditText
+                    android:id="@+id/input_height"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Height (CM)"
+                    android:inputType="number" />
+        </com.google.android.material.textfield.TextInputLayout>
+
 
         <!-- Sex spinner -->
         <com.google.android.material.textfield.TextInputLayout
