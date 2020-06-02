@@ -30,8 +30,10 @@ public class SignupActivity extends AppCompatActivity
   
   @BindView(R.id.input_name)
   EditText _nameText;
+  @BindView(R.id.input_height)
+  EditText _heightText;
   @BindView(R.id.input_age)
-  EditText _addressText;
+  EditText _ageText;
   @BindView(R.id.input_email)
   EditText _emailText;
   @BindView(R.id.tvSex)
@@ -108,11 +110,7 @@ public class SignupActivity extends AppCompatActivity
     progressDialog.setMessage("Creating Account...");
     progressDialog.show();
     
-    String name = _nameText.getText().toString();
-    String address = _addressText.getText().toString();
-    String email = _emailText.getText().toString();
-    String password = _passwordText.getText().toString();
-    String reEnterPassword = _reEnterPasswordText.getText().toString();
+    
     
     // TODO: Implement your own signup logic here.
     
@@ -121,6 +119,23 @@ public class SignupActivity extends AppCompatActivity
         {
           public void run()
           {
+            String name = _nameText.getText().toString();
+            String height = _heightText.getText().toString();
+            String age = _ageText.getText().toString();
+            String email = _emailText.getText().toString();
+            String password = _passwordText.getText().toString();
+            String reEnterPassword = _reEnterPasswordText.getText().toString();
+  
+            int spinnerChoicePosition = _sexSpinner.getSelectedItemPosition();
+            String sex = _sexSpinner.getItemAtPosition(spinnerChoicePosition).toString();
+            
+            // Send get to server
+              // - if email adress alredy exsists set up error flag for field email
+            
+            // otherwise send post to server
+            // create entry to local database
+            
+            
             // On complete call either onSignupSuccess or onSignupFailed
             // depending on success
             onSignupSuccess();
@@ -150,19 +165,28 @@ public class SignupActivity extends AppCompatActivity
     boolean valid = true;
     
     String name = _nameText.getText().toString();
-    String address = _addressText.getText().toString();
+    String height = _heightText.getText().toString();
+    String age = _ageText.getText().toString();
     String email = _emailText.getText().toString();
     String password = _passwordText.getText().toString();
     String reEnterPassword = _reEnterPasswordText.getText().toString();
     
+    // Sex spinner
     if (_sexSpinner.getSelectedItemPosition() == 0)
     {
-      _sexText.setError("Choose your sex!");
+      _sexText.setError("Choose your sex");
+      valid = false;
+    }
+    else
+    {
+      _sexText.setError(null);
     }
     
-    if (name.isEmpty() || name.length() < 3)
+    
+    // name
+    if ( ! name.matches("[A-Za-z0-9]{3,20}"))
     {
-      _nameText.setError("at least 3 characters");
+      _nameText.setError("User name can contain only letters and numbers and has to be from 3 to 20 char length");
       valid = false;
     }
     else
@@ -170,18 +194,29 @@ public class SignupActivity extends AppCompatActivity
       _nameText.setError(null);
     }
     
-    if (address.isEmpty())
+    if ( ! height.matches("^(?:[1-9]\\d?|[12]\\d{2})$"))
     {
-      _addressText.setError("Enter Valid Address");
+      _heightText.setError("Enter height between 0 to 300");
       valid = false;
     }
     else
     {
-      _addressText.setError(null);
+      _heightText.setError(null);
     }
     
+    // age
+    if ( ! age.matches("^[1-9][0-9]?$|^100$"))
+    {
+      _ageText.setError("Enter valid age between 0 and 100");
+      valid = false;
+    }
+    else
+    {
+      _ageText.setError(null);
+    }
     
-    if (email.isEmpty() || ! android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches())
+    // email
+    if ( ! email.matches("^((\"[\\w-\\s]+\")|([\\w-]+(?:\\.[\\w-]+)*)|(\"[\\w-\\s]+\")([\\w-]+(?:\\.[\\w-]+)*))(@((?:[\\w-]+\\.)*\\w[\\w-]{0,66})\\.([a-z]{2,6}(?:\\.[a-z]{2})?)$)|(@\\[?((25[0-5]\\.|2[0-4][0-9]\\.|1[0-9]{2}\\.|[0-9]{1,2}\\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\\]?$)"))
     {
       _emailText.setError("enter a valid email address");
       valid = false;
@@ -191,10 +226,10 @@ public class SignupActivity extends AppCompatActivity
       _emailText.setError(null);
     }
     
-    
-    if (password.isEmpty() || password.length() < 4 || password.length() > 10)
+    // password
+    if ( ! password.matches("[^\\s]{3,20}"))
     {
-      _passwordText.setError("between 4 and 10 alphanumeric characters");
+      _passwordText.setError("between 3 and 20 characters without spaces");
       valid = false;
     }
     else
@@ -202,10 +237,9 @@ public class SignupActivity extends AppCompatActivity
       _passwordText.setError(null);
     }
     
-    if (reEnterPassword.isEmpty() || reEnterPassword.length() < 4 || reEnterPassword.length() > 10 || ! (reEnterPassword
-        .equals(password)))
+    if ( ! reEnterPassword.matches("[^\\s]{3,20}") || ! (reEnterPassword.equals(password)))
     {
-      _reEnterPasswordText.setError("Password Do not match");
+      _reEnterPasswordText.setError("Passwords do not match");
       valid = false;
     }
     else

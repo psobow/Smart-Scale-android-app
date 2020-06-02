@@ -14,13 +14,33 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sobow.smartscale.dto.UserDto;
+
+import java.io.IOException;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class LoginActivity extends AppCompatActivity
 {
   private static final String TAG = "LoginActivity";
   private static final int REQUEST_SIGNUP = 0;
+  
+  private final String BASE_URL = "http://10.0.2.2:8080/v1";
+  private final String USER_CONTROLLER = "/user";
+  private final String MEASUREMENT_CONTROLLER = "/measurement";
+  
+  private OkHttpClient client = new OkHttpClient();
+  private ObjectMapper mapper = new ObjectMapper();
+  
+  boolean isLoginSuccessful = false;
   
   @BindView(R.id.input_email)
   EditText _emailText;
@@ -67,11 +87,13 @@ public class LoginActivity extends AppCompatActivity
   {
     Log.d(TAG, "Login");
     
+    
     if (! validate())
     {
       onLoginFailed();
       return;
     }
+    
     
     _loginButton.setEnabled(false);
     
@@ -80,23 +102,95 @@ public class LoginActivity extends AppCompatActivity
     progressDialog.setIndeterminate(true);
     progressDialog.setMessage("Authenticating...");
     progressDialog.show();
-    
-    String email = _emailText.getText().toString();
-    String password = _passwordText.getText().toString();
-    
-    // TODO: Implement your own authentication logic here.
-    
+  
+    String emailInput = _emailText.getText().toString();
+    String passwordInput = _passwordText.getText().toString();
+  
+  
+    String requestUrl = BASE_URL + USER_CONTROLLER + "/" + emailInput + "/" + passwordInput;
+    Request request = new Request.Builder().url(requestUrl).build();
+  
+  
     new android.os.Handler().postDelayed(
         new Runnable()
         {
           public void run()
           {
-            // On complete call either onLoginSuccess or onLoginFailed
-            onLoginSuccess();
-            // onLoginFailed();
+  
+            // Execute HTTP requests in background thread
+            client.newCall(request).enqueue(new Callback()
+            {
+              @Override
+              public void onFailure(Call call, IOException e)
+              {
+                e.printStackTrace();
+              }
+    
+              @Override
+              public void onResponse(Call call, Response response) throws IOException
+              {
+                if(response.isSuccessful())
+                {
+                  try
+                  {
+                    String stringResponse = response.body().string();
+                    JsonNode tree = mapper.readTree(stringResponse);
+                    JsonNode node = tree.at("");
+                    UserDto userDto = mapper.treeToValue(node, UserDto.class);
+                    
+                    if (userDto.getEmail().equals(emailInput) && userDto.getPassword().equals(passwordInput))
+                    {
+                      isLoginSuccessful = true;
+                    }
+                    else
+                    {
+                      isLoginSuccessful = false;
+                    }
+                  }
+                  catch (IOException e)
+                  {
+                    e.printStackTrace();
+                  }
+                  
+                }
+                else
+                {
+                  isLoginSuccessful = false;
+                  LoginActivity.this.runOnUiThread(new Runnable()
+                  {
+                    @Override
+                    public void run()
+                    {
+                      _emailText.setError("Email or password incorrect");
+                      _passwordText.setError("Email or password incorrect");
+                    }
+                  });
+                }
+              }
+              
+              
+              
+            });
+            //for internet connection:  sent get for user with email and password if server didn't return user display dialog
+            // - if wrong email or password display: wrong email or password
+          
+            //no internet connection:  find user in database based on email and password
+            // - if wrong email or password display: wrong email or password
+  
+            if (isLoginSuccessful)
+            {
+              onLoginSuccess();
+            }
+            else
+            {
+              onLoginFailed();
+            }
             progressDialog.dismiss();
+            
+            
           }
         }, 3000);
+    
   }
   
   
@@ -143,7 +237,7 @@ public class LoginActivity extends AppCompatActivity
     String email = _emailText.getText().toString();
     String password = _passwordText.getText().toString();
     
-    if (email.isEmpty() || ! android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches())
+    if ( ! email.matches("^((\"[\\w-\\s]+\")|([\\w-]+(?:\\.[\\w-]+)*)|(\"[\\w-\\s]+\")([\\w-]+(?:\\.[\\w-]+)*))(@((?:[\\w-]+\\.)*\\w[\\w-]{0,66})\\.([a-z]{2,6}(?:\\.[a-z]{2})?)$)|(@\\[?((25[0-5]\\.|2[0-4][0-9]\\.|1[0-9]{2}\\.|[0-9]{1,2}\\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\\]?$)"))
     {
       _emailText.setError("enter a valid email address");
       valid = false;
@@ -153,9 +247,9 @@ public class LoginActivity extends AppCompatActivity
       _emailText.setError(null);
     }
     
-    if (password.isEmpty() || password.length() < 4 || password.length() > 10)
+    if ( ! password.matches("[^\\s]{3,20}"))
     {
-      _passwordText.setError("between 4 and 10 alphanumeric characters");
+      _passwordText.setError("between 3 and 20 alphanumeric characters without spaces");
       valid = false;
     }
     else
