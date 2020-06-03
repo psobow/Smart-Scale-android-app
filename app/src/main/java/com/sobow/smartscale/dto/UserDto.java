@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class UserDto
 {
-
   @JsonProperty("id")
   private long idFromServer;
   
@@ -22,6 +21,10 @@ public class UserDto
   private String password;
   
   private List<Long> measurementIds;
+  
+  public UserDto()
+  {
+  }
   
   public long getIdFromServer()
   {

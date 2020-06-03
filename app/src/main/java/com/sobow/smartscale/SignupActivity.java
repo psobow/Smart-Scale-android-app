@@ -15,11 +15,21 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sobow.smartscale.dto.UserDto;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class SignupActivity extends AppCompatActivity
 {
@@ -27,6 +37,14 @@ public class SignupActivity extends AppCompatActivity
   private static final String DEFAULT_SPINNER_CHOICE = "Your choice...";
   private static final String FIRST_SPINNER_CHOICE = "Male";
   private static final String SECOND_SPINNER_CHOICE = "Female";
+  
+  private final String BASE_URL = "http://10.0.2.2:8080/v1";
+  private final String USER_CONTROLLER = "/user";
+  
+  private OkHttpClient client = new OkHttpClient();
+  private ObjectMapper mapper = new ObjectMapper();
+  
+  private boolean isEmailAlreadyTaken;
   
   @BindView(R.id.input_name)
   EditText _nameText;
@@ -55,13 +73,13 @@ public class SignupActivity extends AppCompatActivity
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_signup);
     ButterKnife.bind(this);
-  
+    
     // Spinner values
     List<String> spinnerValues = new ArrayList<>();
     spinnerValues.add(DEFAULT_SPINNER_CHOICE);
     spinnerValues.add(FIRST_SPINNER_CHOICE);
     spinnerValues.add(SECOND_SPINNER_CHOICE);
-  
+    
     // Create an ArrayAdapter using the string array and a default spinner layout
     ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, spinnerValues);
     // Specify the layout to use when the list of choices appears
@@ -110,27 +128,72 @@ public class SignupActivity extends AppCompatActivity
     progressDialog.setMessage("Creating Account...");
     progressDialog.show();
     
+    String name = _nameText.getText().toString();
+    String height = _heightText.getText().toString();
+    String age = _ageText.getText().toString();
+    String email = _emailText.getText().toString();
+    String password = _passwordText.getText().toString();
+    String reEnterPassword = _reEnterPasswordText.getText().toString();
     
+    int spinnerChoicePosition = _sexSpinner.getSelectedItemPosition();
+    String sex = _sexSpinner.getItemAtPosition(spinnerChoicePosition).toString();
     
-    // TODO: Implement your own signup logic here.
+    final UserDto newUser = new UserDto();
+    newUser.setUserName(name);
+    newUser.setHeight(Integer.parseInt(height));
+    newUser.setAge(Integer.parseInt(age));
+    newUser.setSex(sex);
+    newUser.setEmail(email);
+    newUser.setPassword(password);
+    
+    String requestUrl = BASE_URL + USER_CONTROLLER + "/" + newUser.getEmail() + "/" + newUser.getPassword();
+    Request request = new Request.Builder().url(requestUrl).build();
+    
     
     new android.os.Handler().postDelayed(
         new Runnable()
         {
           public void run()
           {
-            String name = _nameText.getText().toString();
-            String height = _heightText.getText().toString();
-            String age = _ageText.getText().toString();
-            String email = _emailText.getText().toString();
-            String password = _passwordText.getText().toString();
-            String reEnterPassword = _reEnterPasswordText.getText().toString();
-  
-            int spinnerChoicePosition = _sexSpinner.getSelectedItemPosition();
-            String sex = _sexSpinner.getItemAtPosition(spinnerChoicePosition).toString();
-            
             // Send get to server
-              // - if email adress alredy exsists set up error flag for field email
+            // - if email adress alredy exsists set up error flag for field email
+            
+            // Execute HTTP requests in background thread
+            client.newCall(request).enqueue(new Callback()
+            {
+              @Override
+              public void onFailure(Call call, IOException e)
+              {
+                e.printStackTrace();
+              }
+              
+              @Override
+              public void onResponse(Call call, Response response) throws IOException
+              {
+                if (response.isSuccessful())
+                {
+                  isEmailAlreadyTaken = true;
+                  
+                  SignupActivity.this.runOnUiThread(new Runnable()
+                  {
+                    @Override
+                    public void run()
+                    {
+                      _emailText.setError("Email address already exists in database");
+                    }
+                  });
+                }
+                else // response server not 200
+                {
+                  isEmailAlreadyTaken = false;
+                }
+              }
+            });
+            
+            if (isEmailAlreadyTaken == false)
+            {
+            
+            }
             
             // otherwise send post to server
             // create entry to local database
@@ -184,9 +247,9 @@ public class SignupActivity extends AppCompatActivity
     
     
     // name
-    if ( ! name.matches("[A-Za-z0-9]{3,20}"))
+    if (! name.matches("[A-Za-z0-9]{3,20}"))
     {
-      _nameText.setError("User name can contain only letters and numbers and has to be from 3 to 20 char length");
+      _nameText.setError("Enter only letters and numbers between 3 to 20 length");
       valid = false;
     }
     else
@@ -194,9 +257,9 @@ public class SignupActivity extends AppCompatActivity
       _nameText.setError(null);
     }
     
-    if ( ! height.matches("^(?:[1-9]\\d?|[12]\\d{2})$"))
+    if (! height.matches("^(?:[1-9]\\d?|[12]\\d{2})$"))
     {
-      _heightText.setError("Enter height between 0 to 300");
+      _heightText.setError("Enter height between 0 to 300 centimetres");
       valid = false;
     }
     else
@@ -205,9 +268,9 @@ public class SignupActivity extends AppCompatActivity
     }
     
     // age
-    if ( ! age.matches("^[1-9][0-9]?$|^100$"))
+    if (! age.matches("^[1-9][0-9]?$|^100$"))
     {
-      _ageText.setError("Enter valid age between 0 and 100");
+      _ageText.setError("Enter age between 0 and 100");
       valid = false;
     }
     else
@@ -216,9 +279,10 @@ public class SignupActivity extends AppCompatActivity
     }
     
     // email
-    if ( ! email.matches("^((\"[\\w-\\s]+\")|([\\w-]+(?:\\.[\\w-]+)*)|(\"[\\w-\\s]+\")([\\w-]+(?:\\.[\\w-]+)*))(@((?:[\\w-]+\\.)*\\w[\\w-]{0,66})\\.([a-z]{2,6}(?:\\.[a-z]{2})?)$)|(@\\[?((25[0-5]\\.|2[0-4][0-9]\\.|1[0-9]{2}\\.|[0-9]{1,2}\\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\\]?$)"))
+    if (! email.matches(
+        "^((\"[\\w-\\s]+\")|([\\w-]+(?:\\.[\\w-]+)*)|(\"[\\w-\\s]+\")([\\w-]+(?:\\.[\\w-]+)*))(@((?:[\\w-]+\\.)*\\w[\\w-]{0,66})\\.([a-z]{2,6}(?:\\.[a-z]{2})?)$)|(@\\[?((25[0-5]\\.|2[0-4][0-9]\\.|1[0-9]{2}\\.|[0-9]{1,2}\\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\\]?$)"))
     {
-      _emailText.setError("enter a valid email address");
+      _emailText.setError("Enter a valid email address");
       valid = false;
     }
     else
@@ -227,9 +291,9 @@ public class SignupActivity extends AppCompatActivity
     }
     
     // password
-    if ( ! password.matches("[^\\s]{3,20}"))
+    if (! password.matches("[^\\s]{3,20}"))
     {
-      _passwordText.setError("between 3 and 20 characters without spaces");
+      _passwordText.setError("Enter password between 3 and 20 characters without spaces");
       valid = false;
     }
     else
@@ -237,7 +301,7 @@ public class SignupActivity extends AppCompatActivity
       _passwordText.setError(null);
     }
     
-    if ( ! reEnterPassword.matches("[^\\s]{3,20}") || ! (reEnterPassword.equals(password)))
+    if (! (reEnterPassword.equals(password)))
     {
       _reEnterPasswordText.setError("Passwords do not match");
       valid = false;

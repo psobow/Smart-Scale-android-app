@@ -35,12 +35,8 @@ public class LoginActivity extends AppCompatActivity
   
   private final String BASE_URL = "http://10.0.2.2:8080/v1";
   private final String USER_CONTROLLER = "/user";
-  private final String MEASUREMENT_CONTROLLER = "/measurement";
   
   private OkHttpClient client = new OkHttpClient();
-  private ObjectMapper mapper = new ObjectMapper();
-  
-  boolean isLoginSuccessful = false;
   
   @BindView(R.id.input_email)
   EditText _emailText;
@@ -103,20 +99,18 @@ public class LoginActivity extends AppCompatActivity
     progressDialog.setMessage("Authenticating...");
     progressDialog.show();
   
-    String emailInput = _emailText.getText().toString();
-    String passwordInput = _passwordText.getText().toString();
-  
-  
-    String requestUrl = BASE_URL + USER_CONTROLLER + "/" + emailInput + "/" + passwordInput;
-    Request request = new Request.Builder().url(requestUrl).build();
-  
   
     new android.os.Handler().postDelayed(
         new Runnable()
         {
           public void run()
           {
-  
+            String emailInput = _emailText.getText().toString();
+            String passwordInput = _passwordText.getText().toString();
+            
+            String requestUrl = BASE_URL + USER_CONTROLLER + "/" + emailInput + "/" + passwordInput;
+            Request request = new Request.Builder().url(requestUrl).build();
+            
             // Execute HTTP requests in background thread
             client.newCall(request).enqueue(new Callback()
             {
@@ -131,31 +125,19 @@ public class LoginActivity extends AppCompatActivity
               {
                 if(response.isSuccessful())
                 {
-                  try
+                  LoginActivity.this.runOnUiThread(new Runnable()
                   {
-                    String stringResponse = response.body().string();
-                    JsonNode tree = mapper.readTree(stringResponse);
-                    JsonNode node = tree.at("");
-                    UserDto userDto = mapper.treeToValue(node, UserDto.class);
-                    
-                    if (userDto.getEmail().equals(emailInput) && userDto.getPassword().equals(passwordInput))
+                    @Override
+                    public void run()
                     {
-                      isLoginSuccessful = true;
+                      
+                      onLoginSuccess();
+                      progressDialog.dismiss();
                     }
-                    else
-                    {
-                      isLoginSuccessful = false;
-                    }
-                  }
-                  catch (IOException e)
-                  {
-                    e.printStackTrace();
-                  }
-                  
+                  });
                 }
-                else
+                else // response server not 200
                 {
-                  isLoginSuccessful = false;
                   LoginActivity.this.runOnUiThread(new Runnable()
                   {
                     @Override
@@ -163,6 +145,9 @@ public class LoginActivity extends AppCompatActivity
                     {
                       _emailText.setError("Email or password incorrect");
                       _passwordText.setError("Email or password incorrect");
+                      
+                      onLoginFailed();
+                      progressDialog.dismiss();
                     }
                   });
                 }
@@ -176,16 +161,7 @@ public class LoginActivity extends AppCompatActivity
           
             //no internet connection:  find user in database based on email and password
             // - if wrong email or password display: wrong email or password
-  
-            if (isLoginSuccessful)
-            {
-              onLoginSuccess();
-            }
-            else
-            {
-              onLoginFailed();
-            }
-            progressDialog.dismiss();
+            
             
             
           }

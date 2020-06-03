@@ -17,6 +17,10 @@ public class MeasurementDto
   
   private long userId;
   
+  public MeasurementDto()
+  {
+  }
+  
   public long getIdFromServer()
   {
     return idFromServer;
