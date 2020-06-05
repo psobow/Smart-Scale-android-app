@@ -34,7 +34,7 @@ import okhttp3.Response;
 public class SignupActivity extends AppCompatActivity
 {
   private static final String TAG = "SignupActivity";
-  private static final String DEFAULT_SPINNER_CHOICE = "Your choice...";
+  private static final String SPINNER_CHOICE_DEFAULT = "Your choice...";
   private static final String SPINNER_CHOICE_MALE = "Male";
   private static final String SPINNER_CHOICE_FEMALE = "Female";
   
@@ -76,7 +76,7 @@ public class SignupActivity extends AppCompatActivity
     
     // Spinner values
     List<String> spinnerValues = new ArrayList<>();
-    spinnerValues.add(DEFAULT_SPINNER_CHOICE);
+    spinnerValues.add(SPINNER_CHOICE_DEFAULT);
     spinnerValues.add(SPINNER_CHOICE_MALE);
     spinnerValues.add(SPINNER_CHOICE_FEMALE);
     
@@ -263,6 +263,7 @@ public class SignupActivity extends AppCompatActivity
     if (_sexSpinner.getSelectedItemPosition() == 0)
     {
       _sexText.setError("Choose your sex");
+  
       valid = false;
     }
     else

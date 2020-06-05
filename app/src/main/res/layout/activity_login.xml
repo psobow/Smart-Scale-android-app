@@ -18,7 +18,8 @@
                 android:layout_height="152dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="24dp"
-                android:src="@drawable/logo" />
+                android:src="@drawable/logo"
+                android:contentDescription="Application logo" />
 
         <!--  Email Label -->
 
@@ -27,11 +28,13 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp">
-            <EditText android:id="@+id/input_email"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textEmailAddress"
-                android:hint="Email" />
+
+            <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/input_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textEmailAddress"
+                    android:hint="Email" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!--  Password Label -->
@@ -41,11 +44,13 @@
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
                 app:passwordToggleEnabled="true">
-            <EditText android:id="@+id/input_password"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textPassword"
-                android:hint="Password"/>
+
+            <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/input_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPassword"
+                    android:hint="Password" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button

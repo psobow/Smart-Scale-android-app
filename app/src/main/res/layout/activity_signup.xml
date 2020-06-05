@@ -18,7 +18,55 @@
                 android:layout_height="152dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="24dp"
-                android:src="@drawable/logo" />
+                android:src="@drawable/logo"
+                android:contentDescription="Application Logo" />
+
+        <!--  Email Label -->
+        <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/input_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textEmailAddress"
+                    android:hint="Email" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Password Label -->
+        <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                app:passwordToggleEnabled="true">
+
+            <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/input_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPassword"
+                    android:hint="Password" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Password Re-enter Label -->
+        <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                app:passwordToggleEnabled="true">
+
+            <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/input_reEnterPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPassword"
+                    android:hint="Re-enter Password" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Name Label -->
         <com.google.android.material.textfield.TextInputLayout
@@ -26,7 +74,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp">
-            <EditText android:id="@+id/input_name"
+
+            <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/input_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textPersonName"
@@ -40,7 +90,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp">
 
-            <EditText
+            <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/input_age"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -55,7 +105,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp">
 
-            <EditText
+            <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/input_height"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -71,11 +121,15 @@
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp">
             <TextView
+                    android:layout_marginLeft="5dp"
                     android:id="@+id/tvSex"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="left"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:clickable="true"
                     android:text="Choose your sex:"
                     android:textSize="20dp"
                     android:textStyle="bold">
@@ -90,46 +144,7 @@
             </Spinner>
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!--  Email Label -->
-        <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp">
-            <EditText android:id="@+id/input_email"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textEmailAddress"
-                    android:hint="Email" />
-        </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Password Label -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-                app:passwordToggleEnabled="true">
-            <EditText android:id="@+id/input_password"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textPassword"
-                android:hint="Password"/>
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- Password Re-enter Label -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-                app:passwordToggleEnabled="true">
-            <EditText android:id="@+id/input_reEnterPassword"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textPassword"
-                android:hint="Re-enter Password"/>
-        </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Signup Button -->
         <Button
