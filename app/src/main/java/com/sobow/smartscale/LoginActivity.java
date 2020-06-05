@@ -67,7 +67,6 @@ public class LoginActivity extends AppCompatActivity
         // Start the Signup activity
         Intent intent = new Intent(getApplicationContext(), SignupActivity.class);
         startActivityForResult(intent, REQUEST_SIGNUP);
-        finish();
         overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
       }
     });
@@ -128,16 +127,14 @@ public class LoginActivity extends AppCompatActivity
               {
                 if(response.isSuccessful())
                 {
-                  Log.i(TAG, response.body().string());
+                  Log.i(TAG, "Response body = " + response.body().string());
                   
                   LoginActivity.this.runOnUiThread(new Runnable()
                   {
                     @Override
                     public void run()
                     {
-                      
                       onLoginSuccess();
-                      //progressDialog.dismiss();
                     }
                   });
                 }
@@ -152,7 +149,6 @@ public class LoginActivity extends AppCompatActivity
                       _passwordText.setError("Email or password incorrect");
                       
                       onLoginFailed();
-                      //progressDialog.dismiss();
                     }
                   });
                 }
