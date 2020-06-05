@@ -1,11 +1,8 @@
 package com.sobow.smartscale;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.os.Bundle;
-
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -15,7 +12,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sobow.smartscale.dto.UserDto;
 
@@ -27,16 +26,18 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class SignupActivity extends AppCompatActivity
 {
   private static final String TAG = "SignupActivity";
   private static final String DEFAULT_SPINNER_CHOICE = "Your choice...";
-  private static final String FIRST_SPINNER_CHOICE = "Male";
-  private static final String SECOND_SPINNER_CHOICE = "Female";
+  private static final String SPINNER_CHOICE_MALE = "Male";
+  private static final String SPINNER_CHOICE_FEMALE = "Female";
   
   private final String BASE_URL = "http://10.0.2.2:8080/v1";
   private final String USER_CONTROLLER = "/user";
@@ -77,8 +78,8 @@ public class SignupActivity extends AppCompatActivity
     // Spinner values
     List<String> spinnerValues = new ArrayList<>();
     spinnerValues.add(DEFAULT_SPINNER_CHOICE);
-    spinnerValues.add(FIRST_SPINNER_CHOICE);
-    spinnerValues.add(SECOND_SPINNER_CHOICE);
+    spinnerValues.add(SPINNER_CHOICE_MALE);
+    spinnerValues.add(SPINNER_CHOICE_FEMALE);
     
     // Create an ArrayAdapter using the string array and a default spinner layout
     ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, spinnerValues);
@@ -133,7 +134,6 @@ public class SignupActivity extends AppCompatActivity
     String age = _ageText.getText().toString();
     String email = _emailText.getText().toString();
     String password = _passwordText.getText().toString();
-    String reEnterPassword = _reEnterPasswordText.getText().toString();
     
     int spinnerChoicePosition = _sexSpinner.getSelectedItemPosition();
     String sex = _sexSpinner.getItemAtPosition(spinnerChoicePosition).toString();
@@ -146,63 +146,91 @@ public class SignupActivity extends AppCompatActivity
     newUser.setEmail(email);
     newUser.setPassword(password);
     
-    String requestUrl = BASE_URL + USER_CONTROLLER + "/" + newUser.getEmail() + "/" + newUser.getPassword();
-    Request request = new Request.Builder().url(requestUrl).build();
-    
     
     new android.os.Handler().postDelayed(
         new Runnable()
         {
           public void run()
           {
-            // Send get to server
+            // Send post to server
             // - if email adress alredy exsists set up error flag for field email
-            
+  
+  
+            // map object to JSON string
+            String userJsonString = "";
+            try
+            {
+              userJsonString = mapper.writeValueAsString(newUser);
+              Log.i(TAG, "Mapped User Json String = " + userJsonString);
+            }
+            catch (JsonProcessingException e)
+            {
+              e.printStackTrace();
+            }
+  
+            // json request body
+            RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), userJsonString);
+  
+            String requestUrl = BASE_URL + USER_CONTROLLER;
+  
+            Request request = new Request.Builder()
+                .url(requestUrl)
+                .post(body)
+                .build();
+  
+  
             // Execute HTTP requests in background thread
             client.newCall(request).enqueue(new Callback()
             {
               @Override
               public void onFailure(Call call, IOException e)
               {
+                SignupActivity.this.runOnUiThread(new Runnable()
+                {
+                  @Override
+                  public void run()
+                  {
+                    Toast.makeText(getBaseContext(), "Connection with server failed", Toast.LENGTH_LONG).show();
+                  }
+                });
+      
                 e.printStackTrace();
               }
-              
+    
               @Override
               public void onResponse(Call call, Response response) throws IOException
               {
                 if (response.isSuccessful())
                 {
-                  isEmailAlreadyTaken = true;
-                  
                   SignupActivity.this.runOnUiThread(new Runnable()
                   {
                     @Override
                     public void run()
                     {
-                      _emailText.setError("Email address already exists in database");
+                      onSignupSuccess();
                     }
                   });
                 }
-                else // response server not 200
+                else
                 {
-                  isEmailAlreadyTaken = false;
+                  SignupActivity.this.runOnUiThread(new Runnable()
+                  {
+                    @Override
+                    public void run()
+                    {
+                      _emailText.setError("Email already exists in database");
+            
+                      onSignupFailed();
+                    }
+                  });
                 }
+      
+      
               }
+    
             });
             
-            if (isEmailAlreadyTaken == false)
-            {
             
-            }
-            
-            // otherwise send post to server
-            // create entry to local database
-            
-            
-            // On complete call either onSignupSuccess or onSignupFailed
-            // depending on success
-            onSignupSuccess();
-            // onSignupFailed();
             progressDialog.dismiss();
           }
         }, 3000);
@@ -218,7 +246,7 @@ public class SignupActivity extends AppCompatActivity
   
   public void onSignupFailed()
   {
-    Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
+    Toast.makeText(getBaseContext(), "Sign up failed", Toast.LENGTH_LONG).show();
     
     _signupButton.setEnabled(true);
   }
@@ -256,7 +284,8 @@ public class SignupActivity extends AppCompatActivity
     {
       _nameText.setError(null);
     }
-    
+  
+    // Height
     if (! height.matches("^(?:[1-9]\\d?|[12]\\d{2})$"))
     {
       _heightText.setError("Enter height between 0 to 300 centimetres");

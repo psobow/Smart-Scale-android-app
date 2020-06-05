@@ -1,22 +1,16 @@
 package com.sobow.smartscale;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.os.Bundle;
-
 import android.app.ProgressDialog;
-import android.util.Log;
-
 import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sobow.smartscale.dto.UserDto;
+import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.IOException;
 
@@ -117,6 +111,15 @@ public class LoginActivity extends AppCompatActivity
               @Override
               public void onFailure(Call call, IOException e)
               {
+                LoginActivity.this.runOnUiThread(new Runnable()
+                {
+                  @Override
+                  public void run()
+                  {
+                    Toast.makeText(getBaseContext(), "Connection with server failed", Toast.LENGTH_LONG).show();
+                  }
+                });
+                
                 e.printStackTrace();
               }
     
@@ -125,6 +128,8 @@ public class LoginActivity extends AppCompatActivity
               {
                 if(response.isSuccessful())
                 {
+                  Log.i(TAG, response.body().string());
+                  
                   LoginActivity.this.runOnUiThread(new Runnable()
                   {
                     @Override
@@ -132,11 +137,11 @@ public class LoginActivity extends AppCompatActivity
                     {
                       
                       onLoginSuccess();
-                      progressDialog.dismiss();
+                      //progressDialog.dismiss();
                     }
                   });
                 }
-                else // response server not 200
+                else if (response.code() == 404)
                 {
                   LoginActivity.this.runOnUiThread(new Runnable()
                   {
@@ -147,13 +152,13 @@ public class LoginActivity extends AppCompatActivity
                       _passwordText.setError("Email or password incorrect");
                       
                       onLoginFailed();
-                      progressDialog.dismiss();
+                      //progressDialog.dismiss();
                     }
                   });
                 }
+  
+  
               }
-              
-              
               
             });
             //for internet connection:  sent get for user with email and password if server didn't return user display dialog
@@ -161,9 +166,9 @@ public class LoginActivity extends AppCompatActivity
           
             //no internet connection:  find user in database based on email and password
             // - if wrong email or password display: wrong email or password
-            
-            
-            
+  
+  
+            progressDialog.dismiss();
           }
         }, 3000);
     
