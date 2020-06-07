@@ -46,6 +46,30 @@ public class MainActivity extends AppCompatActivity {
     list.add("2020-03-23 13:47:54    78.5 kg    BMI = 20.2");
     list.add("2020-03-23 11:22:33    78.7 kg    BMI = 20.3");
   
+    list.add("2020-03-20 16:10:08    78.1 kg    BMI = 20.2");
+    list.add("2020-03-21 10:25:34    79.0 kg    BMI = 20.3");
+    list.add("2020-03-22 22:00:01    77.9 kg    BMI = 20.0");
+    list.add("2020-03-23 13:47:54    78.5 kg    BMI = 20.2");
+    list.add("2020-03-23 11:22:33    78.7 kg    BMI = 20.3");
+  
+    list.add("2020-03-20 16:10:08    78.1 kg    BMI = 20.2");
+    list.add("2020-03-21 10:25:34    79.0 kg    BMI = 20.3");
+  
+    list.add("2020-03-20 16:10:08    78.1 kg    BMI = 20.2");
+    list.add("2020-03-21 10:25:34    79.0 kg    BMI = 20.3");
+    list.add("2020-03-22 22:00:01    77.9 kg    BMI = 20.0");
+    list.add("2020-03-23 13:47:54    78.5 kg    BMI = 20.2");
+    list.add("2020-03-23 11:22:33    78.7 kg    BMI = 20.3");
+  
+    list.add("2020-03-20 16:10:08    78.1 kg    BMI = 20.2");
+    list.add("2020-03-21 10:25:34    79.0 kg    BMI = 20.3");
+    list.add("2020-03-22 22:00:01    77.9 kg    BMI = 20.0");
+    list.add("2020-03-23 13:47:54    78.5 kg    BMI = 20.2");
+    list.add("2020-03-23 11:22:33    78.7 kg    BMI = 20.3");
+  
+    list.add("2020-03-20 16:10:08    78.1 kg    BMI = 20.2");
+    list.add("2020-03-21 10:25:34    79.0 kg    BMI = 20.3");
+    
     ArrayAdapter arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, list);
   
     listView.setAdapter(arrayAdapter);
