@@ -32,6 +32,7 @@ public class LoginActivity extends AppCompatActivity
   
   private OkHttpClient client = new OkHttpClient();
   
+  
   @BindView(R.id.input_email)
   EditText _emailText;
   @BindView(R.id.input_password)
@@ -65,8 +66,10 @@ public class LoginActivity extends AppCompatActivity
       public void onClick(View v)
       {
         // Start the Signup activity
-        Intent intent = new Intent(getApplicationContext(), SignupActivity.class);
-        startActivityForResult(intent, REQUEST_SIGNUP);
+        Intent newIntent = new Intent(getApplicationContext(), SignupActivity.class);
+        Bundle bundle = getIntent().getExtras();
+        newIntent.putExtras(bundle);
+        startActivityForResult(newIntent, REQUEST_SIGNUP);
         overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
       }
     });
@@ -134,7 +137,7 @@ public class LoginActivity extends AppCompatActivity
                     @Override
                     public void run()
                     {
-                      onLoginSuccess();
+                      onLoginSuccess(emailInput, passwordInput);
                     }
                   });
                 }
@@ -180,6 +183,10 @@ public class LoginActivity extends AppCompatActivity
       if (resultCode == RESULT_OK)
       {
         // By default we just finish the Activity and log them in automatically
+        Bundle bundle = data.getExtras();
+        getIntent().putExtras(bundle);
+  
+        setResult(RESULT_OK, getIntent());
         this.finish();
       }
     }
@@ -192,9 +199,19 @@ public class LoginActivity extends AppCompatActivity
     moveTaskToBack(true);
   }
   
-  public void onLoginSuccess()
+  public void onLoginSuccess(String email, String password)
   {
     _loginButton.setEnabled(true);
+  
+    Intent intent = getIntent();
+    Bundle bundle = intent.getExtras();
+  
+    bundle.putString("email", email);
+    bundle.putString("password", password);
+  
+    intent.putExtras(bundle);
+    setResult(RESULT_OK, intent);
+    
     finish();
   }
   

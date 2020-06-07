@@ -1,6 +1,7 @@
 package com.sobow.smartscale;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -204,11 +205,11 @@ public class SignupActivity extends AppCompatActivity
                     @Override
                     public void run()
                     {
-                      onSignupSuccess();
+                      onSignupSuccess(newUser);
                     }
                   });
                 }
-                else
+                else if (response.code() == 400)
                 {
                   SignupActivity.this.runOnUiThread(new Runnable()
                   {
@@ -234,11 +235,21 @@ public class SignupActivity extends AppCompatActivity
   }
   
   
-  public void onSignupSuccess()
+  public void onSignupSuccess(UserDto userDto)
   {
     _signupButton.setEnabled(true);
-    setResult(RESULT_OK, null);
+  
+    Intent intent = getIntent();
+    Bundle bundle = intent.getExtras();
+  
+    bundle.putString("email", userDto.getEmail());
+    bundle.putString("password", userDto.getPassword());
+  
+    intent.putExtras(bundle);
+    setResult(RESULT_OK, intent);
+    
     finish();
+    overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
   }
   
   public void onSignupFailed()
