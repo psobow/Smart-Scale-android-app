@@ -1,4 +1,4 @@
-package com.sobow.smartscale;
+package com.sobow.smartscale.activities;
 
 import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
@@ -20,6 +20,10 @@ import android.widget.Toast;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import com.sobow.smartscale.DeviceListAdapter;
+import com.sobow.smartscale.R;
+import com.sobow.smartscale.services.BluetoothConnectionService;
 
 import java.util.ArrayList;
 import java.util.UUID;

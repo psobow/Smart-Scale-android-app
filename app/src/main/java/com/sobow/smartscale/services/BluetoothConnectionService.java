@@ -1,4 +1,4 @@
-package com.sobow.smartscale;
+package com.sobow.smartscale.services;
 
 
 import android.app.ProgressDialog;

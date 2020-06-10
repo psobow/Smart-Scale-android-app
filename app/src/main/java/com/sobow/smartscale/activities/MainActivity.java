@@ -1,4 +1,4 @@
-package com.sobow.smartscale;
+package com.sobow.smartscale.activities;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -11,6 +11,8 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.sobow.smartscale.R;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.sobow.smartscale;
+package com.sobow.smartscale.activities;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sobow.smartscale.R;
 import com.sobow.smartscale.dto.UserDto;
 
 import java.io.IOException;

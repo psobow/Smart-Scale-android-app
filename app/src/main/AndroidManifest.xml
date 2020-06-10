@@ -25,16 +25,16 @@
             android:usesCleartextTraffic="true">
 
         <activity
-                android:name=".SignupActivity"
+                android:name=".activities.SignupActivity"
                 android:theme="@style/AppTheme.Dark" />
         <activity
-                android:name=".LoginActivity"
+                android:name=".activities.LoginActivity"
                 android:theme="@style/AppTheme.Dark" />
         <activity
-                android:name=".BluetoothActivity"
+                android:name=".activities.BluetoothActivity"
                 android:theme="@style/AppTheme.Dark" />
         <activity
-                android:name=".MainActivity"
+                android:name=".activities.MainActivity"
                 android:theme="@style/AppTheme.Dark">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

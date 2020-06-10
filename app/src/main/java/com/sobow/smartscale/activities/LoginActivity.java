@@ -1,4 +1,4 @@
-package com.sobow.smartscale;
+package com.sobow.smartscale.activities;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -11,6 +11,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.sobow.smartscale.R;
 
 import java.io.IOException;
 
