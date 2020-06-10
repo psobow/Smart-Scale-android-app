@@ -47,26 +47,26 @@ public class SignupActivity extends AppCompatActivity
   private ObjectMapper mapper = new ObjectMapper();
   
   
-  @BindView(R.id.input_name)
-  EditText _nameText;
-  @BindView(R.id.input_height)
-  EditText _heightText;
-  @BindView(R.id.input_age)
-  EditText _ageText;
-  @BindView(R.id.input_email)
-  EditText _emailText;
-  @BindView(R.id.tvSex)
-  TextView _sexText;
-  @BindView(R.id.input_sex)
-  Spinner _sexSpinner;
-  @BindView(R.id.input_password)
-  EditText _passwordText;
-  @BindView(R.id.input_reEnterPassword)
-  EditText _reEnterPasswordText;
+  @BindView(R.id.et_userName)
+  EditText et_userName;
+  @BindView(R.id.et_height)
+  EditText et_height;
+  @BindView(R.id.et_age)
+  EditText et_age;
+  @BindView(R.id.et_email)
+  EditText et_email;
+  @BindView(R.id.tv_chooseYourSex)
+  TextView tv_chooseYourSex;
+  @BindView(R.id.spinner_sex)
+  Spinner spinner_sex;
+  @BindView(R.id.et_password)
+  EditText et_password;
+  @BindView(R.id.et_reEnterPassword)
+  EditText et_reEnterPassword;
   @BindView(R.id.btn_signup)
-  Button _signupButton;
+  Button btn_signup;
   @BindView(R.id.link_login)
-  TextView _loginLink;
+  TextView link_login;
   
   @Override
   public void onCreate(Bundle savedInstanceState)
@@ -86,10 +86,10 @@ public class SignupActivity extends AppCompatActivity
     // Specify the layout to use when the list of choices appears
     dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
     // Apply the adapter to the spinner
-    _sexSpinner.setAdapter(dataAdapter);
+    spinner_sex.setAdapter(dataAdapter);
   
     // buttons on click behavior
-    _signupButton.setOnClickListener(new View.OnClickListener()
+    btn_signup.setOnClickListener(new View.OnClickListener()
     {
       @Override
       public void onClick(View v)
@@ -97,8 +97,8 @@ public class SignupActivity extends AppCompatActivity
         signup();
       }
     });
-    
-    _loginLink.setOnClickListener(new View.OnClickListener()
+  
+    link_login.setOnClickListener(new View.OnClickListener()
     {
       @Override
       public void onClick(View v)
@@ -119,23 +119,23 @@ public class SignupActivity extends AppCompatActivity
       onSignupFailed();
       return;
     }
-    
-    _signupButton.setEnabled(false);
+  
+    btn_signup.setEnabled(false);
     
     final ProgressDialog progressDialog = new ProgressDialog(SignupActivity.this,
                                                              R.style.AppTheme_Dark_Dialog);
     progressDialog.setIndeterminate(true);
     progressDialog.setMessage("Creating Account...");
     progressDialog.show();
-    
-    String name = _nameText.getText().toString();
-    String height = _heightText.getText().toString();
-    String age = _ageText.getText().toString();
-    String email = _emailText.getText().toString();
-    String password = _passwordText.getText().toString();
-    
-    int spinnerChoicePosition = _sexSpinner.getSelectedItemPosition();
-    String sex = _sexSpinner.getItemAtPosition(spinnerChoicePosition).toString();
+  
+    String name = et_userName.getText().toString();
+    String height = et_height.getText().toString();
+    String age = et_age.getText().toString();
+    String email = et_email.getText().toString();
+    String password = et_password.getText().toString();
+  
+    int spinnerChoicePosition = spinner_sex.getSelectedItemPosition();
+    String sex = spinner_sex.getItemAtPosition(spinnerChoicePosition).toString();
     
     final UserDto newUser = new UserDto();
     newUser.setUserName(name);
@@ -217,7 +217,7 @@ public class SignupActivity extends AppCompatActivity
                     @Override
                     public void run()
                     {
-                      _emailText.setError("Email already exists in database");
+                      et_email.setError("Email already exists in database");
             
                       onSignupFailed();
                     }
@@ -238,7 +238,7 @@ public class SignupActivity extends AppCompatActivity
   
   public void onSignupSuccess(UserDto userDto)
   {
-    _signupButton.setEnabled(true);
+    btn_signup.setEnabled(true);
   
     Intent intent = getIntent();
     Bundle bundle = new Bundle();
@@ -256,98 +256,98 @@ public class SignupActivity extends AppCompatActivity
   public void onSignupFailed()
   {
     Toast.makeText(getBaseContext(), "Sign up failed", Toast.LENGTH_LONG).show();
-    
-    _signupButton.setEnabled(true);
+  
+    btn_signup.setEnabled(true);
   }
   
   public boolean validate()
   {
     boolean valid = true;
-    
-    String name = _nameText.getText().toString();
-    String height = _heightText.getText().toString();
-    String age = _ageText.getText().toString();
-    String email = _emailText.getText().toString();
-    String password = _passwordText.getText().toString();
-    String reEnterPassword = _reEnterPasswordText.getText().toString();
+  
+    String name = et_userName.getText().toString();
+    String height = et_height.getText().toString();
+    String age = et_age.getText().toString();
+    String email = et_email.getText().toString();
+    String password = et_password.getText().toString();
+    String reEnterPassword = et_reEnterPassword.getText().toString();
     
     // Sex spinner
-    if (_sexSpinner.getSelectedItemPosition() == 0)
+    if (spinner_sex.getSelectedItemPosition() == 0)
     {
-      _sexText.setError("Choose your sex");
+      tv_chooseYourSex.setError("Choose your sex");
   
       valid = false;
     }
     else
     {
-      _sexText.setError(null);
+      tv_chooseYourSex.setError(null);
     }
     
     
     // name
     if (! name.matches("[A-Za-z0-9]{3,20}"))
     {
-      _nameText.setError("Enter only letters and numbers between 3 to 20 length");
+      et_userName.setError("Enter only letters and numbers between 3 to 20 length");
       valid = false;
     }
     else
     {
-      _nameText.setError(null);
+      et_userName.setError(null);
     }
   
     // Height
     if (! height.matches("^(?:[1-9]\\d?|[12]\\d{2})$"))
     {
-      _heightText.setError("Enter height between 0 to 300 centimetres");
+      et_height.setError("Enter height between 0 to 300 centimetres");
       valid = false;
     }
     else
     {
-      _heightText.setError(null);
+      et_height.setError(null);
     }
     
     // age
     if (! age.matches("^[1-9][0-9]?$|^100$"))
     {
-      _ageText.setError("Enter age between 0 and 100");
+      et_age.setError("Enter age between 0 and 100");
       valid = false;
     }
     else
     {
-      _ageText.setError(null);
+      et_age.setError(null);
     }
     
     // email
     if (! email.matches(
         "^((\"[\\w-\\s]+\")|([\\w-]+(?:\\.[\\w-]+)*)|(\"[\\w-\\s]+\")([\\w-]+(?:\\.[\\w-]+)*))(@((?:[\\w-]+\\.)*\\w[\\w-]{0,66})\\.([a-z]{2,6}(?:\\.[a-z]{2})?)$)|(@\\[?((25[0-5]\\.|2[0-4][0-9]\\.|1[0-9]{2}\\.|[0-9]{1,2}\\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\\]?$)"))
     {
-      _emailText.setError("Enter a valid email address");
+      et_email.setError("Enter a valid email address");
       valid = false;
     }
     else
     {
-      _emailText.setError(null);
+      et_email.setError(null);
     }
     
     // password
     if (! password.matches("[^\\s]{3,20}"))
     {
-      _passwordText.setError("Enter password between 3 and 20 characters without spaces");
+      et_password.setError("Enter password between 3 and 20 characters without spaces");
       valid = false;
     }
     else
     {
-      _passwordText.setError(null);
+      et_password.setError(null);
     }
     
     if (! (reEnterPassword.equals(password)))
     {
-      _reEnterPasswordText.setError("Passwords do not match");
+      et_reEnterPassword.setError("Passwords do not match");
       valid = false;
     }
     else
     {
-      _reEnterPasswordText.setError(null);
+      et_reEnterPassword.setError(null);
     }
     
     return valid;

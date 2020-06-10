@@ -55,7 +55,7 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
   @BindView(R.id.btn_bluetoothOnOff)
   Button btn_bluetoothOnOff;
   
-  @BindView(R.id.btn_discoverableOnOff)
+  @BindView(R.id.btn_enableVisibility)
   Button btn_discoverableOnOff;
   
   @BindView(R.id.btn_discoverDevices)
@@ -272,6 +272,7 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
       public void onClick(View v)
       {
         Log.d(TAG, "onClick: enabling/disabling bluetooth.");
+        // TODO: simplify button behavior to simply enable bluetooth if disabled
         enableDisableBT();
       }
     });

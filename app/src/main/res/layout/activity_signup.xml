@@ -29,7 +29,7 @@
                 android:layout_marginBottom="8dp">
 
             <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/input_email"
+                    android:id="@+id/et_email"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textEmailAddress"
@@ -45,7 +45,7 @@
                 app:passwordToggleEnabled="true">
 
             <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/input_password"
+                    android:id="@+id/et_password"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textPassword"
@@ -61,7 +61,7 @@
                 app:passwordToggleEnabled="true">
 
             <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/input_reEnterPassword"
+                    android:id="@+id/et_reEnterPassword"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textPassword"
@@ -76,7 +76,7 @@
             android:layout_marginBottom="8dp">
 
             <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/input_name"
+                    android:id="@+id/et_userName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textPersonName"
@@ -91,7 +91,7 @@
             android:layout_marginBottom="8dp">
 
             <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/input_age"
+                    android:id="@+id/et_age"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Age"
@@ -106,7 +106,7 @@
                 android:layout_marginBottom="8dp">
 
             <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/input_height"
+                    android:id="@+id/et_height"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Height (CM)"
@@ -122,7 +122,7 @@
             android:layout_marginBottom="8dp">
             <TextView
                     android:layout_marginLeft="5dp"
-                    android:id="@+id/tvSex"
+                    android:id="@+id/tv_chooseYourSex"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -137,7 +137,7 @@
             </TextView>
             <!-- Spinner -->
             <Spinner
-                    android:id="@+id/input_sex"
+                    android:id="@+id/spinner_sex"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     >

@@ -31,8 +31,8 @@ public class MainActivity extends AppCompatActivity
   
   
   // GUI components
-  @BindView(R.id.listView)
-  ListView listView;
+  @BindView(R.id.lv_measurements)
+  ListView lv_measurements;
   
   @BindView(R.id.btn_newMeasurement)
   Button btn_newMeasurement;
@@ -62,6 +62,11 @@ public class MainActivity extends AppCompatActivity
   
     // TODO: Implement sending http request for all user measurements. sort them by date and print out in list View
   
+    // TODO: sent http request for userDto. extract from userDto measurementIds. send http request for all measurements.
+    
+    
+    
+    
     // TODO: filter data. po kliknięciu w przycik SHOW FILTERS w widoku głównym pojawią się nowe pola na filtry.
     //  np. pola na date początkową i datę końcową z jakiego okresu czasu mają być pokazywane dane. oraz przycisk APPLY FILTERS.
   
@@ -77,7 +82,7 @@ public class MainActivity extends AppCompatActivity
     
     ArrayAdapter arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, list);
   
-    listView.setAdapter(arrayAdapter);
+    lv_measurements.setAdapter(arrayAdapter);
   
   
     // buttons on click behavior

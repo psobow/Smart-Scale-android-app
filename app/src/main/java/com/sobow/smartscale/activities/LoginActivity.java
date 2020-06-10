@@ -35,14 +35,14 @@ public class LoginActivity extends AppCompatActivity
   private OkHttpClient client = new OkHttpClient();
   
   
-  @BindView(R.id.input_email)
-  EditText _emailText;
-  @BindView(R.id.input_password)
-  EditText _passwordText;
+  @BindView(R.id.et_email)
+  EditText et_email;
+  @BindView(R.id.et_password)
+  EditText et_password;
   @BindView(R.id.btn_login)
-  Button _loginButton;
+  Button btn_login;
   @BindView(R.id.link_signup)
-  TextView _signupLink;
+  TextView btn_signup;
   
   @Override
   public void onCreate(Bundle savedInstanceState)
@@ -50,8 +50,8 @@ public class LoginActivity extends AppCompatActivity
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_login);
     ButterKnife.bind(this);
-    
-    _loginButton.setOnClickListener(new View.OnClickListener()
+  
+    btn_login.setOnClickListener(new View.OnClickListener()
     {
       
       @Override
@@ -60,8 +60,8 @@ public class LoginActivity extends AppCompatActivity
         login();
       }
     });
-    
-    _signupLink.setOnClickListener(new View.OnClickListener()
+  
+    btn_signup.setOnClickListener(new View.OnClickListener()
     {
       
       @Override
@@ -85,9 +85,9 @@ public class LoginActivity extends AppCompatActivity
       onLoginFailed();
       return;
     }
-    
-    
-    _loginButton.setEnabled(false);
+  
+  
+    btn_login.setEnabled(false);
     
     final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this,
                                                              R.style.AppTheme_Dark_Dialog);
@@ -101,8 +101,8 @@ public class LoginActivity extends AppCompatActivity
         {
           public void run()
           {
-            String emailInput = _emailText.getText().toString();
-            String passwordInput = _passwordText.getText().toString();
+            String emailInput = et_email.getText().toString();
+            String passwordInput = et_password.getText().toString();
             
             String requestUrl = BASE_URL + USER_CONTROLLER + "/" + emailInput + "/" + passwordInput;
             Request request = new Request.Builder().url(requestUrl).build();
@@ -148,8 +148,8 @@ public class LoginActivity extends AppCompatActivity
                     @Override
                     public void run()
                     {
-                      _emailText.setError("Email or password incorrect");
-                      _passwordText.setError("Email or password incorrect");
+                      et_email.setError("Email or password incorrect");
+                      et_password.setError("Email or password incorrect");
                       
                       onLoginFailed();
                     }
@@ -201,7 +201,7 @@ public class LoginActivity extends AppCompatActivity
   
   public void onLoginSuccess(String email, String password)
   {
-    _loginButton.setEnabled(true);
+    btn_login.setEnabled(true);
   
     Intent intent = getIntent();
     Bundle bundle = new Bundle();
@@ -218,35 +218,35 @@ public class LoginActivity extends AppCompatActivity
   public void onLoginFailed()
   {
     Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
-    
-    _loginButton.setEnabled(true);
+  
+    btn_login.setEnabled(true);
   }
   
   public boolean validate()
   {
     boolean valid = true;
-    
-    String email = _emailText.getText().toString();
-    String password = _passwordText.getText().toString();
+  
+    String email = et_email.getText().toString();
+    String password = et_password.getText().toString();
     
     if ( ! email.matches("^((\"[\\w-\\s]+\")|([\\w-]+(?:\\.[\\w-]+)*)|(\"[\\w-\\s]+\")([\\w-]+(?:\\.[\\w-]+)*))(@((?:[\\w-]+\\.)*\\w[\\w-]{0,66})\\.([a-z]{2,6}(?:\\.[a-z]{2})?)$)|(@\\[?((25[0-5]\\.|2[0-4][0-9]\\.|1[0-9]{2}\\.|[0-9]{1,2}\\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\\]?$)"))
     {
-      _emailText.setError("enter a valid email address");
+      et_email.setError("enter a valid email address");
       valid = false;
     }
     else
     {
-      _emailText.setError(null);
+      et_email.setError(null);
     }
     
     if ( ! password.matches("[^\\s]{3,20}"))
     {
-      _passwordText.setError("between 3 and 20 alphanumeric characters without spaces");
+      et_password.setError("between 3 and 20 alphanumeric characters without spaces");
       valid = false;
     }
     else
     {
-      _passwordText.setError(null);
+      et_password.setError(null);
     }
     
     return valid;

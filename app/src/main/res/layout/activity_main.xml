@@ -64,7 +64,7 @@
                 android:textStyle="bold" />
 
         <ListView
-                android:id="@+id/listView"
+                android:id="@+id/lv_measurements"
                 android:layout_width="wrap_content"
                 android:layout_height="450dp"
                 android:nestedScrollingEnabled="true" />
