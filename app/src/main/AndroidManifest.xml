@@ -1,19 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         package="com.sobow.smartscale">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <uses-feature android:name="android.hardware.bluetooth" />
+
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission
+            android:name="android.permission.BLUETOOTH_PRIVILEGED"
+            tools:ignore="ProtectedPermissions" />
+
     <application
             android:allowBackup="true"
-            android:usesCleartextTraffic="true"
             android:icon="@mipmap/logo_big"
             android:label="@string/app_name"
             android:supportsRtl="true"
-            android:theme="@style/AppTheme">
-        <activity android:name=".SignupActivity" android:theme="@style/AppTheme.Dark" ></activity>
-        <activity android:name=".LoginActivity" android:theme="@style/AppTheme.Dark" />
-        <activity android:name=".MainActivity" android:theme="@style/AppTheme.Dark">
+            android:theme="@style/AppTheme"
+            android:usesCleartextTraffic="true">
+        <activity android:name=".bluetooth" />
+        <activity
+                android:name=".SignupActivity"
+                android:theme="@style/AppTheme.Dark" />
+        <activity
+                android:name=".LoginActivity"
+                android:theme="@style/AppTheme.Dark" />
+        <activity
+                android:name=".MainActivity"
+                android:theme="@style/AppTheme.Dark">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -1,0 +1,16 @@
+package com.sobow.smartscale;
+
+import android.os.Bundle;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class bluetooth extends AppCompatActivity
+{
+  
+  @Override
+  protected void onCreate(Bundle savedInstanceState)
+  {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_bluetooth);
+  }
+}
