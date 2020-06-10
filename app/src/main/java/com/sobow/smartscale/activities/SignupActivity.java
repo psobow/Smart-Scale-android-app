@@ -241,7 +241,7 @@ public class SignupActivity extends AppCompatActivity
     _signupButton.setEnabled(true);
   
     Intent intent = getIntent();
-    Bundle bundle = intent.getExtras();
+    Bundle bundle = new Bundle();
   
     bundle.putString("email", userDto.getEmail());
     bundle.putString("password", userDto.getPassword());

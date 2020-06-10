@@ -42,6 +42,9 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
   private ArrayList<BluetoothDevice> mBTDevices = new ArrayList<>();
   private DeviceListAdapter mDeviceListAdapter;
   
+  private String userEmail = "";
+  private String userPassword = "";
+  
   // GUI components
   @BindView(R.id.lv_devices)
   ListView lv_devices;
@@ -251,13 +254,16 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
     
     LocalBroadcastManager.getInstance(this).registerReceiver(mReceiver, new IntentFilter("incomingMessage"));
     
-    
     IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
     
     registerReceiver(mBroadcastReceiver4, filter);
     
     mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-    
+  
+    // get email and password from main activity
+    Bundle bundle = getIntent().getExtras();
+    userEmail = bundle.getString("email");
+    userPassword = bundle.getString("password");
     
     // OnClickListeners
     btn_bluetoothOnOff.setOnClickListener(new View.OnClickListener()

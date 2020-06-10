@@ -69,8 +69,6 @@ public class LoginActivity extends AppCompatActivity
       {
         // Start the Signup activity
         Intent newIntent = new Intent(getApplicationContext(), SignupActivity.class);
-        Bundle bundle = getIntent().getExtras();
-        newIntent.putExtras(bundle);
         startActivityForResult(newIntent, REQUEST_SIGNUP);
         overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
       }
@@ -206,7 +204,7 @@ public class LoginActivity extends AppCompatActivity
     _loginButton.setEnabled(true);
   
     Intent intent = getIntent();
-    Bundle bundle = intent.getExtras();
+    Bundle bundle = new Bundle();
   
     bundle.putString("email", email);
     bundle.putString("password", password);

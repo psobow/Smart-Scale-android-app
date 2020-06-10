@@ -29,8 +29,6 @@ public class MainActivity extends AppCompatActivity
   private String userEmail = "";
   private String userPassword = "";
   
-  private Bundle bundle = new Bundle();
-  
   
   // GUI components
   @BindView(R.id.listView)
@@ -38,6 +36,12 @@ public class MainActivity extends AppCompatActivity
   
   @BindView(R.id.btn_newMeasurement)
   Button btn_newMeasurement;
+  
+  @BindView(R.id.btn_userData)
+  Button btn_userData;
+  
+  @BindView(R.id.btn_printChart)
+  Button btn_printChart;
   
   @BindView(R.id.btn_logout)
   Button btn_logout;
@@ -51,9 +55,8 @@ public class MainActivity extends AppCompatActivity
     setContentView(R.layout.activity_main);
     ButterKnife.bind(this);
   
-    // Start login activity
+    // Start login activity for result
     Intent newIntent = new Intent(getApplicationContext(), LoginActivity.class);
-    newIntent.putExtras(bundle);
     startActivityForResult(newIntent, REQUEST_LOGIN);
   
   
@@ -84,7 +87,12 @@ public class MainActivity extends AppCompatActivity
       public void onClick(View v)
       {
         Intent newIntent = new Intent(getApplicationContext(), BluetoothActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putString("email", userEmail);
+        bundle.putString("password", userPassword);
+        
         newIntent.putExtras(bundle);
+  
         startActivityForResult(newIntent, REQUEST_BLUETOOTH);
         overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
       }
@@ -97,11 +105,11 @@ public class MainActivity extends AppCompatActivity
       {
         // TODO: clear list view
         Intent newIntent = new Intent(getApplicationContext(), LoginActivity.class);
-        newIntent.putExtras(bundle);
         startActivityForResult(newIntent, REQUEST_LOGIN);
       }
     });
   
+    // TODO: impelement rest buttons on click behavior
   }
   
   
