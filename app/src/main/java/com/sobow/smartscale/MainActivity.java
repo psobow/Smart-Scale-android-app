@@ -5,7 +5,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,12 +25,16 @@ public class MainActivity extends AppCompatActivity
   @BindView(R.id.listView)
   ListView listView;
   
+  @BindView(R.id.btn_newMeasurement)
+  Button btn_newMeasurement;
+  
   private static final int REQUEST_LOGIN = 0;
   
   private String userEmail = "";
   private String userPassword = "";
   
   private Bundle bundle = new Bundle();
+  
   
   @Override
   protected void onCreate(Bundle savedInstanceState)
@@ -46,7 +52,6 @@ public class MainActivity extends AppCompatActivity
   
     // TODO: filter data. po kliknięciu w przycik SHOW FILTERS w widoku głównym pojawią się nowe pola na filtry.
     //  np. pola na date początkową i datę końcową z jakiego okresu czasu mają być pokazywane dane. oraz przycisk APPLY FILTERS.
-    
     
     
     list.add("2020-03-20 16:10:08    78.1 kg    BMI = 20.2");
@@ -83,6 +88,21 @@ public class MainActivity extends AppCompatActivity
   
     listView.setAdapter(arrayAdapter);
   
+  
+    btn_newMeasurement.setOnClickListener(new View.OnClickListener()
+    {
+      @Override
+      public void onClick(View v)
+      {
+        Intent newIntent = new Intent(getApplicationContext(), BluetoothActivity.class);
+        //Bundle bundle = getIntent().getExtras();
+        //newIntent.putExtras(bundle);
+        //startActivityForResult(newIntent, REQUEST_SIGNUP);
+        startActivity(newIntent);
+        overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+      }
+    });
+    
   }
   
   @Override

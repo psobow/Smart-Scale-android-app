@@ -1,71 +1,106 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".MainActivity">
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:fitsSystemWindows="true">
 
-    <Button
-            android:id="@+id/btnONOFF"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:layout_marginLeft="20dp"
-            android:text="ON/OFF"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-            android:id="@+id/btnDiscoverable_on_off"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="Enable Discoverable"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnONOFF" />
-
-    <Button
-            android:id="@+id/btnFindUnpairedDevices"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="Discover"
-            app:layout_constraintEnd_toStartOf="@+id/btnStartConnection"
-            app:layout_constraintStart_toEndOf="@+id/btnONOFF"
-            app:layout_constraintTop_toTopOf="parent" />
-
-    <ListView
-            android:id="@+id/lvNewDevices"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginTop="20dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/DataFromDevice" />
-
-    <Button
-            android:id="@+id/btnStartConnection"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginRight="20dp"
-            android:text="Start Connection"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-            android:id="@+id/DataFromDevice"
+    <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="Data From Device"
-            android:textSize="20sp"
-            app:layout_constraintTop_toBottomOf="@+id/btnDiscoverable_on_off"
-            tools:layout_editor_absoluteX="220dp" />
+            android:orientation="vertical"
+            android:paddingLeft="24dp"
+            android:paddingTop="56dp"
+            android:paddingRight="24dp"
+            tools:context=".BluetoothActivity">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="152dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="24dp"
+                android:src="@drawable/logo" />
+
+        <Button
+                android:id="@+id/btn_bluetoothOnOff"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="24dp"
+                android:padding="12dp"
+                android:text="BLUETOOTH ON / OFF " />
+
+
+        <Button
+                android:id="@+id/btn_discoverableOnOff"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="0dp"
+                android:layout_marginBottom="24dp"
+                android:padding="12dp"
+                android:text="Discoverable ON / OFF" />
+
+        <Button
+                android:id="@+id/btn_discoverDevices"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="0dp"
+                android:layout_marginBottom="24dp"
+                android:padding="12dp"
+                android:text="Discover devices" />
+
+        <TextView
+                android:id="@+id/tv_discoveredDevices"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Discovered devices:"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+        <ListView
+                android:id="@+id/lv_devices"
+                android:layout_width="wrap_content"
+                android:layout_height="200dp"
+                android:nestedScrollingEnabled="true" />
+
+        <Button
+                android:id="@+id/btn_startConnection"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="24dp"
+                android:padding="12dp"
+                android:text="Start Connection" />
+
+
+        <TextView
+                android:id="@+id/tv_dataFromTheDevice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Data from the device:"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+        <Button
+                android:id="@+id/btn_saveData"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="24dp"
+                android:padding="12dp"
+                android:text="Save data" />
+
+
+        <Button
+                android:id="@+id/btn_backToMainActivity"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="0dp"
+                android:layout_marginBottom="24dp"
+                android:padding="12dp"
+                android:text="GO BACK TO MAIN MENU" />
+
+
+    </LinearLayout>
+</ScrollView>

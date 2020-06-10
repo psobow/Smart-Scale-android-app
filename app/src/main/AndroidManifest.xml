@@ -7,6 +7,7 @@
 
     <uses-feature android:name="android.hardware.bluetooth" />
 
+
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -22,12 +23,15 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme"
             android:usesCleartextTraffic="true">
-        <activity android:name=".bluetooth" />
+
         <activity
                 android:name=".SignupActivity"
                 android:theme="@style/AppTheme.Dark" />
         <activity
                 android:name=".LoginActivity"
+                android:theme="@style/AppTheme.Dark" />
+        <activity
+                android:name=".BluetoothActivity"
                 android:theme="@style/AppTheme.Dark" />
         <activity
                 android:name=".MainActivity"
