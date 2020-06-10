@@ -21,8 +21,8 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import com.sobow.smartscale.DeviceListAdapter;
 import com.sobow.smartscale.R;
+import com.sobow.smartscale.activities.adapter.DeviceListAdapter;
 import com.sobow.smartscale.services.BluetoothConnectionService;
 
 import java.util.ArrayList;

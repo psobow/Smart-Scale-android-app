@@ -46,7 +46,6 @@ public class SignupActivity extends AppCompatActivity
   private OkHttpClient client = new OkHttpClient();
   private ObjectMapper mapper = new ObjectMapper();
   
-  private boolean isEmailAlreadyTaken;
   
   @BindView(R.id.input_name)
   EditText _nameText;
@@ -88,7 +87,8 @@ public class SignupActivity extends AppCompatActivity
     dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
     // Apply the adapter to the spinner
     _sexSpinner.setAdapter(dataAdapter);
-    
+  
+    // buttons on click behavior
     _signupButton.setOnClickListener(new View.OnClickListener()
     {
       @Override

@@ -23,19 +23,25 @@ import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity
 {
+  private static final int REQUEST_LOGIN = 0;
+  private static final int REQUEST_BLUETOOTH = 1;
   
+  private String userEmail = "";
+  private String userPassword = "";
+  
+  private Bundle bundle = new Bundle();
+  
+  
+  // GUI components
   @BindView(R.id.listView)
   ListView listView;
   
   @BindView(R.id.btn_newMeasurement)
   Button btn_newMeasurement;
   
-  private static final int REQUEST_LOGIN = 0;
+  @BindView(R.id.btn_logout)
+  Button btn_logout;
   
-  private String userEmail = "";
-  private String userPassword = "";
-  
-  private Bundle bundle = new Bundle();
   
   
   @Override
@@ -44,68 +50,62 @@ public class MainActivity extends AppCompatActivity
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
     ButterKnife.bind(this);
-    Intent newIntent = new Intent(this, LoginActivity.class);
+  
+    // Start login activity
+    Intent newIntent = new Intent(getApplicationContext(), LoginActivity.class);
     newIntent.putExtras(bundle);
     startActivityForResult(newIntent, REQUEST_LOGIN);
   
-    List<String> list = new ArrayList<>();
   
     // TODO: Implement sending http request for all user measurements. sort them by date and print out in list View
   
     // TODO: filter data. po kliknięciu w przycik SHOW FILTERS w widoku głównym pojawią się nowe pola na filtry.
     //  np. pola na date początkową i datę końcową z jakiego okresu czasu mają być pokazywane dane. oraz przycisk APPLY FILTERS.
+  
+    // list view
+    List<String> list = new ArrayList<>();
     
-    
     list.add("2020-03-20 16:10:08    78.1 kg    BMI = 20.2");
     list.add("2020-03-21 10:25:34    79.0 kg    BMI = 20.3");
     list.add("2020-03-22 22:00:01    77.9 kg    BMI = 20.0");
     list.add("2020-03-23 13:47:54    78.5 kg    BMI = 20.2");
     list.add("2020-03-23 11:22:33    78.7 kg    BMI = 20.3");
-  
-    list.add("2020-03-20 16:10:08    78.1 kg    BMI = 20.2");
-    list.add("2020-03-21 10:25:34    79.0 kg    BMI = 20.3");
-    list.add("2020-03-22 22:00:01    77.9 kg    BMI = 20.0");
-    list.add("2020-03-23 13:47:54    78.5 kg    BMI = 20.2");
-    list.add("2020-03-23 11:22:33    78.7 kg    BMI = 20.3");
-  
-    list.add("2020-03-20 16:10:08    78.1 kg    BMI = 20.2");
-    list.add("2020-03-21 10:25:34    79.0 kg    BMI = 20.3");
-  
-    list.add("2020-03-20 16:10:08    78.1 kg    BMI = 20.2");
-    list.add("2020-03-21 10:25:34    79.0 kg    BMI = 20.3");
-    list.add("2020-03-22 22:00:01    77.9 kg    BMI = 20.0");
-    list.add("2020-03-23 13:47:54    78.5 kg    BMI = 20.2");
-    list.add("2020-03-23 11:22:33    78.7 kg    BMI = 20.3");
-  
-    list.add("2020-03-20 16:10:08    78.1 kg    BMI = 20.2");
-    list.add("2020-03-21 10:25:34    79.0 kg    BMI = 20.3");
-    list.add("2020-03-22 22:00:01    77.9 kg    BMI = 20.0");
-    list.add("2020-03-23 13:47:54    78.5 kg    BMI = 20.2");
-    list.add("2020-03-23 11:22:33    78.7 kg    BMI = 20.3");
-  
-    list.add("2020-03-20 16:10:08    78.1 kg    BMI = 20.2");
-    list.add("2020-03-21 10:25:34    79.0 kg    BMI = 20.3");
+
     
     ArrayAdapter arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, list);
   
     listView.setAdapter(arrayAdapter);
   
   
+    // buttons on click behavior
     btn_newMeasurement.setOnClickListener(new View.OnClickListener()
     {
       @Override
       public void onClick(View v)
       {
         Intent newIntent = new Intent(getApplicationContext(), BluetoothActivity.class);
-        //Bundle bundle = getIntent().getExtras();
-        //newIntent.putExtras(bundle);
-        //startActivityForResult(newIntent, REQUEST_SIGNUP);
-        startActivity(newIntent);
+        newIntent.putExtras(bundle);
+        startActivityForResult(newIntent, REQUEST_BLUETOOTH);
         overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
       }
     });
-    
+  
+    btn_logout.setOnClickListener(new View.OnClickListener()
+    {
+      @Override
+      public void onClick(View v)
+      {
+        // TODO: clear list view
+        Intent newIntent = new Intent(getApplicationContext(), LoginActivity.class);
+        newIntent.putExtras(bundle);
+        startActivityForResult(newIntent, REQUEST_LOGIN);
+      }
+    });
+  
   }
+  
+  
+  
   
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data)
@@ -123,6 +123,16 @@ public class MainActivity extends AppCompatActivity
         
       }
       
+    }
+    else if (requestCode == REQUEST_BLUETOOTH)
+    {
+      if (resultCode == Activity.RESULT_OK)
+      {
+        Bundle bundle = data.getExtras();
+    
+        // TODO: read measurement and append to list view
+    
+      }
     }
   }
   
