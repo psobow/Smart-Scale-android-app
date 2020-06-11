@@ -333,7 +333,7 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
       @Override
       public void onClick(View v)
       {
-        // TODO: implement functionality
+        // TODO: implement functionality. remember to sent post request to /create endpoint!
         if (! tv_dataFromTheDevice.getText().toString().equals("Data from the device:"))
         {
     
@@ -350,6 +350,8 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
       @Override
       public void onClick(View v)
       {
+        // TODO: rozważayć jak przekazać liste obiektów measurement. bo użytkownik może dodać kilka pomiarów.
+        
         finish();
         overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
       }

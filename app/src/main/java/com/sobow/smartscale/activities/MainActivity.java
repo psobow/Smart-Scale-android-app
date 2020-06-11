@@ -93,10 +93,6 @@ public class MainActivity extends AppCompatActivity
     startActivityForResult(newIntent, REQUEST_LOGIN);
   
   
-    // TODO: Implement sending http request for all user measurements. sort them by date and print out in list View
-    // TODO: sent http request for userDto. extract from userDto measurementIds. send http request for all measurements.
-  
-  
     // TODO: filter data. po kliknięciu w przycik SHOW FILTERS w widoku głównym pojawią się nowe pola na filtry.
     //  np. pola na date początkową i datę końcową z jakiego okresu czasu mają być pokazywane dane. oraz przycisk APPLY FILTERS.
   
@@ -145,7 +141,8 @@ public class MainActivity extends AppCompatActivity
       @Override
       public void onClick(View v)
       {
-        // TODO: clear list view
+        listView.clear();
+        lv_measurements.invalidateViews();
         Intent newIntent = new Intent(getApplicationContext(), LoginActivity.class);
         startActivityForResult(newIntent, REQUEST_LOGIN);
       }
@@ -219,6 +216,8 @@ public class MainActivity extends AppCompatActivity
               String jsonString = response.body().string();
         
               measurements = Arrays.asList(mapper.readValue(jsonString, MeasurementDto[].class));
+  
+              // TODO: sort measurements by date time
         
               MainActivity.this.runOnUiThread(new Runnable()
               {
@@ -229,6 +228,10 @@ public class MainActivity extends AppCompatActivity
                   for (int i = 0; i < measurements.size(); i++)
                   {
                     listView.add(measurements.get(i).toString());
+                  }
+                  if (listView.isEmpty())
+                  {
+                    listView.add("You did not add any measurement yet.");
                   }
                   arrayAdapter.notifyDataSetChanged();
                   lv_measurements.invalidateViews();

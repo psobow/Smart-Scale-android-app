@@ -129,8 +129,6 @@ public class LoginActivity extends AppCompatActivity
                     btn_login.setEnabled(true);
                   }
                 });
-                
-                e.printStackTrace();
               }
     
               @Override
