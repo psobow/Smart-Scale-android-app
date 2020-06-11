@@ -46,6 +46,8 @@ public class SignupActivity extends AppCompatActivity
   private OkHttpClient client = new OkHttpClient();
   private ObjectMapper mapper = new ObjectMapper();
   
+  private UserDto userFromServer = new UserDto();
+  
   
   @BindView(R.id.et_userName)
   EditText et_userName;
@@ -129,40 +131,38 @@ public class SignupActivity extends AppCompatActivity
     progressDialog.setMessage("Creating Account...");
     progressDialog.show();
   
-    // read input
-    String name = et_userName.getText().toString();
-    String height = et_height.getText().toString();
-    String age = et_age.getText().toString();
-    String email = et_email.getText().toString();
-    String password = et_password.getText().toString();
-    int spinnerChoicePosition = spinner_sex.getSelectedItemPosition();
-    String sex = spinner_sex.getItemAtPosition(spinnerChoicePosition).toString();
   
-    // initialize UserDto object
-    final UserDto newUser = new UserDto();
-    newUser.setUserName(name);
-    newUser.setHeight(Integer.parseInt(height));
-    newUser.setAge(Integer.parseInt(age));
-    newUser.setSex(sex);
-    newUser.setEmail(email);
-    newUser.setPassword(password);
-    
-    
     new android.os.Handler().postDelayed(
         new Runnable()
         {
           public void run()
           {
-            // Send post to server
-            // - if email adress alredy exsists set up error flag for field email
-  
-  
+            // read input
+            String name = et_userName.getText().toString();
+            String height = et_height.getText().toString();
+            String age = et_age.getText().toString();
+            String email = et_email.getText().toString();
+            String password = et_password.getText().toString();
+            int spinnerChoicePosition = spinner_sex.getSelectedItemPosition();
+            String sex = spinner_sex.getItemAtPosition(spinnerChoicePosition).toString();
+          
+            // initialize UserDto object
+            UserDto newUser = new UserDto();
+            newUser.setUserName(name);
+            newUser.setHeight(Integer.parseInt(height));
+            newUser.setAge(Integer.parseInt(age));
+            newUser.setSex(sex);
+            newUser.setEmail(email);
+            newUser.setPassword(password);
+            newUser.setMeasurementIds(new ArrayList<>());
+            
+            
             // map object to JSON string
             String userJsonString = "";
             try
             {
               userJsonString = mapper.writeValueAsString(newUser);
-              Log.i(TAG, "Mapped User Json String = " + userJsonString);
+              Log.d(TAG, "Mapped User Json String = " + userJsonString);
             }
             catch (JsonProcessingException e)
             {
@@ -192,6 +192,7 @@ public class SignupActivity extends AppCompatActivity
                   public void run()
                   {
                     Toast.makeText(getBaseContext(), "Connection with server failed", Toast.LENGTH_LONG).show();
+                    btn_signup.setEnabled(true);
                   }
                 });
       
@@ -203,12 +204,15 @@ public class SignupActivity extends AppCompatActivity
               {
                 if (response.isSuccessful())
                 {
+                  String jsonString = response.body().string();
+  
+                  userFromServer = mapper.readValue(jsonString, UserDto.class);
                   SignupActivity.this.runOnUiThread(new Runnable()
                   {
                     @Override
                     public void run()
                     {
-                      onSignupSuccess(newUser);
+                      onSignupSuccess();
                     }
                   });
                 }
@@ -238,17 +242,13 @@ public class SignupActivity extends AppCompatActivity
   }
   
   
-  public void onSignupSuccess(UserDto userDto)
+  public void onSignupSuccess()
   {
     btn_signup.setEnabled(true);
   
     Intent intent = getIntent();
-    Bundle bundle = new Bundle();
-  
-    bundle.putString("email", userDto.getEmail());
-    bundle.putString("password", userDto.getPassword());
-  
-    intent.putExtras(bundle);
+    intent.putExtra("user", userFromServer);
+    
     setResult(RESULT_OK, intent);
     
     finish();

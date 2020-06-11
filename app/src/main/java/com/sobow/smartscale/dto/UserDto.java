@@ -1,9 +1,12 @@
 package com.sobow.smartscale.dto;
 
-import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class UserDto
+import java.io.Serializable;
+import java.util.List;
+
+@SuppressWarnings("serial")
+public class UserDto implements Serializable
 {
   @JsonProperty("id")
   private long idFromServer;

@@ -23,6 +23,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.sobow.smartscale.R;
 import com.sobow.smartscale.activities.adapter.DeviceListAdapter;
+import com.sobow.smartscale.dto.UserDto;
 import com.sobow.smartscale.services.BluetoothConnectionService;
 
 import java.util.ArrayList;
@@ -42,9 +43,8 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
   private ArrayList<BluetoothDevice> bluetoothDevices = new ArrayList<>();
   private DeviceListAdapter deviceListAdapter;
   
-  private String userEmail = "";
-  private String userPassword = "";
-  private String measurement = "";
+  private UserDto user;
+  private String userWeightFromScale = "";
   
   // GUI components
   @BindView(R.id.lv_devices)
@@ -189,9 +189,8 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
     @Override
     public void onReceive(Context context, Intent intent)
     {
-      tv_dataFromTheDevice.setText("");
-      String text = intent.getStringExtra("theMessage");
-      tv_dataFromTheDevice.setText(text);
+      userWeightFromScale = intent.getStringExtra("theMessage");
+      tv_dataFromTheDevice.setText("Data from the device: " + userWeightFromScale + " kg.");
     }
   };
   
@@ -261,10 +260,7 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
   
     bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
   
-    // get email and password from main activity
-    Bundle bundle = getIntent().getExtras();
-    userEmail = bundle.getString("email");
-    userPassword = bundle.getString("password");
+    user = (UserDto) getIntent().getSerializableExtra("user");
     
     // OnClickListeners
     btn_bluetoothOnOff.setOnClickListener(new View.OnClickListener()
@@ -338,6 +334,14 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
       public void onClick(View v)
       {
         // TODO: implement functionality
+        if (! tv_dataFromTheDevice.getText().toString().equals("Data from the device:"))
+        {
+    
+        }
+        else
+        {
+          Toast.makeText(getBaseContext(), "Wait for data from scale", Toast.LENGTH_LONG).show();
+        }
       }
     });
     
@@ -352,6 +356,7 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
     });
     
   }
+  
   
   public void startBTConnection(BluetoothDevice device, UUID uuid)
   {

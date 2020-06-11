@@ -1,14 +1,25 @@
 package com.sobow.smartscale.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.time.LocalDateTime;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.sobow.smartscale.datetimeserialization.LocalDateTimeDeserializer;
+import com.sobow.smartscale.datetimeserialization.LocalDateTimeSerializer;
+
+import org.threeten.bp.LocalDateTime;
+import org.threeten.bp.format.DateTimeFormatter;
 
 public class MeasurementDto
 {
+  private static final String DATE_FORMATTER = "yyyy-MM-dd HH:mm";
+  
   @JsonProperty("id")
   private long idFromServer;
   
+  
+  @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+  @JsonSerialize(using = LocalDateTimeSerializer.class)
   private LocalDateTime localDateTime;
   
   private double weight;
@@ -69,6 +80,14 @@ public class MeasurementDto
   public void setUserId(long userId)
   {
     this.userId = userId;
+  }
+  
+  @Override
+  public String toString()
+  {
+    return "Date Time: " + localDateTime.format(DateTimeFormatter.ofPattern(DATE_FORMATTER)) +
+        ", weight: " + weight + "kg" +
+        ", BMI: " + BMI;
   }
 }
 

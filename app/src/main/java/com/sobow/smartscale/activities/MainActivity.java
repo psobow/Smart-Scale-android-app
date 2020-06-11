@@ -3,33 +3,61 @@ package com.sobow.smartscale.activities;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sobow.smartscale.R;
+import com.sobow.smartscale.dto.MeasurementDto;
+import com.sobow.smartscale.dto.UserDto;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 
 public class MainActivity extends AppCompatActivity
 {
+  private static final String TAG = "MainActivity";
+  
   private static final int REQUEST_LOGIN = 0;
   private static final int REQUEST_BLUETOOTH = 1;
   private static final int REQUEST_USERDATA = 2;
   
-  private String userEmail = "";
-  private String userPassword = "";
+  private static final String BASE_URL = "http://10.0.2.2:8080/v1";
+  private static final String MEASUREMENT_CONTROLLER = "/measurement";
   
+  
+  private UserDto user;
+  
+  private List<MeasurementDto> measurements = new ArrayList<>();
+  
+  List<String> listView = new ArrayList<>();
+  
+  private OkHttpClient client = new OkHttpClient();
+  private ObjectMapper mapper = new ObjectMapper();
+  
+  private ArrayAdapter arrayAdapter;
   
   // GUI components
   @BindView(R.id.lv_measurements)
@@ -63,24 +91,22 @@ public class MainActivity extends AppCompatActivity
   
     // TODO: Implement sending http request for all user measurements. sort them by date and print out in list View
     // TODO: sent http request for userDto. extract from userDto measurementIds. send http request for all measurements.
-    
-    
-    
-    
+  
+  
     // TODO: filter data. po kliknięciu w przycik SHOW FILTERS w widoku głównym pojawią się nowe pola na filtry.
     //  np. pola na date początkową i datę końcową z jakiego okresu czasu mają być pokazywane dane. oraz przycisk APPLY FILTERS.
   
     // list view
-    List<String> list = new ArrayList<>();
-    
-    list.add("2020-03-20 16:10:08    78.1 kg    BMI = 20.2");
-    list.add("2020-03-21 10:25:34    79.0 kg    BMI = 20.3");
-    list.add("2020-03-22 22:00:01    77.9 kg    BMI = 20.0");
-    list.add("2020-03-23 13:47:54    78.5 kg    BMI = 20.2");
-    list.add("2020-03-23 11:22:33    78.7 kg    BMI = 20.3");
-
-    
-    ArrayAdapter arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, list);
+  
+  
+    listView.add("2020-03-20 16:10:08    78.1 kg    BMI = 20.2");
+    listView.add("2020-03-21 10:25:34    79.0 kg    BMI = 20.3");
+    listView.add("2020-03-22 22:00:01    77.9 kg    BMI = 20.0");
+    listView.add("2020-03-23 13:47:54    78.5 kg    BMI = 20.2");
+    listView.add("2020-03-23 11:22:33    78.7 kg    BMI = 20.3");
+  
+  
+    arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, listView);
   
     lv_measurements.setAdapter(arrayAdapter);
   
@@ -92,12 +118,7 @@ public class MainActivity extends AppCompatActivity
       public void onClick(View v)
       {
         Intent newIntent = new Intent(getApplicationContext(), BluetoothActivity.class);
-        Bundle bundle = new Bundle();
-        bundle.putString("email", userEmail);
-        bundle.putString("password", userPassword);
-        
-        newIntent.putExtras(bundle);
-  
+        newIntent.putExtra("user", user);
         startActivityForResult(newIntent, REQUEST_BLUETOOTH);
         overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
       }
@@ -109,12 +130,7 @@ public class MainActivity extends AppCompatActivity
       public void onClick(View v)
       {
         Intent newIntent = new Intent(getApplicationContext(), UserDataActivity.class);
-        Bundle bundle = new Bundle();
-        bundle.putString("email", userEmail);
-        bundle.putString("password", userPassword);
-      
-        newIntent.putExtras(bundle);
-      
+        newIntent.putExtra("user", user);
         startActivityForResult(newIntent, REQUEST_USERDATA);
         overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
       }
@@ -138,19 +154,99 @@ public class MainActivity extends AppCompatActivity
   
   
   @Override
-  protected void onActivityResult(int requestCode, int resultCode, Intent data)
+  protected void onActivityResult(int requestCode, int resultCode, Intent intent)
   {
-    super.onActivityResult(requestCode, resultCode, data);
+    super.onActivityResult(requestCode, resultCode, intent);
     
     if (requestCode == REQUEST_LOGIN)
     {
       if (resultCode == Activity.RESULT_OK)
       {
-        Bundle bundle = data.getExtras();
+        user = (UserDto) intent.getSerializableExtra("user");
+  
+        // map object to JSON string
+        String userJsonString = "";
+        try
+        {
+          userJsonString = mapper.writeValueAsString(user);
+          Log.d(TAG, "Mapped User Json String = " + userJsonString);
+        }
+        catch (JsonProcessingException e)
+        {
+          e.printStackTrace();
+        }
+        // json request body
+        RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), userJsonString);
+  
+  
+        // sent http for measurements
+  
+        String requestUrl = BASE_URL + MEASUREMENT_CONTROLLER;
+  
+        Request request = new Request.Builder()
+            .url(requestUrl)
+            .post(body)
+            .build();
+  
+  
+        // Execute HTTP requests in background thread
+        client.newCall(request).enqueue(new Callback()
+        {
+          @Override
+          public void onFailure(Call call, IOException e)
+          {
+            MainActivity.this.runOnUiThread(new Runnable()
+            {
+              @Override
+              public void run()
+              {
+                Toast.makeText(getBaseContext(), "Connection with server failed", Toast.LENGTH_LONG).show();
+              }
+            });
+      
+            e.printStackTrace();
+          }
+    
+          @Override
+          public void onResponse(Call call, Response response) throws IOException
+          {
+            if (response.isSuccessful())
+            {
+              String jsonString = response.body().string();
         
-        userEmail = bundle.getString("email");
-        userPassword = bundle.getString("password");
+              measurements = Arrays.asList(mapper.readValue(jsonString, MeasurementDto[].class));
         
+              MainActivity.this.runOnUiThread(new Runnable()
+              {
+                @Override
+                public void run()
+                {
+                  listView.clear();
+                  for (int i = 0; i < measurements.size(); i++)
+                  {
+                    listView.add(measurements.get(i).toString());
+                  }
+                  arrayAdapter.notifyDataSetChanged();
+                  lv_measurements.invalidateViews();
+                }
+              });
+            }
+            else if (response.code() == 404)
+            {
+              MainActivity.this.runOnUiThread(new Runnable()
+              {
+                @Override
+                public void run()
+                {
+            
+                }
+              });
+            }
+      
+      
+          }
+    
+        });
       }
       
     }
@@ -158,7 +254,6 @@ public class MainActivity extends AppCompatActivity
     {
       if (resultCode == Activity.RESULT_OK)
       {
-        Bundle bundle = data.getExtras();
     
         // TODO: read measurement and append to list view
     

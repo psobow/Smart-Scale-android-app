@@ -12,7 +12,9 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sobow.smartscale.R;
+import com.sobow.smartscale.dto.UserDto;
 
 import java.io.IOException;
 
@@ -29,10 +31,13 @@ public class LoginActivity extends AppCompatActivity
   private static final String TAG = "LoginActivity";
   private static final int REQUEST_SIGNUP = 0;
   
-  private final String BASE_URL = "http://10.0.2.2:8080/v1";
-  private final String USER_CONTROLLER = "/user";
+  private static final String BASE_URL = "http://10.0.2.2:8080/v1";
+  private static final String USER_CONTROLLER = "/user";
   
   private OkHttpClient client = new OkHttpClient();
+  private ObjectMapper mapper = new ObjectMapper();
+  
+  private UserDto user = new UserDto();
   
   
   @BindView(R.id.et_email)
@@ -121,6 +126,7 @@ public class LoginActivity extends AppCompatActivity
                   public void run()
                   {
                     Toast.makeText(getBaseContext(), "Connection with server failed", Toast.LENGTH_LONG).show();
+                    btn_login.setEnabled(true);
                   }
                 });
                 
@@ -132,14 +138,16 @@ public class LoginActivity extends AppCompatActivity
               {
                 if(response.isSuccessful())
                 {
-                  Log.i(TAG, "Response body = " + response.body().string());
+                  String jsonString = response.body().string();
+  
+                  user = mapper.readValue(jsonString, UserDto.class);
                   
                   LoginActivity.this.runOnUiThread(new Runnable()
                   {
                     @Override
                     public void run()
                     {
-                      onLoginSuccess(emailInput, passwordInput);
+                      onLoginSuccess();
                     }
                   });
                 }
@@ -177,19 +185,21 @@ public class LoginActivity extends AppCompatActivity
   
   
   @Override
-  protected void onActivityResult(int requestCode, int resultCode, Intent data)
+  protected void onActivityResult(int requestCode, int resultCode, Intent intent)
   {
-    super.onActivityResult(requestCode, resultCode, data);
+    super.onActivityResult(requestCode, resultCode, intent);
     if (requestCode == REQUEST_SIGNUP)
     {
       if (resultCode == RESULT_OK)
       {
         // By default we just finish the Activity and log them in automatically
-        Bundle bundle = data.getExtras();
-        getIntent().putExtras(bundle);
   
+        // Pass object to main activity
+        UserDto user = (UserDto) intent.getSerializableExtra("user");
+        getIntent().putExtra("user", user);
+        
         setResult(RESULT_OK, getIntent());
-        this.finish();
+        finish();
       }
     }
   }
@@ -201,17 +211,13 @@ public class LoginActivity extends AppCompatActivity
     moveTaskToBack(true);
   }
   
-  public void onLoginSuccess(String email, String password)
+  public void onLoginSuccess()
   {
     btn_login.setEnabled(true);
   
     Intent intent = getIntent();
-    Bundle bundle = new Bundle();
+    intent.putExtra("user", user);
   
-    bundle.putString("email", email);
-    bundle.putString("password", password);
-  
-    intent.putExtras(bundle);
     setResult(RESULT_OK, intent);
     
     finish();
