@@ -121,22 +121,24 @@ public class SignupActivity extends AppCompatActivity
     }
   
     btn_signup.setEnabled(false);
-    
+  
+    // display loading component
     final ProgressDialog progressDialog = new ProgressDialog(SignupActivity.this,
                                                              R.style.AppTheme_Dark_Dialog);
     progressDialog.setIndeterminate(true);
     progressDialog.setMessage("Creating Account...");
     progressDialog.show();
   
+    // read input
     String name = et_userName.getText().toString();
     String height = et_height.getText().toString();
     String age = et_age.getText().toString();
     String email = et_email.getText().toString();
     String password = et_password.getText().toString();
-  
     int spinnerChoicePosition = spinner_sex.getSelectedItemPosition();
     String sex = spinner_sex.getItemAtPosition(spinnerChoicePosition).toString();
-    
+  
+    // initialize UserDto object
     final UserDto newUser = new UserDto();
     newUser.setUserName(name);
     newUser.setHeight(Integer.parseInt(height));
@@ -339,8 +341,13 @@ public class SignupActivity extends AppCompatActivity
     {
       et_password.setError(null);
     }
-    
-    if (! (reEnterPassword.equals(password)))
+  
+    if (reEnterPassword.isEmpty())
+    {
+      et_reEnterPassword.setError("Password can not be empty");
+      valid = false;
+    }
+    else if (! (reEnterPassword.equals(password)))
     {
       et_reEnterPassword.setError("Passwords do not match");
       valid = false;

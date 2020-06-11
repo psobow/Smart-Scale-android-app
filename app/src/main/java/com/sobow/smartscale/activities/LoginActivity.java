@@ -51,6 +51,8 @@ public class LoginActivity extends AppCompatActivity
     setContentView(R.layout.activity_login);
     ButterKnife.bind(this);
   
+    // TODO: implement "Forgot password?" functionality
+  
     btn_login.setOnClickListener(new View.OnClickListener()
     {
       

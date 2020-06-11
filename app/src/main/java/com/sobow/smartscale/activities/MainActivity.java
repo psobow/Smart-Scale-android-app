@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity
 {
   private static final int REQUEST_LOGIN = 0;
   private static final int REQUEST_BLUETOOTH = 1;
+  private static final int REQUEST_USERDATA = 2;
   
   private String userEmail = "";
   private String userPassword = "";
@@ -61,7 +62,6 @@ public class MainActivity extends AppCompatActivity
   
   
     // TODO: Implement sending http request for all user measurements. sort them by date and print out in list View
-  
     // TODO: sent http request for userDto. extract from userDto measurementIds. send http request for all measurements.
     
     
@@ -103,6 +103,23 @@ public class MainActivity extends AppCompatActivity
       }
     });
   
+    btn_userData.setOnClickListener(new View.OnClickListener()
+    {
+      @Override
+      public void onClick(View v)
+      {
+        Intent newIntent = new Intent(getApplicationContext(), UserDataActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putString("email", userEmail);
+        bundle.putString("password", userPassword);
+      
+        newIntent.putExtras(bundle);
+      
+        startActivityForResult(newIntent, REQUEST_USERDATA);
+        overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+      }
+    });
+  
     btn_logout.setOnClickListener(new View.OnClickListener()
     {
       @Override
@@ -114,7 +131,7 @@ public class MainActivity extends AppCompatActivity
       }
     });
   
-    // TODO: impelement rest buttons on click behavior
+    // TODO: impelement remaining buttons on click behavior
   }
   
   
