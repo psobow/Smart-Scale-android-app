@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -74,6 +75,9 @@ public class MainActivity extends AppCompatActivity
   
   @BindView(R.id.btn_logout)
   Button btn_logout;
+  
+  @BindView(R.id.tv_yourMeasurements)
+  TextView tv_yourMeasurements;
   
   
   
@@ -163,7 +167,7 @@ public class MainActivity extends AppCompatActivity
       if (resultCode == Activity.RESULT_OK)
       {
         user = (UserDto) intent.getSerializableExtra("user");
-  
+        tv_yourMeasurements.setText("Welcome " + user.getUserName() + "!\nYour measurements:");
         // map object to JSON string
         String userJsonString = "";
         try

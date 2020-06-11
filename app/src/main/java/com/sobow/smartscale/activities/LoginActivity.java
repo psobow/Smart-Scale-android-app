@@ -201,6 +201,11 @@ public class LoginActivity extends AppCompatActivity
         setResult(RESULT_OK, getIntent());
         finish();
       }
+      else
+      {
+        et_email.setError(null);
+        et_password.setError(null);
+      }
     }
   }
   
