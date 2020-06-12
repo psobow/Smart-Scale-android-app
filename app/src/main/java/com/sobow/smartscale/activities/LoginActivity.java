@@ -39,7 +39,7 @@ public class LoginActivity extends AppCompatActivity
   
   private UserDto user = new UserDto();
   
-  
+  // GUI components
   @BindView(R.id.et_email)
   EditText et_email;
   @BindView(R.id.et_password)
@@ -126,7 +126,6 @@ public class LoginActivity extends AppCompatActivity
                   public void run()
                   {
                     Toast.makeText(getBaseContext(), "Connection with server failed", Toast.LENGTH_LONG).show();
-                    btn_login.setEnabled(true);
                   }
                 });
               }
@@ -174,7 +173,7 @@ public class LoginActivity extends AppCompatActivity
             //no internet connection:  find user in database based on email and password
             // - if wrong email or password display: wrong email or password
   
-  
+            btn_login.setEnabled(true);
             progressDialog.dismiss();
           }
         }, 3000);
@@ -216,8 +215,6 @@ public class LoginActivity extends AppCompatActivity
   
   public void onLoginSuccess()
   {
-    btn_login.setEnabled(true);
-  
     Intent intent = getIntent();
     intent.putExtra("user", user);
   
@@ -229,8 +226,6 @@ public class LoginActivity extends AppCompatActivity
   public void onLoginFailed()
   {
     Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
-  
-    btn_login.setEnabled(true);
   }
   
   public boolean validate()

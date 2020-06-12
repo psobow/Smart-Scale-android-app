@@ -192,7 +192,6 @@ public class SignupActivity extends AppCompatActivity
                   public void run()
                   {
                     Toast.makeText(getBaseContext(), "Connection with server failed", Toast.LENGTH_LONG).show();
-                    btn_signup.setEnabled(true);
                   }
                 });
       
@@ -229,13 +228,17 @@ public class SignupActivity extends AppCompatActivity
                     }
                   });
                 }
+                else
+                {
+                  Log.i(TAG, "response code = " + response.code());
+                }
       
       
               }
     
             });
-            
-            
+  
+            btn_signup.setEnabled(true);
             progressDialog.dismiss();
           }
         }, 3000);
@@ -244,8 +247,6 @@ public class SignupActivity extends AppCompatActivity
   
   public void onSignupSuccess()
   {
-    btn_signup.setEnabled(true);
-  
     Intent intent = getIntent();
     intent.putExtra("user", userFromServer);
     
@@ -258,8 +259,6 @@ public class SignupActivity extends AppCompatActivity
   public void onSignupFailed()
   {
     Toast.makeText(getBaseContext(), "Sign up failed", Toast.LENGTH_LONG).show();
-  
-    btn_signup.setEnabled(true);
   }
   
   public boolean validate()

@@ -25,6 +25,8 @@ import com.sobow.smartscale.dto.UserDto;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import butterknife.BindView;
@@ -81,7 +83,6 @@ public class MainActivity extends AppCompatActivity
   TextView tv_yourMeasurements;
   
   
-  
   @Override
   protected void onCreate(Bundle savedInstanceState)
   {
@@ -98,9 +99,7 @@ public class MainActivity extends AppCompatActivity
     // TODO: filter data. po kliknięciu w przycik SHOW FILTERS w widoku głównym pojawią się nowe pola na filtry.
     //  np. pola na date początkową i datę końcową z jakiego okresu czasu mają być pokazywane dane. oraz przycisk APPLY FILTERS.
   
-    // list view
-  
-  
+    // list view placeholder
     listView.add("2020-03-20 16:10:08    78.1 kg    BMI = 20.2");
     listView.add("2020-03-21 10:25:34    79.0 kg    BMI = 20.3");
     listView.add("2020-03-22 22:00:01    77.9 kg    BMI = 20.0");
@@ -154,8 +153,6 @@ public class MainActivity extends AppCompatActivity
   }
   
   
-  
-  
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent intent)
   {
@@ -168,85 +165,7 @@ public class MainActivity extends AppCompatActivity
         user = (UserDto) intent.getSerializableExtra("user");
         tv_yourMeasurements.setText("Welcome " + user.getUserName() + "!\nYour measurements:");
   
-        // map object to JSON string
-        String userJsonString = "";
-        try
-        {
-          userJsonString = mapper.writeValueAsString(user);
-          Log.d(TAG, "Mapped User Json String = " + userJsonString);
-        }
-        catch (JsonProcessingException e)
-        {
-          e.printStackTrace();
-        }
-  
-        // json request body
-        RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), userJsonString);
-  
-  
-        // sent post for measurements
-  
-        String requestUrl = BASE_URL + MEASUREMENT_CONTROLLER;
-  
-        Request request = new Request.Builder()
-            .url(requestUrl)
-            .post(body)
-            .build();
-  
-  
-        // Execute HTTP requests in background thread
-        client.newCall(request).enqueue(new Callback()
-        {
-          @Override
-          public void onFailure(Call call, IOException e)
-          {
-            MainActivity.this.runOnUiThread(new Runnable()
-            {
-              @Override
-              public void run()
-              {
-                Toast.makeText(getBaseContext(), "Connection with server failed", Toast.LENGTH_LONG).show();
-              }
-            });
-      
-            e.printStackTrace();
-          }
-    
-          @Override
-          public void onResponse(Call call, Response response) throws IOException
-          {
-            if (response.isSuccessful())
-            {
-              String jsonString = response.body().string();
-        
-              measurements = Arrays.asList(mapper.readValue(jsonString, MeasurementDto[].class));
-  
-              // TODO: sort measurements by date time
-        
-              MainActivity.this.runOnUiThread(new Runnable()
-              {
-                @Override
-                public void run()
-                {
-                  listView.clear();
-                  for (int i = 0; i < measurements.size(); i++)
-                  {
-                    listView.add(measurements.get(i).toString());
-                  }
-                  if (listView.isEmpty())
-                  {
-                    listView.add("You haven't added any measurement yet.");
-                  }
-                  arrayAdapter.notifyDataSetChanged();
-                  lv_measurements.invalidateViews();
-                }
-              });
-            }
-  
-  
-          }
-    
-        });
+        sentPostForMeasurementsAndUpdateListView();
       }
       
     }
@@ -254,90 +173,93 @@ public class MainActivity extends AppCompatActivity
     {
       if (resultCode == Activity.RESULT_OK)
       {
-  
-        // TODO: sent post for measurements
-  
-        // map object to JSON string
-        String userJsonString = "";
-        try
-        {
-          userJsonString = mapper.writeValueAsString(user);
-          Log.d(TAG, "Mapped User Json String = " + userJsonString);
-        }
-        catch (JsonProcessingException e)
-        {
-          e.printStackTrace();
-        }
-  
-        // json request body
-        RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), userJsonString);
-  
-  
-        // sent post for measurements
-  
-        String requestUrl = BASE_URL + MEASUREMENT_CONTROLLER;
-  
-        Request request = new Request.Builder()
-            .url(requestUrl)
-            .post(body)
-            .build();
-  
-  
-        // Execute HTTP requests in background thread
-        client.newCall(request).enqueue(new Callback()
-        {
-          @Override
-          public void onFailure(Call call, IOException e)
-          {
-            MainActivity.this.runOnUiThread(new Runnable()
-            {
-              @Override
-              public void run()
-              {
-                Toast.makeText(getBaseContext(), "Connection with server failed", Toast.LENGTH_LONG).show();
-              }
-            });
-      
-            e.printStackTrace();
-          }
-    
-          @Override
-          public void onResponse(Call call, Response response) throws IOException
-          {
-            if (response.isSuccessful())
-            {
-              String jsonString = response.body().string();
-        
-              measurements = Arrays.asList(mapper.readValue(jsonString, MeasurementDto[].class));
-        
-              // TODO: sort measurements by date time
-        
-              MainActivity.this.runOnUiThread(new Runnable()
-              {
-                @Override
-                public void run()
-                {
-                  listView.clear();
-                  for (int i = 0; i < measurements.size(); i++)
-                  {
-                    listView.add(measurements.get(i).toString());
-                  }
-                  if (listView.isEmpty())
-                  {
-                    listView.add("You haven't added any measurement yet.");
-                  }
-                  arrayAdapter.notifyDataSetChanged();
-                  lv_measurements.invalidateViews();
-                }
-              });
-            }
-      
-      
-          }
-    
-        });
+        sentPostForMeasurementsAndUpdateListView();
       }
     }
+  }
+  
+  void sentPostForMeasurementsAndUpdateListView()
+  {
+    // map user object to JSON string
+    String userJsonString = "";
+    try
+    {
+      userJsonString = mapper.writeValueAsString(user);
+      Log.d(TAG, "Mapped User Json String = " + userJsonString);
+    }
+    catch (JsonProcessingException e)
+    {
+      e.printStackTrace();
+    }
+    
+    // create json request body
+    RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), userJsonString);
+    
+    
+    // concat URL
+    String requestUrl = BASE_URL + MEASUREMENT_CONTROLLER;
+    
+    // build post request with body
+    Request request = new Request.Builder()
+        .url(requestUrl)
+        .post(body)
+        .build();
+    
+    
+    // Execute HTTP requests in background thread
+    client.newCall(request).enqueue(new Callback()
+    {
+      @Override
+      public void onFailure(Call call, IOException e)
+      {
+        MainActivity.this.runOnUiThread(new Runnable()
+        {
+          @Override
+          public void run()
+          {
+            Toast.makeText(getBaseContext(), "Connection with server failed", Toast.LENGTH_LONG).show();
+          }
+        });
+        
+        e.printStackTrace();
+      }
+      
+      @Override
+      public void onResponse(Call call, Response response) throws IOException
+      {
+        if (response.isSuccessful())
+        {
+          String jsonString = response.body().string();
+          
+          measurements = Arrays.asList(mapper.readValue(jsonString, MeasurementDto[].class));
+          
+          // sort by date time. date closest to present day will be shown at top
+          Collections.sort(measurements, new CustomComparator());
+          
+          // update list view
+          MainActivity.this.runOnUiThread(new Runnable()
+          {
+            @Override
+            public void run()
+            {
+              listView.clear();
+              for (int i = 0; i < measurements.size(); i++)
+              {
+                listView.add(measurements.get(i).toString());
+              }
+              
+              if (listView.isEmpty())
+              {
+                listView.add("You haven't added any measurement yet.");
+              }
+              
+              arrayAdapter.notifyDataSetChanged();
+              lv_measurements.invalidateViews();
+            }
+          });
+        }
+      }
+    });
   }
   
   @Override
@@ -363,5 +285,15 @@ public class MainActivity extends AppCompatActivity
     }
     
     return super.onOptionsItemSelected(item);
+  }
+  
+  // comparator for sorting measurements by date time
+  private class CustomComparator implements Comparator<MeasurementDto>
+  {
+    @Override
+    public int compare(MeasurementDto o1, MeasurementDto o2)
+    {
+      return o2.getLocalDateTime().compareTo(o1.getLocalDateTime());
+    }
   }
 }

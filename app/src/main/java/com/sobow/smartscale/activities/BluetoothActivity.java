@@ -358,7 +358,6 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
       @Override
       public void onClick(View v)
       {
-        // TODO: implement functionality. remember to sent post request to /create endpoint!
         // TODO: create const instead of Data from the device:
         if (! tv_dataFromTheDevice.getText().toString().equals("Data from the device:"))
         {
@@ -376,6 +375,8 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
               {
                 public void run()
                 {
+                  // sentMeasurementToServer
+                  
                   MeasurementDto newMeasurement = new MeasurementDto();
                   newMeasurement.setLocalDateTime(LocalDateTime.now());
                   double weight = Double.parseDouble(userWeightFromScale);
@@ -399,8 +400,8 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
                   // json request body
                   RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"),
                                                         measurementJsonString);
-          
-                  // sent post for measurements
+  
+                  // sent post to create measurement
           
                   String requestUrl = BASE_URL + MEASUREMENT_CONTROLLER + "/create";
           
@@ -421,7 +422,6 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
                         public void run()
                         {
                           Toast.makeText(getBaseContext(), "Connection with server failed", Toast.LENGTH_LONG).show();
-                          btn_saveData.setEnabled(true);
                         }
                       });
               
@@ -440,16 +440,17 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
                           @Override
                           public void run()
                           {
-                            btn_saveData.setEnabled(true);
                             Toast.makeText(getBaseContext(), "Data successfully saved!", Toast.LENGTH_LONG).show();
                           }
                         });
                       }
-              
-              
+                      else
+                      {
+                        Log.i(TAG, "response code = " + response.code());
+                      }
                     }
-            
                   });
+                  btn_saveData.setEnabled(true);
                   progressDialog.dismiss();
                 }
               }, 3000);
