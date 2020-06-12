@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jakewharton.threetenabp.AndroidThreeTen;
 import com.sobow.smartscale.R;
 import com.sobow.smartscale.dto.MeasurementDto;
 import com.sobow.smartscale.dto.UserDto;
@@ -87,6 +88,7 @@ public class MainActivity extends AppCompatActivity
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
     ButterKnife.bind(this);
+    AndroidThreeTen.init(this);
   
     // Start login activity for result
     Intent newIntent = new Intent(getApplicationContext(), LoginActivity.class);
@@ -165,6 +167,7 @@ public class MainActivity extends AppCompatActivity
       {
         user = (UserDto) intent.getSerializableExtra("user");
         tv_yourMeasurements.setText("Welcome " + user.getUserName() + "!\nYour measurements:");
+  
         // map object to JSON string
         String userJsonString = "";
         try
@@ -176,11 +179,12 @@ public class MainActivity extends AppCompatActivity
         {
           e.printStackTrace();
         }
+  
         // json request body
         RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), userJsonString);
   
   
-        // sent http for measurements
+        // sent post for measurements
   
         String requestUrl = BASE_URL + MEASUREMENT_CONTROLLER;
   
@@ -231,26 +235,15 @@ public class MainActivity extends AppCompatActivity
                   }
                   if (listView.isEmpty())
                   {
-                    listView.add("You did not add any measurement yet.");
+                    listView.add("You haven't added any measurement yet.");
                   }
                   arrayAdapter.notifyDataSetChanged();
                   lv_measurements.invalidateViews();
                 }
               });
             }
-            else if (response.code() == 404)
-            {
-              MainActivity.this.runOnUiThread(new Runnable()
-              {
-                @Override
-                public void run()
-                {
-            
-                }
-              });
-            }
-      
-      
+  
+  
           }
     
         });
@@ -261,9 +254,88 @@ public class MainActivity extends AppCompatActivity
     {
       if (resultCode == Activity.RESULT_OK)
       {
+  
+        // TODO: sent post for measurements
+  
+        // map object to JSON string
+        String userJsonString = "";
+        try
+        {
+          userJsonString = mapper.writeValueAsString(user);
+          Log.d(TAG, "Mapped User Json String = " + userJsonString);
+        }
+        catch (JsonProcessingException e)
+        {
+          e.printStackTrace();
+        }
+  
+        // json request body
+        RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), userJsonString);
+  
+  
+        // sent post for measurements
+  
+        String requestUrl = BASE_URL + MEASUREMENT_CONTROLLER;
+  
+        Request request = new Request.Builder()
+            .url(requestUrl)
+            .post(body)
+            .build();
+  
+  
+        // Execute HTTP requests in background thread
+        client.newCall(request).enqueue(new Callback()
+        {
+          @Override
+          public void onFailure(Call call, IOException e)
+          {
+            MainActivity.this.runOnUiThread(new Runnable()
+            {
+              @Override
+              public void run()
+              {
+                Toast.makeText(getBaseContext(), "Connection with server failed", Toast.LENGTH_LONG).show();
+              }
+            });
+      
+            e.printStackTrace();
+          }
     
-        // TODO: read measurement and append to list view
+          @Override
+          public void onResponse(Call call, Response response) throws IOException
+          {
+            if (response.isSuccessful())
+            {
+              String jsonString = response.body().string();
+        
+              measurements = Arrays.asList(mapper.readValue(jsonString, MeasurementDto[].class));
+        
+              // TODO: sort measurements by date time
+        
+              MainActivity.this.runOnUiThread(new Runnable()
+              {
+                @Override
+                public void run()
+                {
+                  listView.clear();
+                  for (int i = 0; i < measurements.size(); i++)
+                  {
+                    listView.add(measurements.get(i).toString());
+                  }
+                  if (listView.isEmpty())
+                  {
+                    listView.add("You haven't added any measurement yet.");
+                  }
+                  arrayAdapter.notifyDataSetChanged();
+                  lv_measurements.invalidateViews();
+                }
+              });
+            }
+      
+      
+          }
     
+        });
       }
     }
   }

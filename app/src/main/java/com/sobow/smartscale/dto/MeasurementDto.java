@@ -86,8 +86,8 @@ public class MeasurementDto
   public String toString()
   {
     return "Date Time: " + localDateTime.format(DateTimeFormatter.ofPattern(DATE_FORMATTER)) +
-        ", weight: " + weight + "kg" +
-        ", BMI: " + BMI;
+        ", weight: " + String.format("%.1f", weight) + " kg" +
+        ", BMI: " + String.format("%.1f", BMI);
   }
 }
 

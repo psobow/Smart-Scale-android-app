@@ -1,6 +1,7 @@
 package com.sobow.smartscale.activities;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -21,20 +22,37 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sobow.smartscale.R;
 import com.sobow.smartscale.activities.adapter.DeviceListAdapter;
+import com.sobow.smartscale.dto.MeasurementDto;
 import com.sobow.smartscale.dto.UserDto;
 import com.sobow.smartscale.services.BluetoothConnectionService;
 
+import org.threeten.bp.LocalDateTime;
+
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class BluetoothActivity extends AppCompatActivity implements AdapterView.OnItemClickListener
 {
   private static final String TAG = "BluetoothActivity";
+  
+  private static final String BASE_URL = "http://10.0.2.2:8080/v1";
+  private static final String MEASUREMENT_CONTROLLER = "/measurement";
   
   private BluetoothAdapter bluetoothAdapter;
   private BluetoothConnectionService bluetoothConnectionService;
@@ -45,6 +63,10 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
   
   private UserDto user;
   private String userWeightFromScale = "";
+  private List<MeasurementDto> newMeasurements = new ArrayList<>();
+  
+  private ObjectMapper mapper = new ObjectMapper();
+  private OkHttpClient client = new OkHttpClient();
   
   // GUI components
   @BindView(R.id.lv_devices)
@@ -70,6 +92,9 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
   
   @BindView(R.id.btn_backToMainActivity)
   Button btn_backToMainActivity;
+  
+  @BindView(R.id.btn_simulateScale)
+  Button btn_simulateScale;
   
   
   // BroadCast Receiver
@@ -334,24 +359,128 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
       public void onClick(View v)
       {
         // TODO: implement functionality. remember to sent post request to /create endpoint!
+        // TODO: create const instead of Data from the device:
         if (! tv_dataFromTheDevice.getText().toString().equals("Data from the device:"))
         {
-    
+  
+          btn_saveData.setEnabled(false);
+  
+          final ProgressDialog progressDialog = new ProgressDialog(BluetoothActivity.this,
+                                                                   R.style.AppTheme_Dark_Dialog);
+          progressDialog.setIndeterminate(true);
+          progressDialog.setMessage("Sending data to server...");
+          progressDialog.show();
+  
+          new android.os.Handler().postDelayed(
+              new Runnable()
+              {
+                public void run()
+                {
+                  MeasurementDto newMeasurement = new MeasurementDto();
+                  newMeasurement.setLocalDateTime(LocalDateTime.now());
+                  double weight = Double.parseDouble(userWeightFromScale);
+                  newMeasurement.setWeight(weight);
+                  double height = user.getHeight() / 100.0;
+                  newMeasurement.setBMI(weight / (height * height));
+                  newMeasurement.setUserId(user.getIdFromServer());
+          
+                  // map object to JSON string
+                  String measurementJsonString = "";
+                  try
+                  {
+                    measurementJsonString = mapper.writeValueAsString(newMeasurement);
+                    Log.d(TAG, "Mapped Json String = " + measurementJsonString);
+                  }
+                  catch (JsonProcessingException e)
+                  {
+                    e.printStackTrace();
+                  }
+          
+                  // json request body
+                  RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"),
+                                                        measurementJsonString);
+          
+                  // sent post for measurements
+          
+                  String requestUrl = BASE_URL + MEASUREMENT_CONTROLLER + "/create";
+          
+                  Request request = new Request.Builder()
+                      .url(requestUrl)
+                      .post(body)
+                      .build();
+          
+                  // Execute HTTP requests in background thread
+                  client.newCall(request).enqueue(new Callback()
+                  {
+                    @Override
+                    public void onFailure(Call call, IOException e)
+                    {
+                      BluetoothActivity.this.runOnUiThread(new Runnable()
+                      {
+                        @Override
+                        public void run()
+                        {
+                          Toast.makeText(getBaseContext(), "Connection with server failed", Toast.LENGTH_LONG).show();
+                          btn_saveData.setEnabled(true);
+                        }
+                      });
+              
+                      e.printStackTrace();
+                    }
+            
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException
+                    {
+                      if (response.isSuccessful())
+                      {
+                
+                
+                        BluetoothActivity.this.runOnUiThread(new Runnable()
+                        {
+                          @Override
+                          public void run()
+                          {
+                            btn_saveData.setEnabled(true);
+                            Toast.makeText(getBaseContext(), "Data successfully saved!", Toast.LENGTH_LONG).show();
+                          }
+                        });
+                      }
+              
+              
+                    }
+            
+                  });
+                  progressDialog.dismiss();
+                }
+              }, 3000);
         }
         else
         {
           Toast.makeText(getBaseContext(), "Wait for data from scale", Toast.LENGTH_LONG).show();
         }
+  
+      }
+  
+  
+    });
+  
+    btn_simulateScale.setOnClickListener(new View.OnClickListener()
+    {
+      @Override
+      public void onClick(View v)
+      {
+        userWeightFromScale = "75.0";
+        tv_dataFromTheDevice.setText("Data from the device: " + userWeightFromScale + " kg.");
       }
     });
+    
     
     btn_backToMainActivity.setOnClickListener(new View.OnClickListener()
     {
       @Override
       public void onClick(View v)
       {
-        // TODO: rozważayć jak przekazać liste obiektów measurement. bo użytkownik może dodać kilka pomiarów.
-        
+        setResult(RESULT_OK);
         finish();
         overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
       }
