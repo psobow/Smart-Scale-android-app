@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,6 +22,11 @@ import com.jakewharton.threetenabp.AndroidThreeTen;
 import com.sobow.smartscale.R;
 import com.sobow.smartscale.dto.MeasurementDto;
 import com.sobow.smartscale.dto.UserDto;
+
+import org.threeten.bp.LocalDate;
+import org.threeten.bp.LocalDateTime;
+import org.threeten.bp.format.DateTimeFormatter;
+import org.threeten.bp.format.DateTimeParseException;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -63,6 +69,9 @@ public class MainActivity extends AppCompatActivity
   
   private ArrayAdapter arrayAdapter;
   
+  private LocalDateTime initialStartDateTime;
+  private LocalDateTime initialEndDateTime;
+  
   // GUI components
   @BindView(R.id.lv_measurements)
   ListView lv_measurements;
@@ -79,8 +88,17 @@ public class MainActivity extends AppCompatActivity
   @BindView(R.id.btn_logout)
   Button btn_logout;
   
+  @BindView(R.id.btn_applyFilters)
+  Button btn_applyFilters;
+  
   @BindView(R.id.tv_yourMeasurements)
   TextView tv_yourMeasurements;
+  
+  @BindView(R.id.et_startDate)
+  EditText et_startDate;
+  
+  @BindView(R.id.et_endDate)
+  EditText et_endDate;
   
   
   @Override
@@ -95,18 +113,9 @@ public class MainActivity extends AppCompatActivity
     Intent newIntent = new Intent(getApplicationContext(), LoginActivity.class);
     startActivityForResult(newIntent, REQUEST_LOGIN);
   
-  
-    // TODO: filter data. po kliknięciu w przycik SHOW FILTERS w widoku głównym pojawią się nowe pola na filtry.
-    //  np. pola na date początkową i datę końcową z jakiego okresu czasu mają być pokazywane dane. oraz przycisk APPLY FILTERS.
-  
-    // list view placeholder
-    listView.add("2020-03-20 16:10:08    78.1 kg    BMI = 20.2");
-    listView.add("2020-03-21 10:25:34    79.0 kg    BMI = 20.3");
-    listView.add("2020-03-22 22:00:01    77.9 kg    BMI = 20.0");
-    listView.add("2020-03-23 13:47:54    78.5 kg    BMI = 20.2");
-    listView.add("2020-03-23 11:22:33    78.7 kg    BMI = 20.3");
-  
-  
+    // clear list view measurements
+    listView.clear();
+    
     arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, listView);
   
     lv_measurements.setAdapter(arrayAdapter);
@@ -142,13 +151,58 @@ public class MainActivity extends AppCompatActivity
       @Override
       public void onClick(View v)
       {
-        listView.clear();
-        lv_measurements.invalidateViews();
         Intent newIntent = new Intent(getApplicationContext(), LoginActivity.class);
         startActivityForResult(newIntent, REQUEST_LOGIN);
       }
     });
   
+    btn_applyFilters.setOnClickListener(new View.OnClickListener()
+    {
+      @Override
+      public void onClick(View v)
+      {
+        // Validate input
+        String startDate = et_startDate.getText().toString();
+        String endDate = et_endDate.getText().toString();
+      
+        // Validate format and try to parse string to local date
+        LocalDate startDateParsed = null;
+        try
+        {
+          startDateParsed = LocalDate.parse(startDate, DateTimeFormatter.ofPattern(getString(R.string.dateFormat)));
+        }
+        catch (DateTimeParseException e)
+        {
+          et_startDate.setError("Enter valid start date! (" + getString(R.string.dateFormat) + ")");
+        }
+      
+      
+        LocalDate endDateParsed = null;
+        try
+        {
+          endDateParsed = LocalDate.parse(endDate, DateTimeFormatter.ofPattern(getString(R.string.dateFormat)));
+        }
+        catch (DateTimeParseException e)
+        {
+          et_endDate.setError("Enter valid end date! (" + getString(R.string.dateFormat) + ")");
+        }
+      
+        // Forbid user to input previous date than earliest measurement in database
+        if (startDateParsed != null && startDateParsed.isBefore(initialStartDateTime.toLocalDate()))
+        {
+          et_startDate.setError("Start date can't be before: " + initialStartDateTime.format(
+              DateTimeFormatter.ofPattern(getString(R.string.dateFormat))));
+        }
+      
+      
+        // Forbid user to input date after than latest measurement in database
+        if (endDateParsed != null && endDateParsed.isAfter(initialEndDateTime.toLocalDate()))
+        {
+          et_endDate.setError("End date can't be after: " + initialEndDateTime.format(
+              DateTimeFormatter.ofPattern(getString(R.string.dateFormat))));
+        }
+      }
+    });
     // TODO: impelement remaining buttons on click behavior
   }
   
@@ -235,13 +289,14 @@ public class MainActivity extends AppCompatActivity
           
           // sort by date time. date closest to present day will be shown at top
           Collections.sort(measurements, new CustomComparator());
-          
-          // update list view
+  
+          // update list view and Start Date / End Date
           MainActivity.this.runOnUiThread(new Runnable()
           {
             @Override
             public void run()
             {
+              // update list view
               listView.clear();
               for (int i = 0; i < measurements.size(); i++)
               {
@@ -250,11 +305,25 @@ public class MainActivity extends AppCompatActivity
               
               if (listView.isEmpty())
               {
-                listView.add("You haven't added any measurement yet.");
+                listView.add("You haven't added any measurements yet.");
               }
-              
               arrayAdapter.notifyDataSetChanged();
               lv_measurements.invalidateViews();
+  
+              // update Start Date / End Date
+              if (! measurements.isEmpty())
+              {
+                initialStartDateTime = measurements.get(measurements.size() - 1).getLocalDateTime();
+                et_startDate.setText(initialStartDateTime.format(
+                    DateTimeFormatter.ofPattern(getString(R.string.dateFormat))));
+    
+                initialEndDateTime = measurements.get(0).getLocalDateTime();
+                et_endDate.setText(initialEndDateTime.format(
+                    DateTimeFormatter.ofPattern(getString(R.string.dateFormat))));
+    
+                et_startDate.setError(null);
+                et_endDate.setError(null);
+              }
             }
           });
         }
