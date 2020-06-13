@@ -69,7 +69,7 @@ public class LoginActivity extends AppCompatActivity
         });
   }
   
-  public void login()
+  private void login()
   {
     Log.d(TAG, "Login");
     
@@ -82,9 +82,8 @@ public class LoginActivity extends AppCompatActivity
   
   
     btn_login.setEnabled(false);
-    
-    final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this,
-                                                             R.style.AppTheme_Dark_Dialog);
+  
+    final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this, R.style.AppTheme_Dark_Dialog);
     progressDialog.setIndeterminate(true);
     progressDialog.setMessage("Authenticating...");
     progressDialog.show();
@@ -95,10 +94,10 @@ public class LoginActivity extends AppCompatActivity
         {
           String emailInput = et_email.getText().toString();
           String passwordInput = et_password.getText().toString();
-        
+  
           String requestUrl = BASE_URL + USER_CONTROLLER + "/" + emailInput + "/" + passwordInput;
           Request request = new Request.Builder().url(requestUrl).build();
-        
+  
           // Execute HTTP requests in background thread
           client.newCall(request).enqueue(new Callback()
           {
@@ -108,16 +107,16 @@ public class LoginActivity extends AppCompatActivity
               LoginActivity.this.runOnUiThread(
                   () -> Toast.makeText(getBaseContext(), "Connection with server failed", Toast.LENGTH_LONG).show());
             }
-          
+  
             @Override
             public void onResponse(Call call, Response response) throws IOException
             {
               if (response.isSuccessful())
               {
                 String jsonString = response.body().string();
-              
+  
                 user = mapper.readValue(jsonString, UserDto.class);
-              
+  
                 LoginActivity.this.runOnUiThread(() -> onLoginSuccess());
               }
               else if (response.code() == 404)
@@ -134,15 +133,12 @@ public class LoginActivity extends AppCompatActivity
               else
               {
                 LoginActivity.this.runOnUiThread(
-                    () ->
-                        Toast.makeText(getBaseContext(),
-                                       "Something went wrong!",
-                                       Toast.LENGTH_LONG).show());
+                    () -> Toast.makeText(getBaseContext(), "Something went wrong!", Toast.LENGTH_LONG).show());
               }
             }
           });
-        
-        
+  
+  
           btn_login.setEnabled(true);
           progressDialog.dismiss();
         }, 3000);
@@ -189,12 +185,12 @@ public class LoginActivity extends AppCompatActivity
     finish();
   }
   
-  public void onLoginFailed()
+  private void onLoginFailed()
   {
     Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
   }
   
-  public boolean validate()
+  private boolean validate()
   {
     boolean valid = true;
   
