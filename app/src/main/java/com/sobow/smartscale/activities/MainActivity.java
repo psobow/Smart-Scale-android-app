@@ -115,148 +115,131 @@ public class MainActivity extends AppCompatActivity
     }
     
     // buttons on click behavior
-    btn_newMeasurement.setOnClickListener(v ->
-                                          {
-                                            Intent newIntent = new Intent(getApplicationContext(),
-                                                                          BluetoothActivity.class);
-                                            newIntent.putExtra("user", user);
-                                            startActivityForResult(newIntent, REQUEST_BLUETOOTH);
-                                            overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
-                                          });
+    btn_newMeasurement.setOnClickListener(
+        v ->
+        {
+          Intent newIntent = new Intent(getApplicationContext(), BluetoothActivity.class);
+          newIntent.putExtra("user", user);
+          startActivityForResult(newIntent, REQUEST_BLUETOOTH);
+          overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+        });
   
-    btn_userData.setOnClickListener(v ->
-                                    {
-                                      Intent newIntent = new Intent(getApplicationContext(), UserDataActivity.class);
-                                      newIntent.putExtra("user", user);
-                                      startActivityForResult(newIntent, REQUEST_USERDATA);
-                                      overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
-                                    });
+    btn_userData.setOnClickListener(
+        v ->
+        {
+          Intent newIntent = new Intent(getApplicationContext(), UserDataActivity.class);
+          newIntent.putExtra("user", user);
+          startActivityForResult(newIntent, REQUEST_USERDATA);
+          overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+        });
   
-    btn_logout.setOnClickListener(v ->
-                                  {
-                                    init();
-                                    Intent newIntent = new Intent(getApplicationContext(), LoginActivity.class);
-                                    startActivityForResult(newIntent, REQUEST_LOGIN);
-                                  });
+    btn_logout.setOnClickListener(
+        v ->
+        {
+          init();
+          Intent newIntent = new Intent(getApplicationContext(), LoginActivity.class);
+          startActivityForResult(newIntent, REQUEST_LOGIN);
+        });
   
-    btn_applyFilters.setOnClickListener(v ->
-                                        {
-                                          // Validate input
-                                          String startDate = et_startDate.getText().toString();
-                                          String endDate = et_endDate.getText().toString();
-    
-                                          // reset error messages
-                                          resetFilterErrors();
-    
-                                          boolean isInputValid = true;
-    
-                                          // Validate format and try to parse string to local date
-                                          LocalDate startDateParsed = null;
-                                          try
-                                          {
-                                            startDateParsed = LocalDate.parse(startDate,
-                                                                              DateTimeFormatter.ofPattern(getString(R.string.date_format)));
-                                          }
-                                          catch (DateTimeParseException e)
-                                          {
-                                            isInputValid = false;
-                                            et_startDate.setError("Enter valid start date! (" + getString(R.string.date_format) + ")");
-                                          }
-    
-    
-                                          LocalDate endDateParsed = null;
-                                          try
-                                          {
-                                            endDateParsed = LocalDate.parse(endDate,
-                                                                            DateTimeFormatter.ofPattern(getString(R.string.date_format)));
-                                          }
-                                          catch (DateTimeParseException e)
-                                          {
-                                            isInputValid = false;
-                                            et_endDate.setError("Enter valid end date! (" + getString(R.string.date_format) + ")");
-                                          }
-    
-    
-                                          if (startDateParsed != null && endDateParsed != null
-                                              && newestMeasurementDateTime != null && oldestMeasurementDateTime != null)
-                                          {
-                                            // START DATE
-                                            // Forbid user to input start date before oldest measurement in database
-                                            if (startDateParsed.isBefore(oldestMeasurementDateTime.toLocalDate()))
-                                            {
-                                              isInputValid = false;
-                                              et_startDate.setError("Start date can't be before: " + oldestMeasurementDateTime
-                                                  .format(
-                                                      DateTimeFormatter
-                                                          .ofPattern(
-                                                              getString(
-                                                                  R.string.date_format))));
-                                            }
-      
-                                            // Forbid user to enter start date after the newest measurement in database
-                                            else if (startDateParsed.isAfter(newestMeasurementDateTime.toLocalDate()))
-                                            {
-                                              isInputValid = false;
-                                              et_startDate.setError("Start date can't be after: " + newestMeasurementDateTime
-                                                  .format(
-                                                      DateTimeFormatter
-                                                          .ofPattern(
-                                                              getString(
-                                                                  R.string.date_format))));
-                                            }
-      
-      
-                                            // END DATE
-                                            // Forbid user to input end date after the newest measurement in database
-                                            if (endDateParsed.isAfter(newestMeasurementDateTime.toLocalDate()))
-                                            {
-                                              isInputValid = false;
-                                              et_endDate.setError("End date can't be after: " + newestMeasurementDateTime
-                                                  .format(
-                                                      DateTimeFormatter
-                                                          .ofPattern(
-                                                              getString(
-                                                                  R.string.date_format))));
-                                            }
-                                            // forbid user to input end date before oldest measurement in database
-                                            else if (endDateParsed.isBefore(oldestMeasurementDateTime.toLocalDate()))
-                                            {
-                                              isInputValid = false;
-                                              et_endDate.setError("End date can't be before: " + oldestMeasurementDateTime
-                                                  .format(
-                                                      DateTimeFormatter
-                                                          .ofPattern(
-                                                              getString(
-                                                                  R.string.date_format))));
-                                            }
-      
-                                            // in case if start date and end date are between oldest and newest
-                                            // forbid user to input end date before start date and start date after end date
-                                            if (isInputValid && endDateParsed.isBefore(startDateParsed))
-                                            {
-                                              isInputValid = false;
-                                              et_endDate.setError("End date can't be before start date!");
-                                              et_startDate.setError("Start date can't be after end date!");
-                                            }
-                                          }
-    
-    
-                                          if (isInputValid)
-                                          {
-                                            Toast.makeText(getBaseContext(),
-                                                           "Filtering from: " + startDate + " to: " + endDate,
-                                                           Toast.LENGTH_LONG).show();
-      
-                                            previousValidStartDateFilter = startDateParsed;
-                                            previousValidEndDateFilter = endDateParsed;
-                                          }
-                                          else
-                                          {
-                                            setUpPreviousValidDateFilters();
-                                            Toast.makeText(getBaseContext(), "Filter was not applied",
-                                                           Toast.LENGTH_LONG).show();
-                                          }
-                                        });
+    btn_applyFilters.setOnClickListener(
+        v ->
+        {
+          // Validate input
+          String startDate = et_startDate.getText().toString();
+          String endDate = et_endDate.getText().toString();
+        
+          // reset error messages
+          resetFilterErrors();
+        
+          boolean isInputValid = true;
+        
+          // Validate format and try to parse string to local date
+          LocalDate startDateParsed = null;
+          try
+          {
+            startDateParsed = LocalDate.parse(startDate, DateTimeFormatter.ofPattern(getString(R.string.date_format)));
+          }
+          catch (DateTimeParseException e)
+          {
+            isInputValid = false;
+            et_startDate.setError("Enter valid start date! (" + getString(R.string.date_format) + ")");
+          }
+        
+        
+          LocalDate endDateParsed = null;
+          try
+          {
+            endDateParsed = LocalDate.parse(endDate, DateTimeFormatter.ofPattern(getString(R.string.date_format)));
+          }
+          catch (DateTimeParseException e)
+          {
+            isInputValid = false;
+            et_endDate.setError("Enter valid end date! (" + getString(R.string.date_format) + ")");
+          }
+        
+        
+          if (startDateParsed != null && endDateParsed != null
+              && newestMeasurementDateTime != null && oldestMeasurementDateTime != null)
+          {
+            // START DATE
+            // Forbid user to input start date before oldest measurement in database
+            if (startDateParsed.isBefore(oldestMeasurementDateTime.toLocalDate()))
+            {
+              isInputValid = false;
+              et_startDate.setError("Start date can't be before: " + oldestMeasurementDateTime
+                  .format(DateTimeFormatter.ofPattern(getString(R.string.date_format))));
+            }
+          
+            // Forbid user to enter start date after the newest measurement in database
+            else if (startDateParsed.isAfter(newestMeasurementDateTime.toLocalDate()))
+            {
+              isInputValid = false;
+              et_startDate.setError("Start date can't be after: " + newestMeasurementDateTime
+                  .format(DateTimeFormatter.ofPattern(getString(R.string.date_format))));
+            }
+          
+          
+            // END DATE
+            // Forbid user to input end date after the newest measurement in database
+            if (endDateParsed.isAfter(newestMeasurementDateTime.toLocalDate()))
+            {
+              isInputValid = false;
+              et_endDate.setError("End date can't be after: " + newestMeasurementDateTime
+                  .format(DateTimeFormatter.ofPattern(getString(R.string.date_format))));
+            }
+            // forbid user to input end date before oldest measurement in database
+            else if (endDateParsed.isBefore(oldestMeasurementDateTime.toLocalDate()))
+            {
+              isInputValid = false;
+              et_endDate.setError("End date can't be before: " + oldestMeasurementDateTime
+                  .format(DateTimeFormatter.ofPattern(getString(R.string.date_format))));
+            }
+          
+            // in case if start date and end date are between oldest and newest
+            // forbid user to input end date before start date and start date after end date
+            if (isInputValid && endDateParsed.isBefore(startDateParsed))
+            {
+              isInputValid = false;
+              et_endDate.setError("End date can't be before start date!");
+              et_startDate.setError("Start date can't be after end date!");
+            }
+          }
+        
+        
+          if (isInputValid)
+          {
+            Toast.makeText(getBaseContext(), "Filtering from: " + startDate + " to: " + endDate, Toast.LENGTH_LONG)
+                 .show();
+          
+            previousValidStartDateFilter = startDateParsed;
+            previousValidEndDateFilter = endDateParsed;
+          }
+          else
+          {
+            setUpPreviousValidDateFilters();
+            Toast.makeText(getBaseContext(), "Filter was not applied", Toast.LENGTH_LONG).show();
+          }
+        });
     
     // TODO: implement remaining buttons on click behavior
   }
@@ -309,10 +292,8 @@ public class MainActivity extends AppCompatActivity
     // set up previous valid dates
     if (previousValidStartDateFilter != null && previousValidEndDateFilter != null)
     {
-      et_startDate.setText(previousValidStartDateFilter.format(
-          DateTimeFormatter.ofPattern(getString(R.string.date_format))));
-      et_endDate.setText(previousValidEndDateFilter.format(
-          DateTimeFormatter.ofPattern(getString(R.string.date_format))));
+      et_startDate.setText(previousValidStartDateFilter.format(DateTimeFormatter.ofPattern(getString(R.string.date_format))));
+      et_endDate.setText(previousValidEndDateFilter.format(DateTimeFormatter.ofPattern(getString(R.string.date_format))));
     }
   }
   
@@ -405,50 +386,47 @@ public class MainActivity extends AppCompatActivity
           Collections.sort(measurements, new CustomComparator());
   
           // update list view and Start Date / End Date
-          MainActivity.this.runOnUiThread(() ->
-                                          {
-                                            resetFilterErrors();
-    
-                                            if (measurements.isEmpty())
-                                            {
-                                              stringListWithMeasurements.add("You haven't added any measurements yet.");
-      
-                                              resetOldestAndNewestMeasurement();
-      
-                                              resetPreviousValidDateFilters();
-      
-                                              // update UI filters start date and end date
-                                              et_startDate.setText("");
-                                              et_endDate.setText("");
-                                            }
-                                            else
-                                            {
-                                              for (int i = 0; i < measurements.size(); i++)
-                                              {
-                                                stringListWithMeasurements.add(measurements.get(i).toString());
-                                              }
-      
-                                              // update list view
-                                              arrayAdapter.notifyDataSetChanged();
-                                              lv_measurements.invalidateViews();
-      
-                                              // update oldest and newest date measurement
-                                              oldestMeasurementDateTime = measurements.get(measurements.size() - 1)
-                                                                                      .getLocalDateTime();
-                                              newestMeasurementDateTime = measurements.get(0).getLocalDateTime();
-      
-                                              // set up previous valid dates
-                                              previousValidStartDateFilter = oldestMeasurementDateTime.toLocalDate();
-                                              previousValidEndDateFilter = newestMeasurementDateTime.toLocalDate();
-      
-                                              // update UI filters start date and end date
-                                              et_startDate.setText(oldestMeasurementDateTime.format(
-                                                  DateTimeFormatter.ofPattern(getString(R.string.date_format))));
-      
-                                              et_endDate.setText(newestMeasurementDateTime.format(
-                                                  DateTimeFormatter.ofPattern(getString(R.string.date_format))));
-                                            }
-                                          });
+          MainActivity.this.runOnUiThread(
+              () ->
+              {
+                resetFilterErrors();
+        
+                if (measurements.isEmpty())
+                {
+                  stringListWithMeasurements.add("You haven't added any measurements yet.");
+          
+                  resetOldestAndNewestMeasurement();
+          
+                  resetPreviousValidDateFilters();
+          
+                  // update UI filters start date and end date
+                  et_startDate.setText("");
+                  et_endDate.setText("");
+                }
+                else
+                {
+                  for (int i = 0; i < measurements.size(); i++)
+                  {
+                    stringListWithMeasurements.add(measurements.get(i).toString());
+                  }
+          
+                  // update list view
+                  arrayAdapter.notifyDataSetChanged();
+                  lv_measurements.invalidateViews();
+          
+                  // update oldest and newest date measurement
+                  oldestMeasurementDateTime = measurements.get(measurements.size() - 1).getLocalDateTime();
+                  newestMeasurementDateTime = measurements.get(0).getLocalDateTime();
+          
+                  // set up previous valid dates
+                  previousValidStartDateFilter = oldestMeasurementDateTime.toLocalDate();
+                  previousValidEndDateFilter = newestMeasurementDateTime.toLocalDate();
+          
+                  // update UI filters start date and end date
+                  et_startDate.setText(oldestMeasurementDateTime.format(DateTimeFormatter.ofPattern(getString(R.string.date_format))));
+                  et_endDate.setText(newestMeasurementDateTime.format(DateTimeFormatter.ofPattern(getString(R.string.date_format))));
+                }
+              });
         }
         else
         {
