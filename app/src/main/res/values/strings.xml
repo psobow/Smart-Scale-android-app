@@ -43,6 +43,7 @@
     <string name="btn_go_back_to_main_menu">GO BACK TO MAIN MENU</string>
     <string name="btn_simulate_scale">SIMULATE SCALE</string>
     <string name="received_weight">%1$s KG</string>
+    <string name="your_weight_kg">Your weight (KG)</string>
 
     <!-- User data activity -->
     <string name="current_email">Current email:\n%1$s</string>
