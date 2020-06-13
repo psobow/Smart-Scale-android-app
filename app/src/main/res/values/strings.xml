@@ -7,13 +7,13 @@
     <string name="date_format">yyyy-MM-dd</string>
     <string name="json_media_type">application/json; charset=utf-8</string>
 
-    <!-- login activity -->
+    <!-- Login activity -->
     <string name="e_mail">E-mail</string>
     <string name="password">Password</string>
     <string name="btn_login">LOGIN</string>
     <string name="no_account_yet_create_one">No account yet? Create one</string>
 
-    <!-- sign up activity -->
+    <!-- Sign up activity -->
     <string name="re_enter_password">Re-enter Password</string>
     <string name="username">Username</string>
     <string name="age">Age</string>
@@ -22,7 +22,7 @@
     <string name="btn_create_account">CREATE ACCOUNT</string>
     <string name="already_a_member_login">Already a member? Login</string>
 
-    <!-- main activity -->
+    <!-- Main activity -->
     <string name="welcome_username_your_measurements">Hello, %1$s!\nYour measurements:</string>
     <string name="btn_new_measurement">NEW MEASUREMENT</string>
     <string name="btn_user_data">USER DATA</string>
@@ -32,7 +32,7 @@
     <string name="start_date_filter">Start date (yyyy-MM-dd)</string>
     <string name="end_date_filter">End date (yyyy-MM-dd)</string>
 
-    <!-- bluetooth activity -->
+    <!-- Bluetooth activity -->
     <string name="btn_bluetooth_on_off">BLUETOOTH ON / OFF</string>
     <string name="btn_enable_visibility">ENABLE VISIBILITY</string>
     <string name="btn_discover_devices">DISCOVER DEVICES</string>
@@ -44,7 +44,7 @@
     <string name="btn_simulate_scale">SIMULATE SCALE</string>
     <string name="received_weight">%1$s KG</string>
 
-    <!-- user data activity -->
+    <!-- User data activity -->
     <string name="current_email">Current email:\n%1$s</string>
     <string name="new_email">New email</string>
     <string name="new_password">New password</string>
@@ -61,5 +61,14 @@
     <string name="btn_delete_all_your_measurements">DELETE ALL YOUR MEASUREMENTS</string>
     <string name="btn_delete_your_account">DELETE YOUR ACCOUNT</string>
 
+    <!-- Toast messages -->
+    <string name="connection_with_server_failed">Connection with server failed</string>
+    <string name="something_went_wrong">Something went wrong, response code: %1$d</string>
+
+
+    <!-- Progress dialog messages -->
+    <string name="authenticating_progress">Authenticating...</string>
+
+    <!-- Error messages -->
 
 </resources>

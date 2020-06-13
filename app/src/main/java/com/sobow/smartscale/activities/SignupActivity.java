@@ -45,8 +45,6 @@ public class SignupActivity extends AppCompatActivity
   private OkHttpClient client = new OkHttpClient();
   private ObjectMapper mapper = new ObjectMapper();
   
-  private UserDto userFromServer = new UserDto();
-  
   
   @BindView(R.id.et_userName)
   EditText et_userName;
@@ -173,7 +171,8 @@ public class SignupActivity extends AppCompatActivity
             public void onFailure(Call call, IOException e)
             {
               SignupActivity.this.runOnUiThread(
-                  () -> Toast.makeText(getBaseContext(), "Connection with server failed", Toast.LENGTH_LONG).show());
+                  () -> Toast.makeText(getBaseContext(), R.string.connection_with_server_failed, Toast.LENGTH_LONG)
+                             .show());
             
               e.printStackTrace();
             }
@@ -184,9 +183,8 @@ public class SignupActivity extends AppCompatActivity
               if (response.isSuccessful())
               {
                 String jsonString = response.body().string();
-              
-                userFromServer = mapper.readValue(jsonString, UserDto.class);
-                SignupActivity.this.runOnUiThread(() -> onSignupSuccess());
+                UserDto userFromServer = mapper.readValue(jsonString, UserDto.class);
+                SignupActivity.this.runOnUiThread(() -> onSignupSuccess(userFromServer));
               }
               else if (response.code() == 400)
               {
@@ -199,6 +197,8 @@ public class SignupActivity extends AppCompatActivity
               }
               else
               {
+                SignupActivity.this.runOnUiThread(
+                    () -> Toast.makeText(getBaseContext(), "Something went wrong!", Toast.LENGTH_LONG).show());
                 Log.i(TAG, "response code = " + response.code());
               }
             }
@@ -210,7 +210,7 @@ public class SignupActivity extends AppCompatActivity
   }
   
   
-  public void onSignupSuccess()
+  public void onSignupSuccess(UserDto userFromServer)
   {
     Intent intent = getIntent();
     intent.putExtra("user", userFromServer);

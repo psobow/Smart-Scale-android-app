@@ -37,8 +37,6 @@ public class LoginActivity extends AppCompatActivity
   private OkHttpClient client = new OkHttpClient();
   private ObjectMapper mapper = new ObjectMapper();
   
-  private UserDto user = new UserDto();
-  
   // GUI components
   @BindView(R.id.et_email)
   EditText et_email;
@@ -86,7 +84,7 @@ public class LoginActivity extends AppCompatActivity
   
     final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this, R.style.AppTheme_Dark_Dialog);
     progressDialog.setIndeterminate(true);
-    progressDialog.setMessage("Authenticating...");
+    progressDialog.setMessage(getString(R.string.authenticating_progress));
     progressDialog.show();
   
   
@@ -106,7 +104,8 @@ public class LoginActivity extends AppCompatActivity
             public void onFailure(Call call, IOException e)
             {
               LoginActivity.this.runOnUiThread(
-                  () -> Toast.makeText(getBaseContext(), "Connection with server failed", Toast.LENGTH_LONG).show());
+                  () -> Toast.makeText(getBaseContext(), R.string.connection_with_server_failed, Toast.LENGTH_LONG)
+                             .show());
             }
   
             @Override
@@ -115,10 +114,8 @@ public class LoginActivity extends AppCompatActivity
               if (response.isSuccessful())
               {
                 String jsonString = response.body().string();
-  
-                user = mapper.readValue(jsonString, UserDto.class);
-  
-                LoginActivity.this.runOnUiThread(() -> onLoginSuccess());
+                UserDto user = mapper.readValue(jsonString, UserDto.class);
+                LoginActivity.this.runOnUiThread(() -> onLoginSuccess(user));
               }
               else if (response.code() == 404)
               {
@@ -134,7 +131,9 @@ public class LoginActivity extends AppCompatActivity
               else
               {
                 LoginActivity.this.runOnUiThread(
-                    () -> Toast.makeText(getBaseContext(), "Something went wrong!", Toast.LENGTH_LONG).show());
+                    () -> Toast.makeText(getBaseContext(),
+                                         getString(R.string.something_went_wrong, response.code()),
+                                         Toast.LENGTH_LONG).show());
               }
             }
           });
@@ -177,7 +176,7 @@ public class LoginActivity extends AppCompatActivity
     moveTaskToBack(true);
   }
   
-  public void onLoginSuccess()
+  public void onLoginSuccess(UserDto user)
   {
     Intent intent = getIntent();
     intent.putExtra("user", user);
