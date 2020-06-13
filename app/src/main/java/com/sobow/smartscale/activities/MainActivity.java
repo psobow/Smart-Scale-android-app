@@ -48,6 +48,8 @@ import okhttp3.Response;
 // TODO: implement functionality to remove given measurement from the list by pressing it. display confirmation dialog before removing
 // TODO: fix issue with close application after screen orientation change
 // TODO: implement feature for sending request for validation constraints on each field. Constraints will be stored in one place then.
+// TODO: find better way to handle requests in background thread. how to wait for the response?
+
 
 public class MainActivity extends AppCompatActivity
 {
@@ -326,8 +328,8 @@ public class MainActivity extends AppCompatActivity
     et_endDate.setText("");
   
     // reset hints
-    til_startDate.setHint(getString(R.string.start_date_filter_hint, getString(R.string.date_format)));
-    til_endDate.setHint(getString(R.string.end_date_filter_hint, getString(R.string.date_format)));
+    til_startDate.setHint(getString(R.string.hint_start_date_filter, getString(R.string.date_format)));
+    til_endDate.setHint(getString(R.string.hint_end_date_filter, getString(R.string.date_format)));
   }
   
   private void resetFilterErrors()

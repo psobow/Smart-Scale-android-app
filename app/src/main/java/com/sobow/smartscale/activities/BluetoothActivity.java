@@ -53,6 +53,7 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
   
   private static final String BASE_URL = "http://10.0.2.2:8080/v1";
   private static final String MEASUREMENT_CONTROLLER = "/measurement";
+  private static final String CREATE_ENDPOINT = "/create";
   
   private BluetoothAdapter bluetoothAdapter;
   private BluetoothConnectionService bluetoothConnectionService;
@@ -62,7 +63,7 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
   private DeviceListAdapter deviceListAdapter;
   
   private UserDto user;
-  private String userWeight = "";
+  private String userWeight;
   
   private ObjectMapper mapper = new ObjectMapper();
   private OkHttpClient client = new OkHttpClient();
@@ -354,7 +355,7 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
             final ProgressDialog progressDialog = new ProgressDialog(BluetoothActivity.this,
                                                                      R.style.AppTheme_Dark_Dialog);
             progressDialog.setIndeterminate(true);
-            progressDialog.setMessage("Sending data to server...");
+            progressDialog.setMessage(getString(R.string.progress_sending_data));
             progressDialog.show();
           
             new android.os.Handler().postDelayed(
@@ -383,11 +384,11 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
                   }
           
                   // json request body
-                  RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"),
+                  RequestBody body = RequestBody.create(MediaType.parse(getString(R.string.json_media_type)),
                                                         measurementJsonString);
   
-                  // sent post to create measurement
-                  String requestUrl = BASE_URL + MEASUREMENT_CONTROLLER + "/create";
+                  // concat URL
+                  String requestUrl = BASE_URL + MEASUREMENT_CONTROLLER + CREATE_ENDPOINT;
           
                   Request request = new Request.Builder()
                       .url(requestUrl)
@@ -405,7 +406,9 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
                         @Override
                         public void run()
                         {
-                          Toast.makeText(getBaseContext(), "Connection with server failed", Toast.LENGTH_LONG).show();
+                          Toast.makeText(getBaseContext(),
+                                         getString(R.string.connection_with_server_failed),
+                                         Toast.LENGTH_LONG).show();
                         }
                       });
               
@@ -418,12 +421,17 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
                       if (response.isSuccessful())
                       {
                         BluetoothActivity.this.runOnUiThread(
-                            () -> Toast.makeText(getBaseContext(), "Data successfully saved!", Toast.LENGTH_LONG)
+                            () -> Toast.makeText(getBaseContext(), R.string.data_saved_successfully, Toast.LENGTH_LONG)
                                        .show());
                       }
                       else
                       {
-                        Log.i(TAG, "response code = " + response.code());
+                        BluetoothActivity.this.runOnUiThread(
+                            () -> Toast.makeText(getBaseContext(),
+                                                 getString(R.string.something_went_wrong, response.code()),
+                                                 Toast.LENGTH_LONG).show());
+  
+                        Log.d(TAG, "response code = " + response.code());
                       }
                     }
                   });
@@ -433,7 +441,7 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
           }
           else
           {
-            Toast.makeText(getBaseContext(), "Wait for data from scale", Toast.LENGTH_LONG).show();
+            Toast.makeText(getBaseContext(), R.string.wait_for_data_or_insert, Toast.LENGTH_LONG).show();
           }
         
         });
@@ -463,13 +471,13 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
     if (bluetoothAdapter == null)
     {
       Log.d(TAG, "enableDisableBT: Does not have BT capabilities.");
-      Toast.makeText(getBaseContext(), "Device does not have Bluetooth capabilities", Toast.LENGTH_LONG).show();
+      Toast.makeText(getBaseContext(), R.string.device_does_not_support_bluetooth, Toast.LENGTH_LONG).show();
       
     }
     else if (! bluetoothAdapter.isEnabled())
     {
       Log.d(TAG, "enableDisableBT: enabling BT.");
-      Toast.makeText(getBaseContext(), "Enabling Bluetooth", Toast.LENGTH_LONG).show();
+      Toast.makeText(getBaseContext(), R.string.enabling_bluetooth, Toast.LENGTH_LONG).show();
       Intent enableBTIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
       startActivity(enableBTIntent);
       
@@ -479,7 +487,7 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
     else if (bluetoothAdapter.isEnabled())
     {
       Log.d(TAG, "enableDisableBT: disabling BT.");
-      Toast.makeText(getBaseContext(), "Disabling Bluetooth", Toast.LENGTH_LONG).show();
+      Toast.makeText(getBaseContext(), R.string.disabling_bluetooth, Toast.LENGTH_LONG).show();
       bluetoothAdapter.disable();
       
       IntentFilter BTIntent = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);

@@ -32,8 +32,8 @@
     <string name="btn_print_chart">PRINT CHART</string>
     <string name="btn_logout">LOGOUT</string>
     <string name="btn_apply_filters">APPLY FILTERS</string>
-    <string name="start_date_filter_hint">Start date %1$s</string>
-    <string name="end_date_filter_hint">End date %1$s</string>
+    <string name="hint_start_date_filter">Start date %1$s</string>
+    <string name="hint_end_date_filter">End date %1$s</string>
     <string name="no_measurements_from_server">You haven\'t added any measurements yet.</string>
 
     <!-- Bluetooth activity -->
@@ -47,7 +47,7 @@
     <string name="btn_go_back_to_main_menu">GO BACK TO MAIN MENU</string>
     <string name="btn_simulate_scale">SIMULATE SCALE</string>
     <string name="received_weight">%1$s KG</string>
-    <string name="your_weight_kg">Your weight (KG)</string>
+    <string name="hint_your_weight_kg">Your weight (KG)</string>
 
     <!-- User data activity -->
     <string name="current_email">Current email:\n%1$s</string>
@@ -73,10 +73,16 @@
     <string name="sign_up_failed">Sign up failed</string>
     <string name="filtered_from_to">Filtered from: %1$s to: %2$s</string>
     <string name="filters_were_not_applied">Filters were not applied</string>
+    <string name="data_saved_successfully">Data successfully saved</string>
+    <string name="wait_for_data_or_insert">Wait for data from scale or insert weight</string>
+    <string name="device_does_not_support_bluetooth">Device does not have bluetooth capabilities</string>
+    <string name="enabling_bluetooth">Enabling Bluetooth</string>
+    <string name="disabling_bluetooth">Disabling Bluetooth</string>
 
     <!-- Progress dialog messages -->
-    <string name="authenticating_progress">Authenticating...</string>
-    <string name="creating_account_progress">Creating Account...</string>
+    <string name="progress_authenticating">Authenticating...</string>
+    <string name="progress_creating_account">Creating Account...</string>
+    <string name="progress_sending_data">Sending data to server...</string>
 
     <!-- Error flags -->
     <string name="email_or_password_incorrect">Email or password incorrect!</string>

@@ -112,7 +112,7 @@ public class SignUpActivity extends AppCompatActivity
     final ProgressDialog progressDialog = new ProgressDialog(SignUpActivity.this,
                                                              R.style.AppTheme_Dark_Dialog);
     progressDialog.setIndeterminate(true);
-    progressDialog.setMessage(getString(R.string.creating_account_progress));
+    progressDialog.setMessage(getString(R.string.progress_creating_account));
     progressDialog.show();
   
   
@@ -198,7 +198,7 @@ public class SignUpActivity extends AppCompatActivity
                     () -> Toast.makeText(getBaseContext(),
                                          getString(R.string.something_went_wrong, response.code()),
                                          Toast.LENGTH_LONG).show());
-                Log.i(TAG, "response code = " + response.code());
+                Log.d(TAG, "response code = " + response.code());
               }
             }
           });

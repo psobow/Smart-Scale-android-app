@@ -84,7 +84,7 @@ public class LoginActivity extends AppCompatActivity
   
     final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this, R.style.AppTheme_Dark_Dialog);
     progressDialog.setIndeterminate(true);
-    progressDialog.setMessage(getString(R.string.authenticating_progress));
+    progressDialog.setMessage(getString(R.string.progress_authenticating));
     progressDialog.show();
   
   
@@ -134,6 +134,7 @@ public class LoginActivity extends AppCompatActivity
                     () -> Toast.makeText(getBaseContext(),
                                          getString(R.string.something_went_wrong, response.code()),
                                          Toast.LENGTH_LONG).show());
+                Log.d(TAG, "response code = " + response.code());
               }
             }
           });
