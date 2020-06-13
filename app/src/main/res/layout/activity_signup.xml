@@ -127,8 +127,7 @@
                     android:clickable="true"
                     android:text="@string/choose_your_sex"
                     android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:layout_marginStart="5dp">
+                    android:textStyle="bold">
 
             </TextView>
             <!-- Spinner -->
