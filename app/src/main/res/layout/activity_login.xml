@@ -50,20 +50,20 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button
-            android:id="@+id/btn_login"
+                android:id="@+id/btn_sign_in"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:layout_marginBottom="24dp"
-                android:text="@string/btn_login" />
+                android:text="@string/btn_sign_in" />
 
         <TextView
-                android:id="@+id/link_signup"
+                android:id="@+id/link_sign_up"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="24dp"
                 android:gravity="center"
-                android:text="@string/no_account_yet_create_one"
+                android:text="@string/no_account_yet_sign_up"
                 android:textSize="24sp" />
 
     </LinearLayout>

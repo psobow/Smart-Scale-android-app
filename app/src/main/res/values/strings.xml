@@ -10,20 +10,23 @@
     <!-- Login activity -->
     <string name="e_mail">E-mail</string>
     <string name="password">Password</string>
-    <string name="btn_login">LOGIN</string>
-    <string name="no_account_yet_create_one">No account yet? Create one</string>
+    <string name="btn_sign_in">SIGN IN</string>
+    <string name="no_account_yet_sign_up">No account yet? Sign up.</string>
 
     <!-- Sign up activity -->
     <string name="re_enter_password">Re-enter Password</string>
-    <string name="username">Username</string>
+    <string name="user_name">User name</string>
     <string name="age">Age</string>
     <string name="height_cm">Height (CM)</string>
     <string name="choose_your_sex">Choose your sex:</string>
-    <string name="btn_create_account">CREATE ACCOUNT</string>
-    <string name="already_a_member_login">Already a member? Login</string>
+    <string name="spinner_default_choice">Your choice...</string>
+    <string name="spinner_male_choice">Male</string>
+    <string name="spinner_female_choice">Female</string>
+    <string name="btn_sign_up">SIGN UP</string>
+    <string name="already_a_member_sign_in">Already a member? Sign in.</string>
 
     <!-- Main activity -->
-    <string name="welcome_username_your_measurements">Hello, %1$s!\nYour measurements:</string>
+    <string name="hello_user_name_your_measurements">Hello, %1$s!\nYour measurements:</string>
     <string name="btn_new_measurement">NEW MEASUREMENT</string>
     <string name="btn_user_data">USER DATA</string>
     <string name="btn_print_chart">PRINT CHART</string>
@@ -50,31 +53,38 @@
     <string name="new_email">New email</string>
     <string name="new_password">New password</string>
     <string name="re_enter_new_password">Re-enter new password</string>
-    <string name="current_user_name_username">Current username: %1$s</string>
-    <string name="new_username">New username</string>
+    <string name="current_user_name_user_name">Current user name: %1$s</string>
+    <string name="new_user_name">New user name</string>
     <string name="current_age">Current age: %1$d</string>
     <string name="new_age">New age</string>
     <string name="current_height">Current height: %1$s CM</string>
     <string name="new_height_cm">New height (CM)</string>
     <string name="current_sex">Current sex: %1$s</string>
     <string name="btn_update_data">UPDATE DATA</string>
-    <string name="dangerous_section">Dangerous section</string>
+    <string name="dangerous_section">DANGEROUS SECTION</string>
     <string name="btn_delete_all_your_measurements">DELETE ALL YOUR MEASUREMENTS</string>
     <string name="btn_delete_your_account">DELETE YOUR ACCOUNT</string>
 
     <!-- Toast messages -->
     <string name="connection_with_server_failed">Connection with server failed</string>
     <string name="something_went_wrong">Something went wrong, response code: %1$d</string>
-    <string name="login_failed">Login failed</string>
+    <string name="login_failed">Sign in failed</string>
+    <string name="sign_up_failed">Sign up failed</string>
 
     <!-- Progress dialog messages -->
     <string name="authenticating_progress">Authenticating...</string>
-
+    <string name="creating_account_progress">Creating Account...</string>
 
     <!-- Error messages -->
     <string name="email_or_password_incorrect">Email or password incorrect!</string>
-    <string name="email_invalid">Enter valid email address!</string>
-    <string name="password_invalid">Enter valid password! 3 to 20 characters, no spaces.</string>
+    <string name="invalid_email">Invalid email address!</string>
+    <string name="invalid_password">Invalid password! Enter from 3 to 20 characters, no spaces.</string>
+    <string name="email_already_exists">Email already exists in database!</string>
+    <string name="invalid_sex_choice">Invalid sex choice!</string>
+    <string name="invalid_user_name">Invalid user name! Enter from 3 to 20 alphanumeric characters.</string>
+    <string name="invalid_height">Invalid height! Enter number of centimetres from 0 to 299.</string>
+    <string name="invalid_age">Invalid age! Enter number from 0 to 100.</string>
+    <string name="passwords_do_not_match">Passwords do not match!</string>
 
 
 </resources>

@@ -5,7 +5,7 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:fitsSystemWindows="true"
-        tools:context=".activities.SignupActivity">
+        tools:context=".activities.SignUpActivity">
 
     <LinearLayout
         android:orientation="vertical"
@@ -76,7 +76,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textPersonName"
-                    android:hint="@string/username" />
+                    android:hint="@string/user_name" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Age -->
@@ -140,23 +140,22 @@
         </com.google.android.material.textfield.TextInputLayout>
 
 
-
-        <!-- Signup Button -->
+        <!-- SignUp Button -->
         <Button
-                android:id="@+id/btn_updateData"
+                android:id="@+id/btn_signUp"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:layout_marginBottom="24dp"
-                android:text="@string/btn_create_account" />
+                android:text="@string/btn_sign_up" />
 
         <TextView
-                android:id="@+id/link_login"
+                android:id="@+id/link_sign_in"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="24dp"
                 android:gravity="center"
-                android:text="@string/already_a_member_login"
+                android:text="@string/already_a_member_sign_in"
                 android:textSize="24sp" />
 
     </LinearLayout>

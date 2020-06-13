@@ -24,7 +24,7 @@
             android:usesCleartextTraffic="true">
 
         <activity
-                android:name=".activities.SignupActivity"
+                android:name=".activities.SignUpActivity"
                 android:theme="@style/AppTheme.Dark" />
         <activity
                 android:name=".activities.LoginActivity"

@@ -42,10 +42,10 @@ public class LoginActivity extends AppCompatActivity
   EditText et_email;
   @BindView(R.id.et_password)
   EditText et_password;
-  @BindView(R.id.btn_login)
-  Button btn_login;
-  @BindView(R.id.link_signup)
-  TextView btn_signup;
+  @BindView(R.id.btn_sign_in)
+  Button btn_signIn;
+  @BindView(R.id.link_sign_up)
+  TextView btn_signUp;
   
   @Override
   public void onCreate(Bundle savedInstanceState)
@@ -56,31 +56,31 @@ public class LoginActivity extends AppCompatActivity
   
     // TODO: implement "Forgot password?" functionality
   
-    btn_login.setOnClickListener(v -> login());
+    btn_signIn.setOnClickListener(v -> signIn());
   
-    btn_signup.setOnClickListener(
+    btn_signUp.setOnClickListener(
         v ->
         {
-          // Start the Signup activity
-          Intent newIntent = new Intent(getApplicationContext(), SignupActivity.class);
+          // Start the SignUp activity
+          Intent newIntent = new Intent(getApplicationContext(), SignUpActivity.class);
           startActivityForResult(newIntent, REQUEST_SIGNUP);
           overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
         });
   }
   
-  private void login()
+  private void signIn()
   {
-    Log.d(TAG, "Login");
+    Log.d(TAG, "Sign in");
     
     
     if (! validate())
     {
-      onLoginFailed();
+      onSignInFailed();
       return;
     }
-  
-  
-    btn_login.setEnabled(false);
+    
+    
+    btn_signIn.setEnabled(false);
   
     final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this, R.style.AppTheme_Dark_Dialog);
     progressDialog.setIndeterminate(true);
@@ -115,7 +115,7 @@ public class LoginActivity extends AppCompatActivity
               {
                 String jsonString = response.body().string();
                 UserDto user = mapper.readValue(jsonString, UserDto.class);
-                LoginActivity.this.runOnUiThread(() -> onLoginSuccess(user));
+                LoginActivity.this.runOnUiThread(() -> onSignInSuccess(user));
               }
               else if (response.code() == 404)
               {
@@ -124,8 +124,8 @@ public class LoginActivity extends AppCompatActivity
                     {
                       et_email.setError(getString(R.string.email_or_password_incorrect));
                       et_password.setError(getString(R.string.email_or_password_incorrect));
-                      
-                      onLoginFailed();
+  
+                      onSignInFailed();
                     });
               }
               else
@@ -139,7 +139,7 @@ public class LoginActivity extends AppCompatActivity
           });
   
   
-          btn_login.setEnabled(true);
+          btn_signIn.setEnabled(true);
           progressDialog.dismiss();
         }, 3000);
     
@@ -176,7 +176,7 @@ public class LoginActivity extends AppCompatActivity
     moveTaskToBack(true);
   }
   
-  public void onLoginSuccess(UserDto user)
+  public void onSignInSuccess(UserDto user)
   {
     Intent intent = getIntent();
     intent.putExtra("user", user);
@@ -185,7 +185,7 @@ public class LoginActivity extends AppCompatActivity
     finish();
   }
   
-  private void onLoginFailed()
+  private void onSignInFailed()
   {
     Toast.makeText(getBaseContext(), R.string.login_failed, Toast.LENGTH_LONG).show();
   }
@@ -201,7 +201,7 @@ public class LoginActivity extends AppCompatActivity
     if (! email.matches(
         "^((\"[\\w-\\s]+\")|([\\w-]+(?:\\.[\\w-]+)*)|(\"[\\w-\\s]+\")([\\w-]+(?:\\.[\\w-]+)*))(@((?:[\\w-]+\\.)*\\w[\\w-]{0,66})\\.([a-z]{2,6}(?:\\.[a-z]{2})?)$)|(@\\[?((25[0-5]\\.|2[0-4][0-9]\\.|1[0-9]{2}\\.|[0-9]{1,2}\\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\\]?$)"))
     {
-      et_email.setError(getString(R.string.email_invalid));
+      et_email.setError(getString(R.string.invalid_email));
       valid = false;
     }
     else
@@ -212,7 +212,7 @@ public class LoginActivity extends AppCompatActivity
     // password
     if (! password.matches("[^\\s]{3,20}"))
     {
-      et_password.setError(getString(R.string.password_invalid));
+      et_password.setError(getString(R.string.invalid_password));
       valid = false;
     }
     else

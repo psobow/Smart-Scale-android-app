@@ -325,7 +325,7 @@ public class MainActivity extends AppCompatActivity
       {
         isUserLogged = true;
         user = (UserDto) intent.getSerializableExtra("user");
-        tv_yourMeasurements.setText(getString(R.string.welcome_username_your_measurements,
+        tv_yourMeasurements.setText(getString(R.string.hello_user_name_your_measurements,
                                               (user == null ? "null_user" : user.getUserName())));
         sentPostForMeasurementsAndUpdateListView();
       }

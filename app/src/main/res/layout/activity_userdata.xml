@@ -80,7 +80,7 @@
                 android:id="@+id/tv_currentUsername"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/current_user_name_username"
+                android:text="@string/current_user_name_user_name"
                 android:textSize="24sp"
                 android:textStyle="bold" />
 
@@ -95,7 +95,7 @@
                     android:id="@+id/et_userName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/new_username"
+                    android:hint="@string/new_user_name"
                     android:inputType="textPersonName" />
         </com.google.android.material.textfield.TextInputLayout>
 

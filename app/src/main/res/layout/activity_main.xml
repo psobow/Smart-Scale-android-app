@@ -52,7 +52,7 @@
                 android:id="@+id/tv_yourMeasurements"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/welcome_username_your_measurements"
+                android:text="@string/hello_user_name_your_measurements"
                 android:textSize="24sp"
                 android:textStyle="bold" />
 
