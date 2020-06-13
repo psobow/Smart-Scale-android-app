@@ -30,6 +30,7 @@ public class LoginActivity extends AppCompatActivity
   private static final String TAG = "LoginActivity";
   private static final int REQUEST_SIGNUP = 0;
   
+  // TODO: move it to config class
   private static final String BASE_URL = "http://10.0.2.2:8080/v1";
   private static final String USER_CONTROLLER = "/user";
   
