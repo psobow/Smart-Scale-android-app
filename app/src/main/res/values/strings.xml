@@ -64,11 +64,16 @@
     <!-- Toast messages -->
     <string name="connection_with_server_failed">Connection with server failed</string>
     <string name="something_went_wrong">Something went wrong, response code: %1$d</string>
-
+    <string name="login_failed">Login failed</string>
 
     <!-- Progress dialog messages -->
     <string name="authenticating_progress">Authenticating...</string>
 
+
     <!-- Error messages -->
+    <string name="email_or_password_incorrect">Email or password incorrect!</string>
+    <string name="email_invalid">Enter valid email address!</string>
+    <string name="password_invalid">Enter valid password. 3 to 20 characters, no spaces</string>
+
 
 </resources>

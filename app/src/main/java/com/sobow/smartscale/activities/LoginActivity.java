@@ -122,8 +122,8 @@ public class LoginActivity extends AppCompatActivity
                 LoginActivity.this.runOnUiThread(
                     () ->
                     {
-                      et_email.setError("Email or password incorrect");
-                      et_password.setError("Email or password incorrect");
+                      et_email.setError(getString(R.string.email_or_password_incorrect));
+                      et_password.setError(getString(R.string.email_or_password_incorrect));
                       
                       onLoginFailed();
                     });
@@ -187,7 +187,7 @@ public class LoginActivity extends AppCompatActivity
   
   private void onLoginFailed()
   {
-    Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
+    Toast.makeText(getBaseContext(), R.string.login_failed, Toast.LENGTH_LONG).show();
   }
   
   private boolean validate()
@@ -201,7 +201,7 @@ public class LoginActivity extends AppCompatActivity
     if (! email.matches(
         "^((\"[\\w-\\s]+\")|([\\w-]+(?:\\.[\\w-]+)*)|(\"[\\w-\\s]+\")([\\w-]+(?:\\.[\\w-]+)*))(@((?:[\\w-]+\\.)*\\w[\\w-]{0,66})\\.([a-z]{2,6}(?:\\.[a-z]{2})?)$)|(@\\[?((25[0-5]\\.|2[0-4][0-9]\\.|1[0-9]{2}\\.|[0-9]{1,2}\\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\\]?$)"))
     {
-      et_email.setError("enter a valid email address");
+      et_email.setError(getString(R.string.email_invalid));
       valid = false;
     }
     else
@@ -212,7 +212,7 @@ public class LoginActivity extends AppCompatActivity
     // password
     if (! password.matches("[^\\s]{3,20}"))
     {
-      et_password.setError("between 3 and 20 alphanumeric characters without spaces");
+      et_password.setError(getString(R.string.password_invalid));
       valid = false;
     }
     else
