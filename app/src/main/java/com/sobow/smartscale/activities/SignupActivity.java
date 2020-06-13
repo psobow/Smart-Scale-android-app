@@ -65,7 +65,7 @@ public class SignupActivity extends AppCompatActivity
   EditText et_password;
   @BindView(R.id.et_reEnterPassword)
   EditText et_reEnterPassword;
-  @BindView(R.id.btn_signup)
+  @BindView(R.id.btn_updateData)
   Button btn_signup;
   @BindView(R.id.link_login)
   TextView link_login;

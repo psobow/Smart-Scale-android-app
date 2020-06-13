@@ -81,6 +81,15 @@
                     android:inputType="textPassword" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <!--  Current Username Label -->
+        <TextView
+                android:id="@+id/tv_currentUsername"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Current user name: username"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
         <!-- Name Label -->
         <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
@@ -95,6 +104,15 @@
                     android:hint="New user name"
                     android:inputType="textPersonName" />
         </com.google.android.material.textfield.TextInputLayout>
+
+        <!--  Current Age Label -->
+        <TextView
+                android:id="@+id/tv_currentAge"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Current age: 20"
+                android:textSize="24sp"
+                android:textStyle="bold" />
 
         <!-- Age -->
         <com.google.android.material.textfield.TextInputLayout
@@ -111,6 +129,15 @@
                     android:inputType="number" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <!--  Current Height Label -->
+        <TextView
+                android:id="@+id/tv_currentHeight"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Current height: 175 CM"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
         <!-- Height -->
         <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
@@ -126,6 +153,14 @@
                     android:inputType="number" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <!--  Current sex Label -->
+        <TextView
+                android:id="@+id/tv_currentSex"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Current sex: Male"
+                android:textSize="24sp"
+                android:textStyle="bold" />
 
         <!-- Sex spinner -->
         <com.google.android.material.textfield.TextInputLayout
@@ -135,7 +170,6 @@
                 android:layout_marginBottom="8dp">
 
             <TextView
-                    android:layout_marginLeft="5dp"
                     android:id="@+id/tv_chooseYourSex"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -159,7 +193,7 @@
 
         <!-- Signup Button -->
         <Button
-                android:id="@+id/btn_signup"
+                android:id="@+id/btn_updateData"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
@@ -175,6 +209,34 @@
                 android:layout_marginBottom="24dp"
                 android:padding="12dp"
                 android:text="GO BACK TO MAIN MENU" />
+
+        <!--  dangerous section Label -->
+        <TextView
+                android:id="@+id/tv_dangerousSection"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Dangerous section"
+                android:gravity="center"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+        <Button
+                android:id="@+id/btn_deleteAllYourMeasurements"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="24dp"
+                android:padding="12dp"
+                android:text="DELETE ALL YOUR MEASUREMENTS" />
+
+        <Button
+                android:id="@+id/btn_deleteYourAccount"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="0dp"
+                android:layout_marginBottom="24dp"
+                android:padding="12dp"
+                android:text="DELETE YOUR ACCOUNT" />
 
     </LinearLayout>
 </ScrollView>

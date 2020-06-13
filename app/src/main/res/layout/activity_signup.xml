@@ -150,7 +150,7 @@
 
         <!-- Signup Button -->
         <Button
-            android:id="@+id/btn_signup"
+                android:id="@+id/btn_updateData"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
