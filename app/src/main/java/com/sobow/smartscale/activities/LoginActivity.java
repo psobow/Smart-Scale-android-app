@@ -4,7 +4,6 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -58,28 +57,16 @@ public class LoginActivity extends AppCompatActivity
   
     // TODO: implement "Forgot password?" functionality
   
-    btn_login.setOnClickListener(new View.OnClickListener()
-    {
-      
-      @Override
-      public void onClick(View v)
-      {
-        login();
-      }
-    });
+    btn_login.setOnClickListener(v -> login());
   
-    btn_signup.setOnClickListener(new View.OnClickListener()
-    {
-      
-      @Override
-      public void onClick(View v)
-      {
-        // Start the Signup activity
-        Intent newIntent = new Intent(getApplicationContext(), SignupActivity.class);
-        startActivityForResult(newIntent, REQUEST_SIGNUP);
-        overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
-      }
-    });
+    btn_signup.setOnClickListener(
+        v ->
+        {
+          // Start the Signup activity
+          Intent newIntent = new Intent(getApplicationContext(), SignupActivity.class);
+          startActivityForResult(newIntent, REQUEST_SIGNUP);
+          overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+        });
   }
   
   public void login()
@@ -104,78 +91,60 @@ public class LoginActivity extends AppCompatActivity
   
   
     new android.os.Handler().postDelayed(
-        new Runnable()
+        () ->
         {
-          public void run()
+          String emailInput = et_email.getText().toString();
+          String passwordInput = et_password.getText().toString();
+        
+          String requestUrl = BASE_URL + USER_CONTROLLER + "/" + emailInput + "/" + passwordInput;
+          Request request = new Request.Builder().url(requestUrl).build();
+        
+          // Execute HTTP requests in background thread
+          client.newCall(request).enqueue(new Callback()
           {
-            String emailInput = et_email.getText().toString();
-            String passwordInput = et_password.getText().toString();
-            
-            String requestUrl = BASE_URL + USER_CONTROLLER + "/" + emailInput + "/" + passwordInput;
-            Request request = new Request.Builder().url(requestUrl).build();
-            
-            // Execute HTTP requests in background thread
-            client.newCall(request).enqueue(new Callback()
+            @Override
+            public void onFailure(Call call, IOException e)
             {
-              @Override
-              public void onFailure(Call call, IOException e)
+              LoginActivity.this.runOnUiThread(
+                  () -> Toast.makeText(getBaseContext(), "Connection with server failed", Toast.LENGTH_LONG).show());
+            }
+          
+            @Override
+            public void onResponse(Call call, Response response) throws IOException
+            {
+              if (response.isSuccessful())
               {
-                LoginActivity.this.runOnUiThread(new Runnable()
-                {
-                  @Override
-                  public void run()
-                  {
-                    Toast.makeText(getBaseContext(), "Connection with server failed", Toast.LENGTH_LONG).show();
-                  }
-                });
+                String jsonString = response.body().string();
+              
+                user = mapper.readValue(jsonString, UserDto.class);
+              
+                LoginActivity.this.runOnUiThread(() -> onLoginSuccess());
               }
-    
-              @Override
-              public void onResponse(Call call, Response response) throws IOException
+              else if (response.code() == 404)
               {
-                if(response.isSuccessful())
-                {
-                  String jsonString = response.body().string();
-  
-                  user = mapper.readValue(jsonString, UserDto.class);
-                  
-                  LoginActivity.this.runOnUiThread(new Runnable()
-                  {
-                    @Override
-                    public void run()
-                    {
-                      onLoginSuccess();
-                    }
-                  });
-                }
-                else if (response.code() == 404)
-                {
-                  LoginActivity.this.runOnUiThread(new Runnable()
-                  {
-                    @Override
-                    public void run()
+                LoginActivity.this.runOnUiThread(
+                    () ->
                     {
                       et_email.setError("Email or password incorrect");
                       et_password.setError("Email or password incorrect");
                       
                       onLoginFailed();
-                    }
-                  });
-                }
-  
-  
+                    });
               }
-              
-            });
-            //for internet connection:  sent get for user with email and password if server didn't return user display dialog
-            // - if wrong email or password display: wrong email or password
-          
-            //no internet connection:  find user in database based on email and password
-            // - if wrong email or password display: wrong email or password
-  
-            btn_login.setEnabled(true);
-            progressDialog.dismiss();
-          }
+              else
+              {
+                LoginActivity.this.runOnUiThread(
+                    () ->
+                        Toast.makeText(getBaseContext(),
+                                       "Something went wrong!",
+                                       Toast.LENGTH_LONG).show());
+              }
+            }
+          });
+        
+        
+          btn_login.setEnabled(true);
+          progressDialog.dismiss();
         }, 3000);
     
   }
@@ -189,8 +158,6 @@ public class LoginActivity extends AppCompatActivity
     {
       if (resultCode == RESULT_OK)
       {
-        // By default we just finish the Activity and log them in automatically
-  
         // Pass object to main activity
         UserDto user = (UserDto) intent.getSerializableExtra("user");
         getIntent().putExtra("user", user);
@@ -219,7 +186,6 @@ public class LoginActivity extends AppCompatActivity
     intent.putExtra("user", user);
   
     setResult(RESULT_OK, intent);
-    
     finish();
   }
   
@@ -234,8 +200,10 @@ public class LoginActivity extends AppCompatActivity
   
     String email = et_email.getText().toString();
     String password = et_password.getText().toString();
-    
-    if ( ! email.matches("^((\"[\\w-\\s]+\")|([\\w-]+(?:\\.[\\w-]+)*)|(\"[\\w-\\s]+\")([\\w-]+(?:\\.[\\w-]+)*))(@((?:[\\w-]+\\.)*\\w[\\w-]{0,66})\\.([a-z]{2,6}(?:\\.[a-z]{2})?)$)|(@\\[?((25[0-5]\\.|2[0-4][0-9]\\.|1[0-9]{2}\\.|[0-9]{1,2}\\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\\]?$)"))
+  
+    // email
+    if (! email.matches(
+        "^((\"[\\w-\\s]+\")|([\\w-]+(?:\\.[\\w-]+)*)|(\"[\\w-\\s]+\")([\\w-]+(?:\\.[\\w-]+)*))(@((?:[\\w-]+\\.)*\\w[\\w-]{0,66})\\.([a-z]{2,6}(?:\\.[a-z]{2})?)$)|(@\\[?((25[0-5]\\.|2[0-4][0-9]\\.|1[0-9]{2}\\.|[0-9]{1,2}\\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\\]?$)"))
     {
       et_email.setError("enter a valid email address");
       valid = false;
@@ -244,8 +212,9 @@ public class LoginActivity extends AppCompatActivity
     {
       et_email.setError(null);
     }
-    
-    if ( ! password.matches("[^\\s]{3,20}"))
+  
+    // password
+    if (! password.matches("[^\\s]{3,20}"))
     {
       et_password.setError("between 3 and 20 alphanumeric characters without spaces");
       valid = false;
