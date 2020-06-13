@@ -42,4 +42,6 @@
     <string name="btn_save_data">SAVE DATA</string>
     <string name="btn_go_back_to_main_menu">GO BACK TO MAIN MENU</string>
     <string name="btn_simulate_scale">SIMULATE SCALE</string>
+    <string name="received_weight">%1$s KG</string>
+
 </resources>

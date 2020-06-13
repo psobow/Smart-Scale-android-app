@@ -35,7 +35,6 @@ import org.threeten.bp.LocalDateTime;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 import butterknife.BindView;
@@ -64,7 +63,6 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
   
   private UserDto user;
   private String userWeight = "";
-  private List<MeasurementDto> newMeasurements = new ArrayList<>();
   
   private ObjectMapper mapper = new ObjectMapper();
   private OkHttpClient client = new OkHttpClient();
@@ -72,28 +70,20 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
   // GUI components
   @BindView(R.id.lv_devices)
   ListView lv_devices;
-  
   @BindView(R.id.btn_startConnection)
   Button btn_startConnection;
-  
   @BindView(R.id.btn_bluetoothOnOff)
   Button btn_bluetoothOnOff;
-  
   @BindView(R.id.btn_enableVisibility)
   Button btn_enableVisibility;
-  
   @BindView(R.id.btn_discoverDevices)
   Button btn_discoverDevices;
-  
   @BindView(R.id.tv_dataFromTheDevice)
   TextView tv_dataFromTheDevice;
-  
   @BindView(R.id.btn_saveData)
   Button btn_saveData;
-  
   @BindView(R.id.btn_backToMainActivity)
   Button btn_backToMainActivity;
-  
   @BindView(R.id.et_weight)
   EditText et_weight;
   
@@ -108,7 +98,7 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
       String action = intent.getAction();
       if (action.equals(bluetoothAdapter.ACTION_STATE_CHANGED))
       {
-        final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, bluetoothAdapter.ERROR);
+        final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR);
         
         switch (state)
         {
@@ -138,7 +128,7 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
       String action = intent.getAction();
       if (action.equals(bluetoothAdapter.ACTION_SCAN_MODE_CHANGED))
       {
-        int mode = intent.getIntExtra(BluetoothAdapter.EXTRA_SCAN_MODE, bluetoothAdapter.ERROR);
+        int mode = intent.getIntExtra(BluetoothAdapter.EXTRA_SCAN_MODE, BluetoothAdapter.ERROR);
         
         switch (mode)
         {
@@ -215,7 +205,7 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
     public void onReceive(Context context, Intent intent)
     {
       userWeight = intent.getStringExtra("theMessage");
-      et_weight.setText(userWeight + " KG");
+      et_weight.setText(getString(R.string.received_weight, userWeight));
     }
   };
   
@@ -229,14 +219,14 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
     {
       unregisterReceiver(mBroadcastReceiver1);
     }
-    catch (Exception e)
+    catch (Exception ignored)
     {
     }
     try
     {
       unregisterReceiver(mBroadcastReceiver2);
     }
-    catch (Exception e)
+    catch (Exception ignored)
     {
     }
     
@@ -244,7 +234,7 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
     {
       unregisterReceiver(mBroadcastReceiver3);
     }
-    catch (Exception e)
+    catch (Exception ignored)
     {
     
     }
@@ -253,7 +243,7 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
     {
       unregisterReceiver(mBroadcastReceiver4);
     }
-    catch (Exception e)
+    catch (Exception ignored)
     {
     
     }
@@ -262,7 +252,7 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
     {
       unregisterReceiver(mReceiver);
     }
-    catch (Exception e)
+    catch (Exception ignored)
     {
     
     }
@@ -288,33 +278,28 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
     user = (UserDto) getIntent().getSerializableExtra("user");
     
     // OnClickListeners
-    btn_bluetoothOnOff.setOnClickListener(new View.OnClickListener()
-    {
-      @Override
-      public void onClick(View v)
-      {
-        Log.d(TAG, "onClick: enabling/disabling bluetooth.");
-        // TODO: simplify button behavior to simply enable bluetooth if disabled
-        enableDisableBT();
-      }
-    });
+    btn_bluetoothOnOff.setOnClickListener(
+        v ->
+        {
+          Log.d(TAG, "onClick: enabling/disabling bluetooth.");
+          // TODO: simplify button behavior to simply enable bluetooth if disabled
+          enableDisableBT();
+        });
   
-    btn_enableVisibility.setOnClickListener(new View.OnClickListener()
-    {
-      @Override
-      public void onClick(View v)
-      {
-        Log.d(TAG, "onClick: making device discoverable for 300 seconds.");
+    btn_enableVisibility.setOnClickListener(
+        v ->
+        {
+          Log.d(TAG, "onClick: making device discoverable for 300 seconds.");
         
-        Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-        discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
+          Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+          discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
+        
+          IntentFilter IntentFilter = new IntentFilter(bluetoothAdapter.ACTION_SCAN_MODE_CHANGED);
+          registerReceiver(mBroadcastReceiver2, IntentFilter);
+        });
   
-        IntentFilter IntentFilter = new IntentFilter(bluetoothAdapter.ACTION_SCAN_MODE_CHANGED);
-        registerReceiver(mBroadcastReceiver2, IntentFilter);
-      }
-    });
-    
-    btn_discoverDevices.setOnClickListener(new View.OnClickListener()
+    btn_discoverDevices.setOnClickListener(
+        new View.OnClickListener()
     {
       @RequiresApi(api = Build.VERSION_CODES.M)
       @Override
@@ -343,48 +328,37 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
     });
     
     lv_devices.setOnItemClickListener(BluetoothActivity.this);
-    
-    btn_startConnection.setOnClickListener(new View.OnClickListener()
-    {
-      @Override
-      public void onClick(View v)
-      {
-        startBTConnection(bluetoothDevice, MY_UUID_INSECURE);
-      }
-    });
-    
-    btn_saveData.setOnClickListener(new View.OnClickListener()
-    {
-      @Override
-      public void onClick(View v)
-      {
-        boolean isValidWeight = true;
-        try
+  
+    btn_startConnection.setOnClickListener(
+        v -> startBTConnection(bluetoothDevice, MY_UUID_INSECURE));
+  
+    btn_saveData.setOnClickListener(
+        v ->
         {
-          String inputWeight = et_weight.getText().toString();
-          Double.parseDouble(inputWeight);
-          userWeight = inputWeight;
-        }
-        catch (NumberFormatException e)
-        {
-          isValidWeight = false;
-        }
-  
-  
-        if (isValidWeight)
-        {
-          btn_saveData.setEnabled(false);
-  
-          final ProgressDialog progressDialog = new ProgressDialog(BluetoothActivity.this,
-                                                                   R.style.AppTheme_Dark_Dialog);
-          progressDialog.setIndeterminate(true);
-          progressDialog.setMessage("Sending data to server...");
-          progressDialog.show();
-  
-          new android.os.Handler().postDelayed(
-              new Runnable()
-              {
-                public void run()
+          boolean isValidWeight = true;
+          try
+          {
+            String inputWeight = et_weight.getText().toString();
+            userWeight = Double.toString(Double.parseDouble(inputWeight));
+          }
+          catch (NumberFormatException e)
+          {
+            isValidWeight = false;
+          }
+        
+        
+          if (isValidWeight)
+          {
+            btn_saveData.setEnabled(false);
+          
+            final ProgressDialog progressDialog = new ProgressDialog(BluetoothActivity.this,
+                                                                     R.style.AppTheme_Dark_Dialog);
+            progressDialog.setIndeterminate(true);
+            progressDialog.setMessage("Sending data to server...");
+            progressDialog.show();
+          
+            new android.os.Handler().postDelayed(
+                () ->
                 {
                   // sentMeasurementToServer
                   
@@ -413,7 +387,6 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
                                                         measurementJsonString);
   
                   // sent post to create measurement
-          
                   String requestUrl = BASE_URL + MEASUREMENT_CONTROLLER + "/create";
           
                   Request request = new Request.Builder()
@@ -444,16 +417,9 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
                     {
                       if (response.isSuccessful())
                       {
-                
-                
-                        BluetoothActivity.this.runOnUiThread(new Runnable()
-                        {
-                          @Override
-                          public void run()
-                          {
-                            Toast.makeText(getBaseContext(), "Data successfully saved!", Toast.LENGTH_LONG).show();
-                          }
-                        });
+                        BluetoothActivity.this.runOnUiThread(
+                            () -> Toast.makeText(getBaseContext(), "Data successfully saved!", Toast.LENGTH_LONG)
+                                       .show());
                       }
                       else
                       {
@@ -463,30 +429,23 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
                   });
                   btn_saveData.setEnabled(true);
                   progressDialog.dismiss();
-                }
-              }, 3000);
-        }
-        else
+                }, 3000);
+          }
+          else
+          {
+            Toast.makeText(getBaseContext(), "Wait for data from scale", Toast.LENGTH_LONG).show();
+          }
+        
+        });
+  
+  
+    btn_backToMainActivity.setOnClickListener(
+        v ->
         {
-          Toast.makeText(getBaseContext(), "Wait for data from scale", Toast.LENGTH_LONG).show();
-        }
-  
-      }
-  
-  
-    });
-    
-    
-    btn_backToMainActivity.setOnClickListener(new View.OnClickListener()
-    {
-      @Override
-      public void onClick(View v)
-      {
-        setResult(RESULT_OK);
-        finish();
-        overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
-      }
-    });
+          setResult(RESULT_OK);
+          finish();
+          overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
+        });
     
   }
   
@@ -556,16 +515,11 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
     String deviceAddress = bluetoothDevices.get(position).getAddress();
     Log.d(TAG, "onItemClick: deviceName = " + deviceName);
     Log.d(TAG, "onItemClick: deviceAddress = " + deviceAddress);
-    
-    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR2)
-    {
-      Log.d(TAG, "Trying to pair with " + deviceName);
-      bluetoothDevices.get(position).createBond();
   
-      bluetoothDevice = bluetoothDevices.get(position);
-      bluetoothConnectionService = new BluetoothConnectionService(BluetoothActivity.this);
-      
-    }
-    
+    Log.d(TAG, "Trying to pair with " + deviceName);
+    bluetoothDevices.get(position).createBond();
+  
+    bluetoothDevice = bluetoothDevices.get(position);
+    bluetoothConnectionService = new BluetoothConnectionService(BluetoothActivity.this);
   }
 }
