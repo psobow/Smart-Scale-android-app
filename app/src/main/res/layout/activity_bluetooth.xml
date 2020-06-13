@@ -78,10 +78,26 @@
         <TextView
                 android:id="@+id/tv_dataFromTheDevice"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:text="@string/data_from_the_device"
                 android:textSize="24sp"
                 android:textStyle="bold" />
+
+        <!-- Weight -->
+        <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                >
+
+            <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_weight"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Your weight (KG)"
+                    android:inputType="numberDecimal" />
+        </com.google.android.material.textfield.TextInputLayout>
+
 
         <Button
                 android:id="@+id/btn_saveData"
@@ -101,15 +117,6 @@
                 android:layout_marginBottom="24dp"
                 android:padding="12dp"
                 android:text="@string/btn_go_back_to_main_menu" />
-
-        <Button
-                android:id="@+id/btn_simulateScale"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="0dp"
-                android:layout_marginBottom="24dp"
-                android:padding="12dp"
-                android:text="@string/btn_simulate_scale" />
 
 
     </LinearLayout>

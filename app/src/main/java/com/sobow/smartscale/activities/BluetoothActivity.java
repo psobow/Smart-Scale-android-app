@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -62,7 +63,7 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
   private DeviceListAdapter deviceListAdapter;
   
   private UserDto user;
-  private String userWeightFromScale = "";
+  private String userWeight = "";
   private List<MeasurementDto> newMeasurements = new ArrayList<>();
   
   private ObjectMapper mapper = new ObjectMapper();
@@ -93,9 +94,8 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
   @BindView(R.id.btn_backToMainActivity)
   Button btn_backToMainActivity;
   
-  @BindView(R.id.btn_simulateScale)
-  Button btn_simulateScale;
-  
+  @BindView(R.id.et_weight)
+  EditText et_weight;
   
   // BroadCast Receiver
   
@@ -214,8 +214,8 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
     @Override
     public void onReceive(Context context, Intent intent)
     {
-      userWeightFromScale = intent.getStringExtra("theMessage");
-      tv_dataFromTheDevice.setText("Data from the device: " + userWeightFromScale + " kg.");
+      userWeight = intent.getStringExtra("theMessage");
+      et_weight.setText(userWeight + " KG");
     }
   };
   
@@ -358,10 +358,21 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
       @Override
       public void onClick(View v)
       {
-        // TODO: create const instead of Data from the device:
-        if (! tv_dataFromTheDevice.getText().toString().equals("Data from the device:"))
+        boolean isValidWeight = true;
+        try
         {
+          String inputWeight = et_weight.getText().toString();
+          Double.parseDouble(inputWeight);
+          userWeight = inputWeight;
+        }
+        catch (NumberFormatException e)
+        {
+          isValidWeight = false;
+        }
   
+  
+        if (isValidWeight)
+        {
           btn_saveData.setEnabled(false);
   
           final ProgressDialog progressDialog = new ProgressDialog(BluetoothActivity.this,
@@ -379,7 +390,7 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
                   
                   MeasurementDto newMeasurement = new MeasurementDto();
                   newMeasurement.setLocalDateTime(LocalDateTime.now());
-                  double weight = Double.parseDouble(userWeightFromScale);
+                  double weight = Double.parseDouble(userWeight);
                   newMeasurement.setWeight(weight);
                   double height = user.getHeight() / 100.0;
                   newMeasurement.setBMI(weight / (height * height));
@@ -463,16 +474,6 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
       }
   
   
-    });
-  
-    btn_simulateScale.setOnClickListener(new View.OnClickListener()
-    {
-      @Override
-      public void onClick(View v)
-      {
-        userWeightFromScale = "75.0";
-        tv_dataFromTheDevice.setText("Data from the device: " + userWeightFromScale + " kg.");
-      }
     });
     
     
