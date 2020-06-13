@@ -15,7 +15,7 @@
 
     <!-- sign up activity -->
     <string name="re_enter_password">Re-enter Password</string>
-    <string name="user_name">User name</string>
+    <string name="username">Username</string>
     <string name="age">Age</string>
     <string name="height_cm">Height (CM)</string>
     <string name="choose_your_sex">Choose your sex:</string>
@@ -43,5 +43,23 @@
     <string name="btn_go_back_to_main_menu">GO BACK TO MAIN MENU</string>
     <string name="btn_simulate_scale">SIMULATE SCALE</string>
     <string name="received_weight">%1$s KG</string>
+
+    <!-- user data activity -->
+    <string name="current_email">Current email:\n%1$s</string>
+    <string name="new_email">New email</string>
+    <string name="new_password">New password</string>
+    <string name="re_enter_new_password">Re-enter new password</string>
+    <string name="current_user_name_username">Current username: %1$s</string>
+    <string name="new_username">New username</string>
+    <string name="current_age">Current age: %1$d</string>
+    <string name="new_age">New age</string>
+    <string name="current_height">Current height: %1$s CM</string>
+    <string name="new_height_cm">New height (CM)</string>
+    <string name="current_sex">Current sex: %1$s</string>
+    <string name="btn_update_data">UPDATE DATA</string>
+    <string name="dangerous_section">Dangerous section</string>
+    <string name="btn_delete_all_your_measurements">DELETE ALL YOUR MEASUREMENTS</string>
+    <string name="btn_delete_your_account">DELETE YOUR ACCOUNT</string>
+
 
 </resources>

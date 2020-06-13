@@ -258,11 +258,11 @@ public class MainActivity extends AppCompatActivity
     resetListView();
     
     resetOldestAndNewestMeasurement();
-    
-    resetPreviousValidDateFilters();
+  
+    resetPreviousValidFilterDates();
   }
   
-  private void resetPreviousValidDateFilters()
+  private void resetPreviousValidFilterDates()
   {
     previousValidStartDateFilter = null;
     previousValidEndDateFilter = null;
@@ -295,6 +295,13 @@ public class MainActivity extends AppCompatActivity
       et_startDate.setText(previousValidStartDateFilter.format(DateTimeFormatter.ofPattern(getString(R.string.date_format))));
       et_endDate.setText(previousValidEndDateFilter.format(DateTimeFormatter.ofPattern(getString(R.string.date_format))));
     }
+  }
+  
+  private void resetFilters()
+  {
+    resetFilterErrors();
+    et_startDate.setText("");
+    et_endDate.setText("");
   }
   
   private void resetFilterErrors()
@@ -389,19 +396,18 @@ public class MainActivity extends AppCompatActivity
           MainActivity.this.runOnUiThread(
               () ->
               {
-                resetFilterErrors();
-        
+                resetFilters();
+                
                 if (measurements.isEmpty())
                 {
                   stringListWithMeasurements.add("You haven't added any measurements yet.");
           
                   resetOldestAndNewestMeasurement();
-          
-                  resetPreviousValidDateFilters();
+  
+                  resetPreviousValidFilterDates();
           
                   // update UI filters start date and end date
-                  et_startDate.setText("");
-                  et_endDate.setText("");
+  
                 }
                 else
                 {
