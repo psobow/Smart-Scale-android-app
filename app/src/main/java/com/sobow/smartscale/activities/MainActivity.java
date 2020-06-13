@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.android.material.textfield.TextInputLayout;
 import com.jakewharton.threetenabp.AndroidThreeTen;
 import com.sobow.smartscale.R;
 import com.sobow.smartscale.dto.MeasurementDto;
@@ -44,6 +45,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+// TODO: implement functionality to remove given measurement from the list by pressing it. display confirmation dialog before removing
 
 public class MainActivity extends AppCompatActivity
 {
@@ -95,6 +97,12 @@ public class MainActivity extends AppCompatActivity
   EditText et_startDate;
   @BindView(R.id.et_endDate)
   EditText et_endDate;
+  
+  // need to set up hint properly in the source code
+  @BindView(R.id.til_startDate)
+  TextInputLayout til_startDate;
+  @BindView(R.id.til_endDate)
+  TextInputLayout til_endDate;
   
   
   @Override
@@ -311,8 +319,8 @@ public class MainActivity extends AppCompatActivity
     et_endDate.setText("");
   
     // reset hints
-    et_startDate.setHint(getString(R.string.start_date_filter_hint, getString(R.string.date_format)));
-    et_endDate.setHint(getString(R.string.end_date_filter_hint, getString(R.string.date_format)));
+    til_startDate.setHint(getString(R.string.start_date_filter_hint, getString(R.string.date_format)));
+    til_endDate.setHint(getString(R.string.end_date_filter_hint, getString(R.string.date_format)));
   }
   
   private void resetFilterErrors()
