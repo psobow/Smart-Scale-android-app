@@ -442,10 +442,6 @@ public class MainActivity extends AppCompatActivity
                     stringListWithMeasurements.add(measurements.get(i).toString());
                   }
   
-                  // update list view
-                  arrayAdapter.notifyDataSetChanged();
-                  lv_measurements.invalidateViews();
-  
                   // update oldest and newest date measurement
                   oldestMeasurementDateTime = measurements.get(measurements.size() - 1).getLocalDateTime();
                   newestMeasurementDateTime = measurements.get(0).getLocalDateTime();
@@ -458,6 +454,10 @@ public class MainActivity extends AppCompatActivity
                   et_startDate.setText(oldestMeasurementDateTime.format(dateTimeFormatter));
                   et_endDate.setText(newestMeasurementDateTime.format(dateTimeFormatter));
                 }
+  
+                // update list view
+                arrayAdapter.notifyDataSetChanged();
+                lv_measurements.invalidateViews();
               });
         }
         else
