@@ -63,11 +63,14 @@ public class MainActivity extends AppCompatActivity
   // dependencies
   private OkHttpClient client;
   private ObjectMapper mapper;
-  private ArrayAdapter arrayAdapter; // need for list view component
+  
+  // date format
+  DateTimeFormatter dateTimeFormatter;
   
   // user information
   private UserDto user;
   private List<String> stringListWithMeasurements;
+  private ArrayAdapter arrayAdapter; // need for list view component
   private boolean isUserLogged;
   
   // measurements information
@@ -165,7 +168,7 @@ public class MainActivity extends AppCompatActivity
           LocalDate startDateParsed = null;
           try
           {
-            startDateParsed = LocalDate.parse(startDate, DateTimeFormatter.ofPattern(getString(R.string.date_format)));
+            startDateParsed = LocalDate.parse(startDate, dateTimeFormatter);
           }
           catch (DateTimeParseException e)
           {
@@ -177,7 +180,7 @@ public class MainActivity extends AppCompatActivity
           LocalDate endDateParsed = null;
           try
           {
-            endDateParsed = LocalDate.parse(endDate, DateTimeFormatter.ofPattern(getString(R.string.date_format)));
+            endDateParsed = LocalDate.parse(endDate, dateTimeFormatter);
           }
           catch (DateTimeParseException e)
           {
@@ -195,7 +198,7 @@ public class MainActivity extends AppCompatActivity
             {
               isInputValid = false;
               et_startDate.setError(getString(R.string.start_date_cant_be_before, oldestMeasurementDateTime
-                  .format(DateTimeFormatter.ofPattern(getString(R.string.date_format)))));
+                  .format(dateTimeFormatter)));
             }
 
             // Forbid user to enter start date after the newest measurement in database
@@ -203,7 +206,7 @@ public class MainActivity extends AppCompatActivity
             {
               isInputValid = false;
               et_startDate.setError(getString(R.string.start_date_cant_be_after, newestMeasurementDateTime
-                  .format(DateTimeFormatter.ofPattern(getString(R.string.date_format)))));
+                  .format(dateTimeFormatter)));
             }
   
   
@@ -213,14 +216,14 @@ public class MainActivity extends AppCompatActivity
             {
               isInputValid = false;
               et_endDate.setError(getString(R.string.end_date_cant_be_before, oldestMeasurementDateTime
-                  .format(DateTimeFormatter.ofPattern(getString(R.string.date_format)))));
+                  .format(dateTimeFormatter)));
             }
             // Forbid user to input end date after the newest measurement in database
             else if (endDateParsed.isAfter(newestMeasurementDateTime.toLocalDate()))
             {
               isInputValid = false;
               et_endDate.setError(getString(R.string.end_date_cant_be_after, newestMeasurementDateTime
-                  .format(DateTimeFormatter.ofPattern(getString(R.string.date_format)))));
+                  .format(dateTimeFormatter)));
             }
   
   
@@ -263,6 +266,8 @@ public class MainActivity extends AppCompatActivity
     // init dependencies
     client = new OkHttpClient();
     mapper = new ObjectMapper();
+  
+    dateTimeFormatter = DateTimeFormatter.ofPattern(getString(R.string.date_format));
     
     resetUser();
     
@@ -305,8 +310,8 @@ public class MainActivity extends AppCompatActivity
     // set up previous valid dates
     if (previousValidStartDateFilter != null && previousValidEndDateFilter != null)
     {
-      et_startDate.setText(previousValidStartDateFilter.format(DateTimeFormatter.ofPattern(getString(R.string.date_format))));
-      et_endDate.setText(previousValidEndDateFilter.format(DateTimeFormatter.ofPattern(getString(R.string.date_format))));
+      et_startDate.setText(previousValidStartDateFilter.format(dateTimeFormatter));
+      et_endDate.setText(previousValidEndDateFilter.format(dateTimeFormatter));
     }
   }
   
@@ -446,8 +451,8 @@ public class MainActivity extends AppCompatActivity
                   previousValidEndDateFilter = newestMeasurementDateTime.toLocalDate();
   
                   // update UI filters start date and end date
-                  et_startDate.setText(oldestMeasurementDateTime.format(DateTimeFormatter.ofPattern(getString(R.string.date_format))));
-                  et_endDate.setText(newestMeasurementDateTime.format(DateTimeFormatter.ofPattern(getString(R.string.date_format))));
+                  et_startDate.setText(oldestMeasurementDateTime.format(dateTimeFormatter));
+                  et_endDate.setText(newestMeasurementDateTime.format(dateTimeFormatter));
                 }
               });
         }
