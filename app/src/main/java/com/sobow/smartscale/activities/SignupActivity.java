@@ -4,7 +4,6 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -91,25 +90,15 @@ public class SignupActivity extends AppCompatActivity
     spinner_sex.setAdapter(dataAdapter);
   
     // buttons on click behavior
-    btn_signup.setOnClickListener(new View.OnClickListener()
-    {
-      @Override
-      public void onClick(View v)
-      {
-        signup();
-      }
-    });
+    btn_signup.setOnClickListener(v -> signup());
   
-    link_login.setOnClickListener(new View.OnClickListener()
-    {
-      @Override
-      public void onClick(View v)
-      {
-        // Finish the registration screen and return to the Login activity
-        finish();
-        overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
-      }
-    });
+    link_login.setOnClickListener(
+        v ->
+        {
+          // Finish the registration screen and return to the Login activity
+          finish();
+          overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
+        });
   }
   
   public void signup()
@@ -133,114 +122,90 @@ public class SignupActivity extends AppCompatActivity
   
   
     new android.os.Handler().postDelayed(
-        new Runnable()
+        () ->
         {
-          public void run()
+          // read input
+          String name = et_userName.getText().toString();
+          String height = et_height.getText().toString();
+          String age = et_age.getText().toString();
+          String email = et_email.getText().toString();
+          String password = et_password.getText().toString();
+          int spinnerChoicePosition = spinner_sex.getSelectedItemPosition();
+          String sex = spinner_sex.getItemAtPosition(spinnerChoicePosition).toString();
+        
+          // initialize UserDto object
+          UserDto newUser = new UserDto();
+          newUser.setUserName(name);
+          newUser.setHeight(Integer.parseInt(height));
+          newUser.setAge(Integer.parseInt(age));
+          newUser.setSex(sex);
+          newUser.setEmail(email);
+          newUser.setPassword(password);
+          newUser.setMeasurementIds(new ArrayList<>());
+        
+          // map object to JSON string
+          String userJsonString = "";
+          try
           {
-            // read input
-            String name = et_userName.getText().toString();
-            String height = et_height.getText().toString();
-            String age = et_age.getText().toString();
-            String email = et_email.getText().toString();
-            String password = et_password.getText().toString();
-            int spinnerChoicePosition = spinner_sex.getSelectedItemPosition();
-            String sex = spinner_sex.getItemAtPosition(spinnerChoicePosition).toString();
-          
-            // initialize UserDto object
-            UserDto newUser = new UserDto();
-            newUser.setUserName(name);
-            newUser.setHeight(Integer.parseInt(height));
-            newUser.setAge(Integer.parseInt(age));
-            newUser.setSex(sex);
-            newUser.setEmail(email);
-            newUser.setPassword(password);
-            newUser.setMeasurementIds(new ArrayList<>());
-            
-            
-            // map object to JSON string
-            String userJsonString = "";
-            try
+            userJsonString = mapper.writeValueAsString(newUser);
+            Log.d(TAG, "Mapped User Json String = " + userJsonString);
+          }
+          catch (JsonProcessingException e)
+          {
+            e.printStackTrace();
+          }
+        
+          // json request body
+          RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), userJsonString);
+        
+          String requestUrl = BASE_URL + USER_CONTROLLER;
+        
+          Request request = new Request.Builder()
+              .url(requestUrl)
+              .post(body)
+              .build();
+        
+        
+          // Execute HTTP requests in background thread
+          client.newCall(request).enqueue(new Callback()
+          {
+            @Override
+            public void onFailure(Call call, IOException e)
             {
-              userJsonString = mapper.writeValueAsString(newUser);
-              Log.d(TAG, "Mapped User Json String = " + userJsonString);
-            }
-            catch (JsonProcessingException e)
-            {
+              SignupActivity.this.runOnUiThread(
+                  () -> Toast.makeText(getBaseContext(), "Connection with server failed", Toast.LENGTH_LONG).show());
+            
               e.printStackTrace();
             }
-  
-            // json request body
-            RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), userJsonString);
-  
-            String requestUrl = BASE_URL + USER_CONTROLLER;
-  
-            Request request = new Request.Builder()
-                .url(requestUrl)
-                .post(body)
-                .build();
-  
-  
-            // Execute HTTP requests in background thread
-            client.newCall(request).enqueue(new Callback()
+          
+            @Override
+            public void onResponse(Call call, Response response) throws IOException
             {
-              @Override
-              public void onFailure(Call call, IOException e)
+              if (response.isSuccessful())
               {
-                SignupActivity.this.runOnUiThread(new Runnable()
-                {
-                  @Override
-                  public void run()
-                  {
-                    Toast.makeText(getBaseContext(), "Connection with server failed", Toast.LENGTH_LONG).show();
-                  }
-                });
-      
-                e.printStackTrace();
+                String jsonString = response.body().string();
+              
+                userFromServer = mapper.readValue(jsonString, UserDto.class);
+                SignupActivity.this.runOnUiThread(() -> onSignupSuccess());
               }
-    
-              @Override
-              public void onResponse(Call call, Response response) throws IOException
+              else if (response.code() == 400)
               {
-                if (response.isSuccessful())
-                {
-                  String jsonString = response.body().string();
-  
-                  userFromServer = mapper.readValue(jsonString, UserDto.class);
-                  SignupActivity.this.runOnUiThread(new Runnable()
-                  {
-                    @Override
-                    public void run()
-                    {
-                      onSignupSuccess();
-                    }
-                  });
-                }
-                else if (response.code() == 400)
-                {
-                  SignupActivity.this.runOnUiThread(new Runnable()
-                  {
-                    @Override
-                    public void run()
+                SignupActivity.this.runOnUiThread(
+                    () ->
                     {
                       et_email.setError("Email already exists in database");
-            
                       onSignupFailed();
-                    }
-                  });
-                }
-                else
-                {
-                  Log.i(TAG, "response code = " + response.code());
-                }
-      
-      
+                    });
               }
-    
-            });
-  
-            btn_signup.setEnabled(true);
-            progressDialog.dismiss();
-          }
+              else
+              {
+                Log.i(TAG, "response code = " + response.code());
+              }
+            }
+          });
+        
+          btn_signup.setEnabled(true);
+          progressDialog.dismiss();
         }, 3000);
   }
   
@@ -283,9 +248,8 @@ public class SignupActivity extends AppCompatActivity
     {
       tv_chooseYourSex.setError(null);
     }
-    
-    
-    // name
+  
+    // user name
     if (! name.matches("[A-Za-z0-9]{3,20}"))
     {
       et_userName.setError("Enter only letters and numbers between 3 to 20 length");
