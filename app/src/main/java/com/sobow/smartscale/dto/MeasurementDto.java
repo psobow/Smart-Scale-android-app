@@ -4,8 +4,8 @@ package com.sobow.smartscale.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.sobow.smartscale.datetimeserialization.LocalDateTimeDeserializer;
-import com.sobow.smartscale.datetimeserialization.LocalDateTimeSerializer;
+import com.sobow.smartscale.serialization.LocalDateTimeDeserializer;
+import com.sobow.smartscale.serialization.LocalDateTimeSerializer;
 
 import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.format.DateTimeFormatter;

@@ -1,4 +1,4 @@
-package com.sobow.smartscale.datetimeserialization;
+package com.sobow.smartscale.serialization;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
