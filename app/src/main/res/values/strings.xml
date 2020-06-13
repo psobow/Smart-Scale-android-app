@@ -32,8 +32,9 @@
     <string name="btn_print_chart">PRINT CHART</string>
     <string name="btn_logout">LOGOUT</string>
     <string name="btn_apply_filters">APPLY FILTERS</string>
-    <string name="start_date_filter">Start date (yyyy-MM-dd)</string>
-    <string name="end_date_filter">End date (yyyy-MM-dd)</string>
+    <string name="start_date_filter_hint">Start date %1$s</string>
+    <string name="end_date_filter_hint">End date %1$s</string>
+    <string name="no_measurements_from_server">You haven\'t added any measurements yet.</string>
 
     <!-- Bluetooth activity -->
     <string name="btn_bluetooth_on_off">BLUETOOTH ON / OFF</string>
@@ -70,12 +71,14 @@
     <string name="something_went_wrong">Something went wrong, response code: %1$d</string>
     <string name="login_failed">Sign in failed</string>
     <string name="sign_up_failed">Sign up failed</string>
+    <string name="filtered_from_to">Filtered from: %1$s to: %2$s</string>
+    <string name="filters_were_not_applied">Filters were not applied</string>
 
     <!-- Progress dialog messages -->
     <string name="authenticating_progress">Authenticating...</string>
     <string name="creating_account_progress">Creating Account...</string>
 
-    <!-- Error messages -->
+    <!-- Error flags -->
     <string name="email_or_password_incorrect">Email or password incorrect!</string>
     <string name="invalid_email">Invalid email address!</string>
     <string name="invalid_password">Invalid password!\nEnter from 3 to 20 characters, no spaces.</string>
@@ -85,6 +88,14 @@
     <string name="invalid_height">Invalid height!\nEnter number of centimetres from 0 to 299.</string>
     <string name="invalid_age">Invalid age!\nEnter number from 0 to 100.</string>
     <string name="passwords_do_not_match">Passwords do not match!</string>
+    <string name="invalid_start_date">Enter valid start date!\nEnter format: %1$s</string>
+    <string name="invalid_end_date">Enter valid end date!\nEnter format: %1$s</string>
+    <string name="start_date_cant_be_before">Start date can\'t be before: %1$s!</string>
+    <string name="start_date_cant_be_after">Start date can\'t be after: %1$s!</string>
+    <string name="end_date_cant_be_before">End date can\'t be before: %1$s!</string>
+    <string name="end_date_cant_be_after">End date can\'t be after: %1$s!</string>
+    <string name="end_date_before_start_date">End date can\'t be before start date!</string>
+    <string name="start_date_after_end_date">Start date can\'t be after end date!</string>
 
 
 </resources>

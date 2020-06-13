@@ -147,12 +147,12 @@ public class MainActivity extends AppCompatActivity
           // Validate input
           String startDate = et_startDate.getText().toString();
           String endDate = et_endDate.getText().toString();
-        
+  
           // reset error messages
           resetFilterErrors();
-        
+  
           boolean isInputValid = true;
-        
+  
           // Validate format and try to parse string to local date
           LocalDate startDateParsed = null;
           try
@@ -162,10 +162,10 @@ public class MainActivity extends AppCompatActivity
           catch (DateTimeParseException e)
           {
             isInputValid = false;
-            et_startDate.setError("Enter valid start date! (" + getString(R.string.date_format) + ")");
+            et_startDate.setError(getString(R.string.invalid_start_date, getString(R.string.date_format)));
           }
-        
-        
+  
+  
           LocalDate endDateParsed = null;
           try
           {
@@ -174,10 +174,10 @@ public class MainActivity extends AppCompatActivity
           catch (DateTimeParseException e)
           {
             isInputValid = false;
-            et_endDate.setError("Enter valid end date! (" + getString(R.string.date_format) + ")");
+            et_endDate.setError(getString(R.string.invalid_end_date, getString(R.string.date_format)));
           }
-        
-        
+  
+  
           if (startDateParsed != null && endDateParsed != null
               && newestMeasurementDateTime != null && oldestMeasurementDateTime != null)
           {
@@ -186,58 +186,61 @@ public class MainActivity extends AppCompatActivity
             if (startDateParsed.isBefore(oldestMeasurementDateTime.toLocalDate()))
             {
               isInputValid = false;
-              et_startDate.setError("Start date can't be before: " + oldestMeasurementDateTime
-                  .format(DateTimeFormatter.ofPattern(getString(R.string.date_format))));
+              et_startDate.setError(getString(R.string.start_date_cant_be_before, oldestMeasurementDateTime
+                  .format(DateTimeFormatter.ofPattern(getString(R.string.date_format)))));
             }
-          
+
             // Forbid user to enter start date after the newest measurement in database
             else if (startDateParsed.isAfter(newestMeasurementDateTime.toLocalDate()))
             {
               isInputValid = false;
-              et_startDate.setError("Start date can't be after: " + newestMeasurementDateTime
-                  .format(DateTimeFormatter.ofPattern(getString(R.string.date_format))));
+              et_startDate.setError(getString(R.string.start_date_cant_be_after, newestMeasurementDateTime
+                  .format(DateTimeFormatter.ofPattern(getString(R.string.date_format)))));
             }
-          
-          
+  
+  
             // END DATE
-            // Forbid user to input end date after the newest measurement in database
-            if (endDateParsed.isAfter(newestMeasurementDateTime.toLocalDate()))
-            {
-              isInputValid = false;
-              et_endDate.setError("End date can't be after: " + newestMeasurementDateTime
-                  .format(DateTimeFormatter.ofPattern(getString(R.string.date_format))));
-            }
             // forbid user to input end date before oldest measurement in database
-            else if (endDateParsed.isBefore(oldestMeasurementDateTime.toLocalDate()))
+            if (endDateParsed.isBefore(oldestMeasurementDateTime.toLocalDate()))
             {
               isInputValid = false;
-              et_endDate.setError("End date can't be before: " + oldestMeasurementDateTime
-                  .format(DateTimeFormatter.ofPattern(getString(R.string.date_format))));
+              et_endDate.setError(getString(R.string.end_date_cant_be_before, oldestMeasurementDateTime
+                  .format(DateTimeFormatter.ofPattern(getString(R.string.date_format)))));
             }
-          
+            // Forbid user to input end date after the newest measurement in database
+            else if (endDateParsed.isAfter(newestMeasurementDateTime.toLocalDate()))
+            {
+              isInputValid = false;
+              et_endDate.setError(getString(R.string.end_date_cant_be_after, newestMeasurementDateTime
+                  .format(DateTimeFormatter.ofPattern(getString(R.string.date_format)))));
+            }
+  
+  
             // in case if start date and end date are between oldest and newest
             // forbid user to input end date before start date and start date after end date
             if (isInputValid && endDateParsed.isBefore(startDateParsed))
             {
               isInputValid = false;
-              et_endDate.setError("End date can't be before start date!");
-              et_startDate.setError("Start date can't be after end date!");
+              et_endDate.setError(getString(R.string.end_date_before_start_date));
+              et_startDate.setError(getString(R.string.start_date_after_end_date));
             }
           }
-        
-        
+  
+  
           if (isInputValid)
           {
-            Toast.makeText(getBaseContext(), "Filtering from: " + startDate + " to: " + endDate, Toast.LENGTH_LONG)
+            Toast.makeText(getBaseContext(),
+                           getString(R.string.filtered_from_to, startDate, endDate),
+                           Toast.LENGTH_LONG)
                  .show();
-          
+  
             previousValidStartDateFilter = startDateParsed;
             previousValidEndDateFilter = endDateParsed;
           }
           else
           {
             setUpPreviousValidDateFilters();
-            Toast.makeText(getBaseContext(), "Filter was not applied", Toast.LENGTH_LONG).show();
+            Toast.makeText(getBaseContext(), R.string.filters_were_not_applied, Toast.LENGTH_LONG).show();
           }
         });
     
@@ -259,6 +262,8 @@ public class MainActivity extends AppCompatActivity
     
     resetOldestAndNewestMeasurement();
   
+    resetFilters();
+    
     resetPreviousValidFilterDates();
   }
   
@@ -300,8 +305,14 @@ public class MainActivity extends AppCompatActivity
   private void resetFilters()
   {
     resetFilterErrors();
+  
+    // reset edit texts
     et_startDate.setText("");
     et_endDate.setText("");
+  
+    // reset hints
+    et_startDate.setHint(getString(R.string.start_date_filter_hint, getString(R.string.date_format)));
+    et_endDate.setHint(getString(R.string.end_date_filter_hint, getString(R.string.date_format)));
   }
   
   private void resetFilterErrors()
@@ -373,7 +384,8 @@ public class MainActivity extends AppCompatActivity
       public void onFailure(Call call, IOException e)
       {
         MainActivity.this.runOnUiThread(
-            () -> Toast.makeText(getBaseContext(), "Connection with server failed", Toast.LENGTH_LONG).show());
+            () -> Toast.makeText(getBaseContext(), getString(R.string.connection_with_server_failed), Toast.LENGTH_LONG)
+                       .show());
         
         e.printStackTrace();
       }
@@ -400,14 +412,11 @@ public class MainActivity extends AppCompatActivity
                 
                 if (measurements.isEmpty())
                 {
-                  stringListWithMeasurements.add("You haven't added any measurements yet.");
-          
+                  stringListWithMeasurements.add(getString(R.string.no_measurements_from_server));
+                  
                   resetOldestAndNewestMeasurement();
   
                   resetPreviousValidFilterDates();
-          
-                  // update UI filters start date and end date
-  
                 }
                 else
                 {
@@ -415,19 +424,19 @@ public class MainActivity extends AppCompatActivity
                   {
                     stringListWithMeasurements.add(measurements.get(i).toString());
                   }
-          
+  
                   // update list view
                   arrayAdapter.notifyDataSetChanged();
                   lv_measurements.invalidateViews();
-          
+  
                   // update oldest and newest date measurement
                   oldestMeasurementDateTime = measurements.get(measurements.size() - 1).getLocalDateTime();
                   newestMeasurementDateTime = measurements.get(0).getLocalDateTime();
-          
+  
                   // set up previous valid dates
                   previousValidStartDateFilter = oldestMeasurementDateTime.toLocalDate();
                   previousValidEndDateFilter = newestMeasurementDateTime.toLocalDate();
-          
+  
                   // update UI filters start date and end date
                   et_startDate.setText(oldestMeasurementDateTime.format(DateTimeFormatter.ofPattern(getString(R.string.date_format))));
                   et_endDate.setText(newestMeasurementDateTime.format(DateTimeFormatter.ofPattern(getString(R.string.date_format))));
@@ -436,7 +445,7 @@ public class MainActivity extends AppCompatActivity
         }
         else
         {
-          Toast.makeText(getBaseContext(), "Something went wrong response code: " + response.code(), Toast.LENGTH_LONG)
+          Toast.makeText(getBaseContext(), getString(R.string.something_went_wrong, response.code()), Toast.LENGTH_LONG)
                .show();
           Log.d(TAG, "response code = " + response.code());
         }

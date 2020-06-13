@@ -81,7 +81,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:inputType="date"
-                            android:hint="@string/start_date_filter" />
+                            android:hint="@string/start_date_filter_hint" />
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
 
@@ -103,7 +103,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:inputType="date"
-                            android:hint="@string/end_date_filter" />
+                            android:hint="@string/end_date_filter_hint" />
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
         </LinearLayout>
