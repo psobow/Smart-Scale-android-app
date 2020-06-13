@@ -47,6 +47,7 @@ import okhttp3.Response;
 
 // TODO: implement functionality to remove given measurement from the list by pressing it. display confirmation dialog before removing
 // TODO: fix issue with close application after screen orientation change
+// TODO: implement feature for sending request for validation constraints on each field. Constraints will be stored in one place then.
 
 public class MainActivity extends AppCompatActivity
 {

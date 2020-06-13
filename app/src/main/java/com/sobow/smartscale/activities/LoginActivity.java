@@ -28,7 +28,7 @@ import okhttp3.Response;
 public class LoginActivity extends AppCompatActivity
 {
   private static final String TAG = "LoginActivity";
-  private static final int REQUEST_SIGNUP = 0;
+  private static final int REQUEST_SIGN_UP = 0;
   
   // TODO: move it to config class
   private static final String BASE_URL = "http://10.0.2.2:8080/v1";
@@ -63,7 +63,7 @@ public class LoginActivity extends AppCompatActivity
         {
           // Start the SignUp activity
           Intent newIntent = new Intent(getApplicationContext(), SignUpActivity.class);
-          startActivityForResult(newIntent, REQUEST_SIGNUP);
+          startActivityForResult(newIntent, REQUEST_SIGN_UP);
           overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
         });
   }
@@ -153,8 +153,8 @@ public class LoginActivity extends AppCompatActivity
   
     // clear focus
     getWindow().getDecorView().clearFocus();
-    
-    if (requestCode == REQUEST_SIGNUP)
+  
+    if (requestCode == REQUEST_SIGN_UP)
     {
       if (resultCode == RESULT_OK)
       {
