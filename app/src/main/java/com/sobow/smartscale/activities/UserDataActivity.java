@@ -16,5 +16,6 @@ public class UserDataActivity extends AppCompatActivity
     setContentView(R.layout.activity_userdata);
     
     // TODO: implement logic here
+    // TODO: fix hard coded strings in layout of this view
   }
 }
