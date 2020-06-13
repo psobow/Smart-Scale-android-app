@@ -150,6 +150,10 @@ public class LoginActivity extends AppCompatActivity
   protected void onActivityResult(int requestCode, int resultCode, Intent intent)
   {
     super.onActivityResult(requestCode, resultCode, intent);
+  
+    // clear focus
+    getWindow().getDecorView().clearFocus();
+    
     if (requestCode == REQUEST_SIGNUP)
     {
       if (resultCode == RESULT_OK)
