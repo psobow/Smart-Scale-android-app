@@ -46,6 +46,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 // TODO: implement functionality to remove given measurement from the list by pressing it. display confirmation dialog before removing
+// TODO: fix issue with close application after screen orientation change
 
 public class MainActivity extends AppCompatActivity
 {
