@@ -20,6 +20,7 @@
                 android:layout_height="152dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="24dp"
+                android:contentDescription="@string/application_logo"
                 android:src="@drawable/logo" />
 
         <Button
@@ -29,7 +30,7 @@
                 android:layout_marginTop="24dp"
                 android:layout_marginBottom="24dp"
                 android:padding="12dp"
-                android:text="BLUETOOTH ON / OFF " />
+                android:text="@string/btn_bluetooth_on_off" />
 
 
         <Button
@@ -39,7 +40,7 @@
                 android:layout_marginTop="0dp"
                 android:layout_marginBottom="24dp"
                 android:padding="12dp"
-                android:text="enable visibility" />
+                android:text="@string/btn_enable_visibility" />
 
         <Button
                 android:id="@+id/btn_discoverDevices"
@@ -48,13 +49,13 @@
                 android:layout_marginTop="0dp"
                 android:layout_marginBottom="24dp"
                 android:padding="12dp"
-                android:text="Discover devices" />
+                android:text="@string/btn_discover_devices" />
 
         <TextView
                 android:id="@+id/tv_discoveredDevices"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Discovered devices:"
+                android:text="@string/discovered_devices"
                 android:textSize="24sp"
                 android:textStyle="bold" />
 
@@ -71,14 +72,14 @@
                 android:layout_marginTop="24dp"
                 android:layout_marginBottom="24dp"
                 android:padding="12dp"
-                android:text="Start Connection" />
+                android:text="@string/btn_start_connection" />
 
 
         <TextView
                 android:id="@+id/tv_dataFromTheDevice"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Data from the device:"
+                android:text="@string/data_from_the_device"
                 android:textSize="24sp"
                 android:textStyle="bold" />
 
@@ -89,7 +90,7 @@
                 android:layout_marginTop="24dp"
                 android:layout_marginBottom="24dp"
                 android:padding="12dp"
-                android:text="Save data" />
+                android:text="@string/btn_save_data" />
 
 
         <Button
@@ -99,7 +100,7 @@
                 android:layout_marginTop="0dp"
                 android:layout_marginBottom="24dp"
                 android:padding="12dp"
-                android:text="GO BACK TO MAIN MENU" />
+                android:text="@string/btn_go_back_to_main_menu" />
 
         <Button
                 android:id="@+id/btn_simulateScale"
@@ -108,7 +109,7 @@
                 android:layout_marginTop="0dp"
                 android:layout_marginBottom="24dp"
                 android:padding="12dp"
-                android:text="SIMULATE SCALE" />
+                android:text="@string/btn_simulate_scale" />
 
 
     </LinearLayout>

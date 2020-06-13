@@ -178,24 +178,24 @@ public class MainActivity extends AppCompatActivity
         LocalDate startDateParsed = null;
         try
         {
-          startDateParsed = LocalDate.parse(startDate, DateTimeFormatter.ofPattern(getString(R.string.dateFormat)));
+          startDateParsed = LocalDate.parse(startDate, DateTimeFormatter.ofPattern(getString(R.string.date_format)));
         }
         catch (DateTimeParseException e)
         {
           isInputValid = false;
-          et_startDate.setError("Enter valid start date! (" + getString(R.string.dateFormat) + ")");
+          et_startDate.setError("Enter valid start date! (" + getString(R.string.date_format) + ")");
         }
   
   
         LocalDate endDateParsed = null;
         try
         {
-          endDateParsed = LocalDate.parse(endDate, DateTimeFormatter.ofPattern(getString(R.string.dateFormat)));
+          endDateParsed = LocalDate.parse(endDate, DateTimeFormatter.ofPattern(getString(R.string.date_format)));
         }
         catch (DateTimeParseException e)
         {
           isInputValid = false;
-          et_endDate.setError("Enter valid end date! (" + getString(R.string.dateFormat) + ")");
+          et_endDate.setError("Enter valid end date! (" + getString(R.string.date_format) + ")");
         }
   
         // START DATE
@@ -205,7 +205,7 @@ public class MainActivity extends AppCompatActivity
         {
           isInputValid = false;
           et_startDate.setError("Start date can't be before: " + oldestMeasurementDateTime.format(
-              DateTimeFormatter.ofPattern(getString(R.string.dateFormat))));
+              DateTimeFormatter.ofPattern(getString(R.string.date_format))));
         }
 
         // Forbid user to enter start date after the newest measurement in database
@@ -215,7 +215,7 @@ public class MainActivity extends AppCompatActivity
   
           // set up error message
           et_startDate.setError("Start date can't be after: " + newestMeasurementDateTime.format(
-              DateTimeFormatter.ofPattern(getString(R.string.dateFormat))));
+              DateTimeFormatter.ofPattern(getString(R.string.date_format))));
         }
   
   
@@ -227,14 +227,14 @@ public class MainActivity extends AppCompatActivity
           isInputValid = false;
   
           et_endDate.setError("End date can't be after: " + newestMeasurementDateTime.format(
-              DateTimeFormatter.ofPattern(getString(R.string.dateFormat))));
+              DateTimeFormatter.ofPattern(getString(R.string.date_format))));
         }
         // forbid user to input end date before oldest measurement in database
         else if (endDateParsed != null && endDateParsed.isBefore(oldestMeasurementDateTime.toLocalDate()))
         {
           isInputValid = false;
           et_endDate.setError("End date can't be before: " + oldestMeasurementDateTime.format(
-              DateTimeFormatter.ofPattern(getString(R.string.dateFormat))));
+              DateTimeFormatter.ofPattern(getString(R.string.date_format))));
         }
   
         // IN CASE if start date and end date are between oldest and newest measurement check if start date is not after end date
@@ -251,7 +251,7 @@ public class MainActivity extends AppCompatActivity
         
         if (isInputValid)
         {
-          Toast.makeText(getBaseContext(), "Filtering measurements from: " + startDate + " to: " + endDate,
+          Toast.makeText(getBaseContext(), "Filtering from: " + startDate + " to: " + endDate,
                          Toast.LENGTH_LONG).show();
   
           previousValidStartDate = startDateParsed;
@@ -272,9 +272,9 @@ public class MainActivity extends AppCompatActivity
   {
     // set up previous valid dates
     et_startDate.setText(previousValidStartDate.format(
-        DateTimeFormatter.ofPattern(getString(R.string.dateFormat))));
+        DateTimeFormatter.ofPattern(getString(R.string.date_format))));
     et_endDate.setText(previousValidEndDate.format(
-        DateTimeFormatter.ofPattern(getString(R.string.dateFormat))));
+        DateTimeFormatter.ofPattern(getString(R.string.date_format))));
   }
   
   @Override
@@ -287,8 +287,7 @@ public class MainActivity extends AppCompatActivity
       if (resultCode == Activity.RESULT_OK)
       {
         user = (UserDto) intent.getSerializableExtra("user");
-        tv_yourMeasurements.setText("Welcome " + user.getUserName() + "!\nYour measurements:");
-  
+        tv_yourMeasurements.setText(getString(R.string.welcome_username_your_measurements, user.getUserName()));
         sentPostForMeasurementsAndUpdateListView();
       }
       
@@ -317,7 +316,7 @@ public class MainActivity extends AppCompatActivity
     }
     
     // create json request body
-    RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), userJsonString);
+    RequestBody body = RequestBody.create(MediaType.parse(getString(R.string.json_media_type)), userJsonString);
     
     
     // concat URL
@@ -385,11 +384,11 @@ public class MainActivity extends AppCompatActivity
               {
                 oldestMeasurementDateTime = measurements.get(measurements.size() - 1).getLocalDateTime();
                 et_startDate.setText(oldestMeasurementDateTime.format(
-                    DateTimeFormatter.ofPattern(getString(R.string.dateFormat))));
+                    DateTimeFormatter.ofPattern(getString(R.string.date_format))));
   
                 newestMeasurementDateTime = measurements.get(0).getLocalDateTime();
                 et_endDate.setText(newestMeasurementDateTime.format(
-                    DateTimeFormatter.ofPattern(getString(R.string.dateFormat))));
+                    DateTimeFormatter.ofPattern(getString(R.string.date_format))));
   
                 et_startDate.setError(null);
                 et_endDate.setError(null);
@@ -404,6 +403,17 @@ public class MainActivity extends AppCompatActivity
     });
   }
   
+  // comparator for sorting measurements by date time
+  private class CustomComparator implements Comparator<MeasurementDto>
+  {
+    @Override
+    public int compare(MeasurementDto o1, MeasurementDto o2)
+    {
+      return o2.getLocalDateTime().compareTo(o1.getLocalDateTime());
+    }
+  }
+  
+  // options menu
   @Override
   public boolean onCreateOptionsMenu(Menu menu)
   {
@@ -429,13 +439,5 @@ public class MainActivity extends AppCompatActivity
     return super.onOptionsItemSelected(item);
   }
   
-  // comparator for sorting measurements by date time
-  private class CustomComparator implements Comparator<MeasurementDto>
-  {
-    @Override
-    public int compare(MeasurementDto o1, MeasurementDto o2)
-    {
-      return o2.getLocalDateTime().compareTo(o1.getLocalDateTime());
-    }
-  }
+  
 }

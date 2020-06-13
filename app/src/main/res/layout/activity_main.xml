@@ -19,6 +19,7 @@
                 android:layout_height="152dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="24dp"
+                android:contentDescription="@string/application_logo"
                 android:src="@drawable/logo" />
 
         <Button
@@ -28,7 +29,7 @@
                 android:layout_marginTop="24dp"
                 android:layout_marginBottom="24dp"
                 android:padding="12dp"
-                android:text="new measurement" />
+                android:text="@string/btn_new_measurement" />
 
         <Button
                 android:id="@+id/btn_userData"
@@ -37,7 +38,7 @@
                 android:layout_marginTop="0dp"
                 android:layout_marginBottom="24dp"
                 android:padding="12dp"
-                android:text="user data" />
+                android:text="@string/btn_user_data" />
 
         <Button
                 android:id="@+id/btn_printChart"
@@ -46,7 +47,7 @@
                 android:layout_marginTop="0dp"
                 android:layout_marginBottom="24dp"
                 android:padding="12dp"
-                android:text="print chart" />
+                android:text="@string/btn_print_chart" />
 
         <Button
                 android:id="@+id/btn_logout"
@@ -55,13 +56,13 @@
                 android:layout_marginTop="0dp"
                 android:layout_marginBottom="24dp"
                 android:padding="12dp"
-                android:text="logout" />
+                android:text="@string/btn_logout" />
 
         <TextView
                 android:id="@+id/tv_yourMeasurements"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Welcome username!\nYour measurements:"
+                android:text="@string/welcome_username_your_measurements"
                 android:textSize="24sp"
                 android:textStyle="bold" />
 
@@ -69,7 +70,8 @@
         <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:baselineAligned="false">
 
             <LinearLayout
                     android:layout_width="wrap_content"
@@ -82,14 +84,14 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:layout_marginBottom="8dp"
-                        android:layout_marginRight="8dp">
+                        android:layout_marginEnd="8dp">
 
                     <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/et_startDate"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:inputType="date"
-                            android:hint="Start date (yyyy-MM-dd)" />
+                            android:hint="@string/start_date_filter" />
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
 
@@ -104,14 +106,14 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:layout_marginBottom="8dp"
-                        android:layout_marginLeft="8dp">
+                        android:layout_marginStart="8dp">
 
                     <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/et_endDate"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:inputType="date"
-                            android:hint="End date (yyyy-MM-dd)" />
+                            android:hint="@string/end_date_filter" />
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
         </LinearLayout>
@@ -123,7 +125,7 @@
                 android:layout_marginTop="0dp"
                 android:layout_marginBottom="24dp"
                 android:padding="12dp"
-                android:text="apply filters" />
+                android:text="@string/btn_apply_filters" />
 
 
         <ListView

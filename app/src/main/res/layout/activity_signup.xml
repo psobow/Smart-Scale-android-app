@@ -20,8 +20,8 @@
                 android:layout_height="152dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="24dp"
-                android:src="@drawable/logo"
-                android:contentDescription="Application Logo" />
+                android:contentDescription="@string/application_logo"
+                android:src="@drawable/logo" />
 
         <!--  Email Label -->
         <com.google.android.material.textfield.TextInputLayout
@@ -34,8 +34,8 @@
                     android:id="@+id/et_email"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textEmailAddress"
-                    android:hint="Email" />
+                    android:hint="@string/e_mail"
+                    android:inputType="textEmailAddress" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Password Label -->
@@ -50,8 +50,8 @@
                     android:id="@+id/et_password"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textPassword"
-                    android:hint="Password" />
+                    android:hint="@string/password"
+                    android:inputType="textPassword" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Password Re-enter Label -->
@@ -67,7 +67,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textPassword"
-                    android:hint="Re-enter Password" />
+                    android:hint="@string/re_enter_password" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Name Label -->
@@ -82,7 +82,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textPersonName"
-                android:hint="User name" />
+                    android:hint="@string/user_name" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Age -->
@@ -96,7 +96,7 @@
                     android:id="@+id/et_age"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Age"
+                    android:hint="@string/age"
                     android:inputType="number" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -111,7 +111,7 @@
                     android:id="@+id/et_height"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Height (CM)"
+                    android:hint="@string/height_cm"
                     android:inputType="number" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -123,18 +123,18 @@
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp">
             <TextView
-                    android:layout_marginLeft="5dp"
                     android:id="@+id/tv_chooseYourSex"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:gravity="left"
+                    android:gravity="start"
                     android:focusable="true"
                     android:focusableInTouchMode="true"
                     android:clickable="true"
-                    android:text="Choose your sex:"
-                    android:textSize="20dp"
-                    android:textStyle="bold">
+                    android:text="@string/choose_your_sex"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="5dp">
 
             </TextView>
             <!-- Spinner -->
@@ -156,7 +156,7 @@
             android:layout_marginTop="24dp"
             android:layout_marginBottom="24dp"
             android:padding="12dp"
-            android:text="Create Account"/>
+                android:text="@string/btn_create_account" />
 
         <TextView
                 android:id="@+id/link_login"
@@ -164,7 +164,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="24dp"
                 android:gravity="center"
-                android:text="Already a member? Login"
+                android:text="@string/already_a_member_login"
                 android:textSize="24sp" />
 
     </LinearLayout>
