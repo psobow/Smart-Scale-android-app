@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sobow.smartscale.R;
+import com.sobow.smartscale.config.WebConfig;
 import com.sobow.smartscale.dto.UserDto;
 
 import java.io.IOException;
@@ -36,11 +37,9 @@ public class SignUpActivity extends AppCompatActivity
 {
   private static final String TAG = "SignupActivity";
   
-  private static final String BASE_URL = "http://10.0.2.2:8080/v1";
-  private static final String USER_CONTROLLER = "/user";
-  
   private OkHttpClient client;
   private ObjectMapper mapper;
+  private WebConfig webConfig;
   
   // GUI components
   @BindView(R.id.et_userName)
@@ -89,6 +88,7 @@ public class SignUpActivity extends AppCompatActivity
   {
     client = new OkHttpClient();
     mapper = new ObjectMapper();
+    webConfig = new WebConfig();
     
     // Spinner values
     List<String> spinnerValues = new ArrayList<>();
@@ -120,7 +120,9 @@ public class SignUpActivity extends AppCompatActivity
     final ProgressDialog progressDialog = new ProgressDialog(SignUpActivity.this,
                                                              R.style.AppTheme_Dark_Dialog);
     progressDialog.setIndeterminate(true);
-    progressDialog.setMessage(getString(R.string.progress_creating_account));
+    progressDialog.setTitle(getString(R.string.progress_creating_account));
+    progressDialog.setMessage(getString(R.string.progress_please_wait));
+    progressDialog.setCancelable(false);
     progressDialog.show();
   
   
@@ -160,8 +162,8 @@ public class SignUpActivity extends AppCompatActivity
         
           // json request body
           RequestBody body = RequestBody.create(MediaType.parse(getString(R.string.json_media_type)), userJsonString);
-        
-          String requestUrl = BASE_URL + USER_CONTROLLER;
+  
+          String requestUrl = webConfig.getUserControllerURL();
         
           Request request = new Request.Builder()
               .url(requestUrl)

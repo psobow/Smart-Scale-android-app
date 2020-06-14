@@ -12,6 +12,8 @@ import android.util.Log;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.sobow.smartscale.R;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -235,10 +237,15 @@ public class BluetoothConnectionService
   public void startClient(BluetoothDevice device, UUID uuid)
   {
     Log.d(TAG, "startClient: Started.");
+  
+    //init progress dialog
+    mProgressDialog = new ProgressDialog(mContext, R.style.AppTheme_Dark_Dialog);
+    mProgressDialog.setIndeterminate(true);
+    mProgressDialog.setTitle(mContext.getString(R.string.connecting_bluetooth));
+    mProgressDialog.setMessage(mContext.getString(R.string.progress_please_wait));
+    mProgressDialog.setCancelable(false);
+    mProgressDialog.show();
     
-    //initprogress dialog
-    mProgressDialog = ProgressDialog.show(mContext, "Connecting Bluetooth"
-        , "Please Wait...", true);
     
     mConnectThread = new ConnectThread(device, uuid);
     mConnectThread.start();

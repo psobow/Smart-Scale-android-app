@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.material.textfield.TextInputLayout;
 import com.jakewharton.threetenabp.AndroidThreeTen;
 import com.sobow.smartscale.R;
+import com.sobow.smartscale.config.WebConfig;
 import com.sobow.smartscale.dto.MeasurementDto;
 import com.sobow.smartscale.dto.UserDto;
 
@@ -60,13 +61,10 @@ public class MainActivity extends AppCompatActivity
   private static final int REQUEST_BLUETOOTH = 1;
   private static final int REQUEST_USERDATA = 2;
   
-  // API END POINT TODO: move this to some config class
-  private static final String BASE_URL = "http://10.0.2.2:8080/v1";
-  private static final String MEASUREMENT_CONTROLLER = "/measurement";
-  
   // dependencies
   private OkHttpClient client;
   private ObjectMapper mapper;
+  private WebConfig webConfig;
   
   // date format
   DateTimeFormatter dateTimeFormatter;
@@ -124,6 +122,7 @@ public class MainActivity extends AppCompatActivity
     // init dependencies
     client = new OkHttpClient();
     mapper = new ObjectMapper();
+    webConfig = new WebConfig();
     
     dateTimeFormatter = DateTimeFormatter.ofPattern(getString(R.string.date_format));
   
@@ -172,6 +171,7 @@ public class MainActivity extends AppCompatActivity
     ButterKnife.bind(this);
     AndroidThreeTen.init(this);
   
+  
     init();
     
     // Start login activity for result if user is not logged in
@@ -180,6 +180,13 @@ public class MainActivity extends AppCompatActivity
       Intent newIntent = new Intent(getApplicationContext(), LoginActivity.class);
       startActivityForResult(newIntent, REQUEST_LOGIN);
     }
+  
+    // lv measurements on click behavior
+    lv_measurements.setOnItemClickListener(
+        (parent, view, position, id) ->
+        {
+        
+        });
     
     // buttons on click behavior
     btn_newMeasurement.setOnClickListener(
@@ -448,7 +455,7 @@ public class MainActivity extends AppCompatActivity
     RequestBody body = RequestBody.create(MediaType.parse(getString(R.string.json_media_type)), userJsonString);
     
     // concat URL
-    String requestUrl = BASE_URL + MEASUREMENT_CONTROLLER;
+    String requestUrl = webConfig.getMeasurementControllerURL();
     
     // build post request with body
     Request request = new Request.Builder()

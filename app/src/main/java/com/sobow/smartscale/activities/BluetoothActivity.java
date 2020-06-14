@@ -27,6 +27,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sobow.smartscale.R;
 import com.sobow.smartscale.activities.adapter.DeviceListAdapter;
+import com.sobow.smartscale.config.WebConfig;
 import com.sobow.smartscale.dto.MeasurementDto;
 import com.sobow.smartscale.dto.UserDto;
 import com.sobow.smartscale.services.BluetoothConnectionService;
@@ -47,13 +48,11 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+// TODO: test app. and prevent crashing !
+
 public class BluetoothActivity extends AppCompatActivity implements AdapterView.OnItemClickListener
 {
   private static final String TAG = "BluetoothActivity";
-  
-  private static final String BASE_URL = "http://10.0.2.2:8080/v1";
-  private static final String MEASUREMENT_CONTROLLER = "/measurement";
-  private static final String CREATE_ENDPOINT = "/create";
   
   private BluetoothAdapter bluetoothAdapter;
   private BluetoothConnectionService bluetoothConnectionService;
@@ -67,6 +66,7 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
   
   private ObjectMapper mapper = new ObjectMapper();
   private OkHttpClient client = new OkHttpClient();
+  private WebConfig webConfig = new WebConfig();
   
   // GUI components
   @BindView(R.id.lv_devices)
@@ -206,7 +206,7 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
     public void onReceive(Context context, Intent intent)
     {
       userWeight = intent.getStringExtra("theMessage");
-      et_weight.setText(getString(R.string.received_weight, userWeight));
+      et_weight.setText(userWeight);
     }
   };
   
@@ -291,42 +291,57 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
         v ->
         {
           Log.d(TAG, "onClick: making device discoverable for 300 seconds.");
-        
+          Toast.makeText(getBaseContext(), R.string.device_discoverable_for_300_seconds, Toast.LENGTH_LONG).show();
           Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
           discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
-        
+  
           IntentFilter IntentFilter = new IntentFilter(bluetoothAdapter.ACTION_SCAN_MODE_CHANGED);
           registerReceiver(mBroadcastReceiver2, IntentFilter);
         });
   
     btn_discoverDevices.setOnClickListener(
         new View.OnClickListener()
-    {
-      @RequiresApi(api = Build.VERSION_CODES.M)
-      @Override
-      public void onClick(View v)
-      {
-        Log.d(TAG, "onClick: looking for unpaired devices.");
-        bluetoothDevices.clear();
-        if (bluetoothAdapter.isDiscovering())
         {
-          bluetoothAdapter.cancelDiscovery();
-          Log.d(TAG, "onClick: canceling discovery.");
-  
-          bluetoothAdapter.startDiscovery();
-          IntentFilter discoverDevicesIntent = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-          registerReceiver(mBroadcastReceiver3, discoverDevicesIntent);
-        }
-        else
-        {
-          checkBTPermissions();
-  
-          bluetoothAdapter.startDiscovery();
-          IntentFilter discoverDevicesIntent = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-          registerReceiver(mBroadcastReceiver3, discoverDevicesIntent);
-        }
-      }
-    });
+          @RequiresApi(api = Build.VERSION_CODES.M)
+          @Override
+          public void onClick(View v)
+          {
+            btn_discoverDevices.setEnabled(false);
+            Log.d(TAG, "onClick: looking for unpaired devices.");
+            bluetoothDevices.clear();
+            ProgressDialog progressDialog = new ProgressDialog(BluetoothActivity.this, R.style.AppTheme_Dark_Dialog);
+            progressDialog.setIndeterminate(true);
+            progressDialog.setTitle(getString(R.string.progress_discovering_devices));
+            progressDialog.setMessage(getString(R.string.progress_please_wait));
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+    
+            new android.os.Handler().postDelayed(
+                () ->
+                {
+                  if (bluetoothAdapter.isDiscovering())
+                  {
+                    bluetoothAdapter.cancelDiscovery();
+                    Log.d(TAG, "onClick: canceling discovery.");
+            
+                    bluetoothAdapter.startDiscovery();
+                    IntentFilter discoverDevicesIntent = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+                    registerReceiver(mBroadcastReceiver3, discoverDevicesIntent);
+                  }
+                  else
+                  {
+                    checkBTPermissions();
+            
+                    bluetoothAdapter.startDiscovery();
+                    IntentFilter discoverDevicesIntent = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+                    registerReceiver(mBroadcastReceiver3, discoverDevicesIntent);
+                  }
+          
+                  progressDialog.dismiss();
+                  btn_discoverDevices.setEnabled(true);
+                }, 3000);
+          }
+        });
     
     lv_devices.setOnItemClickListener(BluetoothActivity.this);
   
@@ -337,6 +352,8 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
         v ->
         {
           boolean isValidWeight = true;
+  
+  
           try
           {
             String inputWeight = et_weight.getText().toString();
@@ -346,18 +363,20 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
           {
             isValidWeight = false;
           }
-        
-        
+  
+  
           if (isValidWeight)
           {
             btn_saveData.setEnabled(false);
-          
+  
             final ProgressDialog progressDialog = new ProgressDialog(BluetoothActivity.this,
                                                                      R.style.AppTheme_Dark_Dialog);
             progressDialog.setIndeterminate(true);
-            progressDialog.setMessage(getString(R.string.progress_sending_data));
+            progressDialog.setTitle(getString(R.string.progress_sending_data));
+            progressDialog.setMessage(getString(R.string.progress_please_wait));
+            progressDialog.setCancelable(false);
             progressDialog.show();
-          
+  
             new android.os.Handler().postDelayed(
                 () ->
                 {
@@ -370,7 +389,7 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
                   double height = user.getHeight() / 100.0;
                   newMeasurement.setBMI(weight / (height * height));
                   newMeasurement.setUserId(user.getIdFromServer());
-          
+  
                   // map object to JSON string
                   String measurementJsonString = "";
                   try
@@ -382,19 +401,18 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
                   {
                     e.printStackTrace();
                   }
-          
+  
                   // json request body
                   RequestBody body = RequestBody.create(MediaType.parse(getString(R.string.json_media_type)),
                                                         measurementJsonString);
   
-                  // concat URL
-                  String requestUrl = BASE_URL + MEASUREMENT_CONTROLLER + CREATE_ENDPOINT;
-          
+                  String requestUrl = webConfig.getCreateMeasurementURL();
+                  
                   Request request = new Request.Builder()
                       .url(requestUrl)
                       .post(body)
                       .build();
-          
+  
                   // Execute HTTP requests in background thread
                   client.newCall(request).enqueue(new Callback()
                   {
@@ -411,10 +429,10 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
                                          Toast.LENGTH_LONG).show();
                         }
                       });
-              
+  
                       e.printStackTrace();
                     }
-            
+  
                     @Override
                     public void onResponse(Call call, Response response) throws IOException
                     {
@@ -444,7 +462,7 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
           {
             Toast.makeText(getBaseContext(), R.string.wait_for_data_or_insert, Toast.LENGTH_LONG).show();
           }
-        
+  
         });
   
   

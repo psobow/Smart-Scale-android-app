@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sobow.smartscale.R;
+import com.sobow.smartscale.config.WebConfig;
 import com.sobow.smartscale.dto.UserDto;
 
 import java.io.IOException;
@@ -32,12 +33,10 @@ public class LoginActivity extends AppCompatActivity
   private static final String TAG = "LoginActivity";
   private static final int REQUEST_SIGN_UP = 0;
   
-  // TODO: move it to config class
-  private static final String BASE_URL = "http://10.0.2.2:8080/v1";
-  private static final String USER_CONTROLLER = "/user";
-  
+  // dependencies
   private OkHttpClient client;
   private ObjectMapper mapper;
+  private WebConfig webConfig;
   
   // GUI components
   @BindView(R.id.et_email)
@@ -54,6 +53,7 @@ public class LoginActivity extends AppCompatActivity
   {
     client = new OkHttpClient();
     mapper = new ObjectMapper();
+    webConfig = new WebConfig();
   }
   
   
@@ -94,7 +94,9 @@ public class LoginActivity extends AppCompatActivity
   
     final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this, R.style.AppTheme_Dark_Dialog);
     progressDialog.setIndeterminate(true);
-    progressDialog.setMessage(getString(R.string.progress_authenticating));
+    progressDialog.setTitle(getString(R.string.progress_authenticating));
+    progressDialog.setMessage(getString(R.string.progress_please_wait));
+    progressDialog.setCancelable(false);
     progressDialog.show();
   
   
@@ -104,8 +106,9 @@ public class LoginActivity extends AppCompatActivity
           String emailInput = et_email.getText().toString();
           String passwordInput = et_password.getText().toString();
   
-          String requestUrl = BASE_URL + USER_CONTROLLER + "/" + emailInput + "/" + passwordInput;
+          String requestUrl = webConfig.getUserControllerURL() + "/" + emailInput + "/" + passwordInput;
           Request request = new Request.Builder().url(requestUrl).build();
+  
   
           // Execute HTTP requests in background thread
           client.newCall(request).enqueue(new Callback()
@@ -114,8 +117,15 @@ public class LoginActivity extends AppCompatActivity
             public void onFailure(Call call, IOException e)
             {
               LoginActivity.this.runOnUiThread(
-                  () -> Toast.makeText(getBaseContext(), R.string.connection_with_server_failed, Toast.LENGTH_LONG)
-                             .show());
+                  () ->
+                  {
+                    progressDialog.setMessage(getString(R.string.connection_with_server_failed));
+      
+      
+                    Toast.makeText(getBaseContext(), R.string.connection_with_server_failed, Toast.LENGTH_LONG)
+                         .show();
+                  });
+              
             }
   
             @Override

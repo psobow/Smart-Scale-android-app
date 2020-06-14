@@ -80,11 +80,14 @@
     <string name="enabling_bluetooth">Enabling Bluetooth.</string>
     <string name="disabling_bluetooth">Disabling Bluetooth.</string>
     <string name="no_data_to_filter">No data to filter. Create one!</string>
+    <string name="device_discoverable_for_300_seconds">Making device discoverable for 300 seconds.</string>
 
     <!-- Progress dialog messages -->
-    <string name="progress_authenticating">Authenticating...</string>
-    <string name="progress_creating_account">Creating Account...</string>
-    <string name="progress_sending_data">Sending data to server...</string>
+    <string name="progress_authenticating">Authenticating</string>
+    <string name="progress_creating_account">Creating Account</string>
+    <string name="progress_sending_data">Sending data to server</string>
+    <string name="progress_discovering_devices">Discovering devices</string>
+    <string name="progress_please_wait">Please wait...</string>
 
     <!-- Error flags -->
     <string name="email_or_password_incorrect">Email or password incorrect!</string>
@@ -104,6 +107,7 @@
     <string name="end_date_cant_be_after">End date can\'t be after: %1$s!</string>
     <string name="end_date_before_start_date">End date can\'t be before start date!</string>
     <string name="start_date_after_end_date">Start date can\'t be after end date!</string>
+    <string name="connecting_bluetooth">Connecting Bluetooth</string>
 
 
 </resources>
