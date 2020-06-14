@@ -36,11 +36,11 @@ public class SignUpActivity extends AppCompatActivity
 {
   private static final String TAG = "SignupActivity";
   
-  private final String BASE_URL = "http://10.0.2.2:8080/v1";
-  private final String USER_CONTROLLER = "/user";
+  private static final String BASE_URL = "http://10.0.2.2:8080/v1";
+  private static final String USER_CONTROLLER = "/user";
   
-  private OkHttpClient client = new OkHttpClient();
-  private ObjectMapper mapper = new ObjectMapper();
+  private OkHttpClient client;
+  private ObjectMapper mapper;
   
   // GUI components
   @BindView(R.id.et_userName)
@@ -70,19 +70,8 @@ public class SignUpActivity extends AppCompatActivity
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_signup);
     ButterKnife.bind(this);
-    
-    // Spinner values
-    List<String> spinnerValues = new ArrayList<>();
-    spinnerValues.add(getString(R.string.spinner_default_choice));
-    spinnerValues.add(getString(R.string.spinner_male_choice));
-    spinnerValues.add(getString(R.string.spinner_female_choice));
-    
-    // Create an ArrayAdapter using the string array and a default spinner layout
-    ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, spinnerValues);
-    // Specify the layout to use when the list of choices appears
-    dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-    // Apply the adapter to the spinner
-    spinner_sex.setAdapter(dataAdapter);
+  
+    init();
   
     // buttons on click behavior
     btn_signUp.setOnClickListener(v -> signUp());
@@ -96,7 +85,26 @@ public class SignUpActivity extends AppCompatActivity
         });
   }
   
-  public void signUp()
+  private void init()
+  {
+    client = new OkHttpClient();
+    mapper = new ObjectMapper();
+    
+    // Spinner values
+    List<String> spinnerValues = new ArrayList<>();
+    spinnerValues.add(getString(R.string.spinner_default_choice));
+    spinnerValues.add(getString(R.string.spinner_male_choice));
+    spinnerValues.add(getString(R.string.spinner_female_choice));
+    
+    // Create an ArrayAdapter using the string array and a default spinner layout
+    ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, spinnerValues);
+    // Specify the layout to use when the list of choices appears
+    dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    // Apply the adapter to the spinner
+    spinner_sex.setAdapter(dataAdapter);
+  }
+  
+  private void signUp()
   {
     Log.d(TAG, "SignUp");
     
@@ -209,7 +217,7 @@ public class SignUpActivity extends AppCompatActivity
   }
   
   
-  public void onSignUpSuccess(UserDto userFromServer)
+  private void onSignUpSuccess(UserDto userFromServer)
   {
     Intent intent = getIntent();
     intent.putExtra("user", userFromServer);
@@ -220,12 +228,12 @@ public class SignUpActivity extends AppCompatActivity
     overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
   }
   
-  public void onSignUpFailed()
+  private void onSignUpFailed()
   {
     Toast.makeText(getBaseContext(), R.string.sign_up_failed, Toast.LENGTH_LONG).show();
   }
   
-  public boolean validate()
+  private boolean validate()
   {
     boolean valid = true;
   

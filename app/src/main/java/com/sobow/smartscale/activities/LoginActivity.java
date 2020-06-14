@@ -25,6 +25,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+// TODO: implement "Forgot password?" functionality
+
 public class LoginActivity extends AppCompatActivity
 {
   private static final String TAG = "LoginActivity";
@@ -34,8 +36,8 @@ public class LoginActivity extends AppCompatActivity
   private static final String BASE_URL = "http://10.0.2.2:8080/v1";
   private static final String USER_CONTROLLER = "/user";
   
-  private OkHttpClient client = new OkHttpClient();
-  private ObjectMapper mapper = new ObjectMapper();
+  private OkHttpClient client;
+  private ObjectMapper mapper;
   
   // GUI components
   @BindView(R.id.et_email)
@@ -47,6 +49,14 @@ public class LoginActivity extends AppCompatActivity
   @BindView(R.id.link_sign_up)
   TextView btn_signUp;
   
+  
+  private void init()
+  {
+    client = new OkHttpClient();
+    mapper = new ObjectMapper();
+  }
+  
+  
   @Override
   public void onCreate(Bundle savedInstanceState)
   {
@@ -54,7 +64,7 @@ public class LoginActivity extends AppCompatActivity
     setContentView(R.layout.activity_login);
     ButterKnife.bind(this);
   
-    // TODO: implement "Forgot password?" functionality
+    init();
   
     btn_signIn.setOnClickListener(v -> signIn());
   
@@ -146,42 +156,7 @@ public class LoginActivity extends AppCompatActivity
     
   }
   
-  
-  @Override
-  protected void onActivityResult(int requestCode, int resultCode, Intent intent)
-  {
-    super.onActivityResult(requestCode, resultCode, intent);
-  
-    // clear focus
-    getWindow().getDecorView().clearFocus();
-  
-    if (requestCode == REQUEST_SIGN_UP)
-    {
-      if (resultCode == RESULT_OK)
-      {
-        // Pass object to main activity
-        UserDto user = (UserDto) intent.getSerializableExtra("user");
-        getIntent().putExtra("user", user);
-        
-        setResult(RESULT_OK, getIntent());
-        finish();
-      }
-      else
-      {
-        et_email.setError(null);
-        et_password.setError(null);
-      }
-    }
-  }
-  
-  @Override
-  public void onBackPressed()
-  {
-    // Disable going back to the MainActivity
-    moveTaskToBack(true);
-  }
-  
-  public void onSignInSuccess(UserDto user)
+  private void onSignInSuccess(UserDto user)
   {
     Intent intent = getIntent();
     intent.putExtra("user", user);
@@ -226,5 +201,39 @@ public class LoginActivity extends AppCompatActivity
     }
     
     return valid;
+  }
+  
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, Intent intent)
+  {
+    super.onActivityResult(requestCode, resultCode, intent);
+    
+    // clear focus
+    getWindow().getDecorView().clearFocus();
+    
+    if (requestCode == REQUEST_SIGN_UP)
+    {
+      if (resultCode == RESULT_OK)
+      {
+        // Pass object to main activity
+        UserDto user = (UserDto) intent.getSerializableExtra("user");
+        getIntent().putExtra("user", user);
+        
+        setResult(RESULT_OK, getIntent());
+        finish();
+      }
+      else
+      {
+        et_email.setError(null);
+        et_password.setError(null);
+      }
+    }
+  }
+  
+  @Override
+  public void onBackPressed()
+  {
+    // Disable going back to the MainActivity
+    moveTaskToBack(true);
   }
 }

@@ -111,6 +111,27 @@ public class MainActivity extends AppCompatActivity
   @BindView(R.id.til_endDate)
   TextInputLayout til_endDate;
   
+  private void init()
+  {
+    // clear focus
+    getWindow().getDecorView().clearFocus();
+    
+    // init dependencies
+    client = new OkHttpClient();
+    mapper = new ObjectMapper();
+    
+    dateTimeFormatter = DateTimeFormatter.ofPattern(getString(R.string.date_format));
+    
+    resetUser();
+    
+    resetListView();
+    
+    resetOldestAndNewestMeasurement();
+    
+    resetFilters();
+    
+    resetPreviousValidFilterDates();
+  }
   
   @Override
   protected void onCreate(Bundle savedInstanceState)
@@ -260,28 +281,6 @@ public class MainActivity extends AppCompatActivity
         });
     
     // TODO: implement remaining buttons on click behavior
-  }
-  
-  private void init()
-  {
-    // clear focus
-    getWindow().getDecorView().clearFocus();
-    
-    // init dependencies
-    client = new OkHttpClient();
-    mapper = new ObjectMapper();
-  
-    dateTimeFormatter = DateTimeFormatter.ofPattern(getString(R.string.date_format));
-    
-    resetUser();
-    
-    resetListView();
-    
-    resetOldestAndNewestMeasurement();
-  
-    resetFilters();
-    
-    resetPreviousValidFilterDates();
   }
   
   private void resetPreviousValidFilterDates()
