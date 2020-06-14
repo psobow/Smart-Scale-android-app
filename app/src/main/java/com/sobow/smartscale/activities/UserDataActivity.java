@@ -17,5 +17,6 @@ public class UserDataActivity extends AppCompatActivity
     
     // TODO: implement logic here
     // TODO: fix hard coded strings in layout of this view
+    // TODO: setResult(OK) after response.isSucessfull() - po to aby po kliknięciu wbudowane przycisku back dane w main activity zostały zaktualizowane
   }
 }
