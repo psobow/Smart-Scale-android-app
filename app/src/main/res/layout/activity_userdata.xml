@@ -15,7 +15,9 @@
             android:paddingLeft="24dp"
             android:paddingRight="24dp">
 
-        <ImageView style="@style/ImageLogoBig" />
+        <ImageView
+                style="@style/ImageLogoBig"
+                android:contentDescription="@string/application_logo_description" />
 
 
         <!--  Current Email Label -->
@@ -77,10 +79,10 @@
 
         <!--  Current Username Label -->
         <TextView
-                android:id="@+id/tv_currentUsername"
+                android:id="@+id/tv_currentUserName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/current_user_name_user_name"
+                android:text="@string/current_user_name"
                 android:textSize="24sp"
                 android:textStyle="bold" />
 
@@ -173,7 +175,7 @@
                     android:focusableInTouchMode="true"
                     android:clickable="true"
                     android:text="@string/choose_your_sex"
-                    android:textSize="20dp"
+                    android:textSize="20sp"
                     android:textStyle="bold">
 
             </TextView>

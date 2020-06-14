@@ -241,7 +241,7 @@ public class BluetoothConnectionService
     //init progress dialog
     mProgressDialog = new ProgressDialog(mContext, R.style.AppTheme_Dark_Dialog);
     mProgressDialog.setIndeterminate(true);
-    mProgressDialog.setTitle(mContext.getString(R.string.connecting_bluetooth));
+    mProgressDialog.setTitle(mContext.getString(R.string.progress_connecting_bluetooth));
     mProgressDialog.setMessage(mContext.getString(R.string.progress_please_wait));
     mProgressDialog.setCancelable(false);
     mProgressDialog.show();

@@ -139,6 +139,15 @@ public class MainActivity extends AppCompatActivity
     resetPreviousValidFilterDates();
   }
   
+  private void clearFocusAndScrollViewToTheTop()
+  {
+    // clear focus
+    getWindow().getDecorView().clearFocus();
+    
+    // scroll to top
+    sv_main.fullScroll(ScrollView.FOCUS_UP);
+  }
+  
   private void resetPreviousValidFilterDates()
   {
     previousValidStartDateFilter = null;
@@ -435,16 +444,15 @@ public class MainActivity extends AppCompatActivity
         sentPostForMeasurementsAndUpdateListView();
       }
     }
+    else if (requestCode == REQUEST_USERDATA)
+    {
+      if (resultCode == Activity.RESULT_OK)
+      {
+    
+      }
+    }
   }
   
-  private void clearFocusAndScrollViewToTheTop()
-  {
-    // clear focus
-    getWindow().getDecorView().clearFocus();
-    
-    // scroll to top
-    sv_main.fullScroll(ScrollView.FOCUS_UP);
-  }
   
   void sentPostForMeasurementsAndUpdateListView()
   {

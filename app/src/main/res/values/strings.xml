@@ -3,7 +3,7 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-    <string name="application_logo">Application logo</string>
+    <string name="application_logo_description">Application logo</string>
     <string name="date_format">yyyy-MM-dd</string>
     <string name="json_media_type">application/json; charset=utf-8</string>
 
@@ -55,11 +55,11 @@
     <string name="new_email">New email</string>
     <string name="new_password">New password</string>
     <string name="re_enter_new_password">Re-enter new password</string>
-    <string name="current_user_name_user_name">Current user name: %1$s</string>
+    <string name="current_user_name">Current user name: %1$s</string>
     <string name="new_user_name">New user name</string>
     <string name="current_age">Current age: %1$d</string>
     <string name="new_age">New age</string>
-    <string name="current_height">Current height: %1$s CM</string>
+    <string name="current_height">Current height: %1$d CM</string>
     <string name="new_height_cm">New height (CM)</string>
     <string name="current_sex">Current sex: %1$s</string>
     <string name="btn_update_data">UPDATE DATA</string>
@@ -81,13 +81,17 @@
     <string name="disabling_bluetooth">Disabling Bluetooth.</string>
     <string name="no_data_to_filter">No data to filter. Create one!</string>
     <string name="device_discoverable_for_300_seconds">Making device discoverable for 300 seconds.</string>
+    <string name="data_updated">Data successfully updated!</string>
+    <string name="update_data_failed">Update data failed.</string>
 
     <!-- Progress dialog messages -->
     <string name="progress_authenticating">Authenticating</string>
-    <string name="progress_creating_account">Creating Account</string>
+    <string name="progress_creating_account">Creating account</string>
     <string name="progress_sending_data">Sending data to server</string>
     <string name="progress_discovering_devices">Discovering devices</string>
     <string name="progress_please_wait">Please wait...</string>
+    <string name="progress_connecting_bluetooth">Connecting bluetooth</string>
+    <string name="progress_updating_data">Updating data</string>
 
     <!-- Error flags -->
     <string name="email_or_password_incorrect">Email or password incorrect!</string>
@@ -107,7 +111,6 @@
     <string name="end_date_cant_be_after">End date can\'t be after: %1$s!</string>
     <string name="end_date_before_start_date">End date can\'t be before start date!</string>
     <string name="start_date_after_end_date">Start date can\'t be after end date!</string>
-    <string name="connecting_bluetooth">Connecting Bluetooth</string>
 
 
 </resources>

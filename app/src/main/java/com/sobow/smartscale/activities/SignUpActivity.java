@@ -78,9 +78,7 @@ public class SignUpActivity extends AppCompatActivity
     link_sign_in.setOnClickListener(
         v ->
         {
-          // Finish the registration screen and return to the Login activity
-          finish();
-          overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
+          finishAndPushRight();
         });
   }
   
@@ -117,8 +115,8 @@ public class SignUpActivity extends AppCompatActivity
     btn_signUp.setEnabled(false);
   
     // display loading component
-    final ProgressDialog progressDialog = new ProgressDialog(SignUpActivity.this,
-                                                             R.style.AppTheme_Dark_Dialog);
+    ProgressDialog progressDialog = new ProgressDialog(SignUpActivity.this,
+                                                       R.style.AppTheme_Dark_Dialog);
     progressDialog.setIndeterminate(true);
     progressDialog.setTitle(getString(R.string.progress_creating_account));
     progressDialog.setMessage(getString(R.string.progress_please_wait));
@@ -217,7 +215,6 @@ public class SignUpActivity extends AppCompatActivity
           progressDialog.dismiss();
         }, 3000);
   }
-  
   
   private void onSignUpSuccess(UserDto userFromServer)
   {
@@ -330,5 +327,17 @@ public class SignUpActivity extends AppCompatActivity
     }
     
     return valid;
+  }
+  
+  private void finishAndPushRight()
+  {
+    finish();
+    overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
+  }
+  
+  @Override
+  public void onBackPressed()
+  {
+    finishAndPushRight();
   }
 }

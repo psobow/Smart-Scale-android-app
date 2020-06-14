@@ -470,8 +470,7 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
     btn_backToMainActivity.setOnClickListener(
         v ->
         {
-          finish();
-          overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
+          finishAndPushRight();
         });
     
   }
@@ -548,5 +547,17 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
   
     bluetoothDevice = bluetoothDevices.get(position);
     bluetoothConnectionService = new BluetoothConnectionService(BluetoothActivity.this);
+  }
+  
+  private void finishAndPushRight()
+  {
+    finish();
+    overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
+  }
+  
+  @Override
+  public void onBackPressed()
+  {
+    finishAndPushRight();
   }
 }

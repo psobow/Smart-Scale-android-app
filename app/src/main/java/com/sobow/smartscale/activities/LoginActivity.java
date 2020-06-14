@@ -102,10 +102,10 @@ public class LoginActivity extends AppCompatActivity
     new android.os.Handler().postDelayed(
         () ->
         {
-          String emailInput = et_email.getText().toString();
-          String passwordInput = et_password.getText().toString();
+          String email = et_email.getText().toString();
+          String password = et_password.getText().toString();
   
-          String requestUrl = webConfig.getUserControllerURL() + "/" + emailInput + "/" + passwordInput;
+          String requestUrl = webConfig.getUserControllerURL() + "/" + email + "/" + password;
           Request request = new Request.Builder().url(requestUrl).build();
   
           // Execute HTTP requests in background thread
