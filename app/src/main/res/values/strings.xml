@@ -32,6 +32,7 @@
     <string name="btn_print_chart">PRINT CHART</string>
     <string name="btn_logout">LOGOUT</string>
     <string name="btn_apply_filters">APPLY FILTERS</string>
+    <string name="btn_reset_filters">RESET FILTERS</string>
     <string name="hint_start_date_filter">Start date %1$s</string>
     <string name="hint_end_date_filter">End date %1$s</string>
     <string name="no_measurements_from_server">You haven\'t added any measurements yet.</string>

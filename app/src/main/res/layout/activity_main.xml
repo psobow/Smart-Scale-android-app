@@ -83,6 +83,14 @@
                             android:layout_height="match_parent"
                             android:inputType="date" />
                 </com.google.android.material.textfield.TextInputLayout>
+
+                <Button
+                        android:id="@+id/btn_applyFilters"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0dp"
+                        android:layout_marginBottom="24dp"
+                        android:text="@string/btn_apply_filters" />
             </LinearLayout>
 
             <LinearLayout
@@ -105,16 +113,16 @@
                             android:layout_height="match_parent"
                             android:inputType="date" />
                 </com.google.android.material.textfield.TextInputLayout>
+
+                <Button
+                        android:id="@+id/btn_resetFilters"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0dp"
+                        android:layout_marginBottom="24dp"
+                        android:text="@string/btn_reset_filters" />
             </LinearLayout>
         </LinearLayout>
-
-        <Button
-                android:id="@+id/btn_applyFilters"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="0dp"
-                android:layout_marginBottom="24dp"
-                android:text="@string/btn_apply_filters" />
 
 
         <ListView
