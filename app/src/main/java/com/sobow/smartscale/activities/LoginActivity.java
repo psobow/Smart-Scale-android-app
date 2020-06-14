@@ -47,6 +47,8 @@ public class LoginActivity extends AppCompatActivity
   Button btn_signIn;
   @BindView(R.id.link_sign_up)
   TextView btn_signUp;
+  @BindView(R.id.link_forgot_password)
+  TextView btn_forgotPassword;
   
   
   private void init()
@@ -75,6 +77,12 @@ public class LoginActivity extends AppCompatActivity
           Intent newIntent = new Intent(getApplicationContext(), SignUpActivity.class);
           startActivityForResult(newIntent, REQUEST_SIGN_UP);
           overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+        });
+  
+    btn_forgotPassword.setOnClickListener(
+        v ->
+        {
+          Toast.makeText(getBaseContext(), "To be implemented...", Toast.LENGTH_LONG).show();
         });
   }
   

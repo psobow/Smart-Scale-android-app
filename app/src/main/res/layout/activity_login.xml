@@ -66,5 +66,14 @@
                 android:text="@string/no_account_yet_sign_up"
                 android:textSize="24sp" />
 
+        <TextView
+                android:id="@+id/link_forgot_password"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                android:gravity="center"
+                android:text="@string/forgot_your_password"
+                android:textSize="24sp" />
+
     </LinearLayout>
 </ScrollView>
