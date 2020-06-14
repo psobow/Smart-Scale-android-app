@@ -200,6 +200,12 @@ public class MainActivity extends AppCompatActivity
           overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
         });
   
+    btn_printChart.setOnClickListener(
+        v ->
+        {
+          Toast.makeText(getBaseContext(), "To be implemented...", Toast.LENGTH_LONG);
+        });
+    
     btn_logout.setOnClickListener(
         v ->
         {
@@ -325,7 +331,6 @@ public class MainActivity extends AppCompatActivity
                          Toast.LENGTH_LONG)
                .show();
         });
-    // TODO: implement remaining buttons on click behavior
   }
   
   private List<MeasurementDto> getFilteredMeasurements(LocalDate startDate, LocalDate endDate)
