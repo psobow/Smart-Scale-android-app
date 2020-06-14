@@ -203,7 +203,7 @@ public class MainActivity extends AppCompatActivity
     btn_printChart.setOnClickListener(
         v ->
         {
-          Toast.makeText(getBaseContext(), "To be implemented...", Toast.LENGTH_LONG);
+          Toast.makeText(getBaseContext(), "To be implemented...", Toast.LENGTH_LONG).show();
         });
     
     btn_logout.setOnClickListener(
