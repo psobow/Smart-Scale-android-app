@@ -101,6 +101,8 @@ public class MainActivity extends AppCompatActivity
   Button btn_logout;
   @BindView(R.id.btn_applyFilters)
   Button btn_applyFilters;
+  @BindView(R.id.btn_resetFilters)
+  Button btn_resetFilters;
   @BindView(R.id.tv_yourMeasurements)
   TextView tv_yourMeasurements;
   @BindView(R.id.et_startDate)
@@ -311,7 +313,18 @@ public class MainActivity extends AppCompatActivity
             Toast.makeText(getBaseContext(), R.string.filters_were_not_applied, Toast.LENGTH_LONG).show();
           }
         });
-    
+  
+    btn_resetFilters.setOnClickListener(
+        v ->
+        {
+          updateMeasurementListView(allMeasurements);
+          Toast.makeText(getBaseContext(),
+                         getString(R.string.filtered_from_to,
+                                   oldestMeasurementDateTime.format(dateTimeFormatter),
+                                   newestMeasurementDateTime.format(dateTimeFormatter)),
+                         Toast.LENGTH_LONG)
+               .show();
+        });
     // TODO: implement remaining buttons on click behavior
   }
   
