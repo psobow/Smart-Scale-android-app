@@ -423,6 +423,7 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
                         BluetoothActivity.this.runOnUiThread(
                             () -> Toast.makeText(getBaseContext(), R.string.data_saved_successfully, Toast.LENGTH_LONG)
                                        .show());
+                        setResult(RESULT_OK);
                       }
                       else
                       {
@@ -450,7 +451,6 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
     btn_backToMainActivity.setOnClickListener(
         v ->
         {
-          setResult(RESULT_OK);
           finish();
           overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
         });
