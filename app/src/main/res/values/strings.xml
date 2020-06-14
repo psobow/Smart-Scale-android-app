@@ -68,17 +68,18 @@
     <string name="btn_delete_your_account">DELETE YOUR ACCOUNT</string>
 
     <!-- Toast messages -->
-    <string name="connection_with_server_failed">Connection with server failed</string>
-    <string name="something_went_wrong">Something went wrong, response code: %1$d</string>
-    <string name="login_failed">Sign in failed</string>
-    <string name="sign_up_failed">Sign up failed</string>
-    <string name="filtered_from_to">Filtered from: %1$s to: %2$s</string>
-    <string name="filters_were_not_applied">Filters were not applied</string>
-    <string name="data_saved_successfully">Data successfully saved</string>
-    <string name="wait_for_data_or_insert">Wait for data from scale or insert weight</string>
-    <string name="device_does_not_support_bluetooth">Device does not have bluetooth capabilities</string>
-    <string name="enabling_bluetooth">Enabling Bluetooth</string>
-    <string name="disabling_bluetooth">Disabling Bluetooth</string>
+    <string name="connection_with_server_failed">Connection with server failed.</string>
+    <string name="something_went_wrong">Something went wrong, response code: %1$d.</string>
+    <string name="login_failed">Sign in failed.</string>
+    <string name="sign_up_failed">Sign up failed.</string>
+    <string name="filtered_from_to">Filtered from: %1$s to: %2$s.</string>
+    <string name="filters_were_not_applied">Filters were not applied.</string>
+    <string name="data_saved_successfully">Data successfully saved.</string>
+    <string name="wait_for_data_or_insert">Wait for data from scale or insert weight.</string>
+    <string name="device_does_not_support_bluetooth">Device does not have bluetooth capabilities.</string>
+    <string name="enabling_bluetooth">Enabling Bluetooth.</string>
+    <string name="disabling_bluetooth">Disabling Bluetooth.</string>
+    <string name="no_data_to_filter">No data to filter. Create one!</string>
 
     <!-- Progress dialog messages -->
     <string name="progress_authenticating">Authenticating...</string>

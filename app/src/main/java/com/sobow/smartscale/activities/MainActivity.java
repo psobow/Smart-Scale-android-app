@@ -49,7 +49,7 @@ import okhttp3.Response;
 // TODO: fix issue with close application after screen orientation change
 // TODO: implement feature for sending request for validation constraints on each field. Constraints will be stored in one place then.
 // TODO: find better way to handle requests in background thread. how to wait for the response?
-
+// TODO create enum Sex with fields Male Female
 
 public class MainActivity extends AppCompatActivity
 {
@@ -221,7 +221,7 @@ public class MainActivity extends AppCompatActivity
           String startDate = et_startDate.getText().toString();
           String endDate = et_endDate.getText().toString();
   
-          // reset error messages
+          // reset error flags
           resetFilterErrors();
   
           boolean isInputValid = true;
@@ -237,7 +237,6 @@ public class MainActivity extends AppCompatActivity
             isInputValid = false;
             et_startDate.setError(getString(R.string.invalid_start_date, getString(R.string.date_format)));
           }
-  
   
           LocalDate endDateParsed = null;
           try
@@ -302,34 +301,55 @@ public class MainActivity extends AppCompatActivity
   
           if (isInputValid)
           {
-            Toast.makeText(getBaseContext(),
-                           getString(R.string.filtered_from_to, startDate, endDate),
-                           Toast.LENGTH_LONG)
-                 .show();
-  
-            previousValidStartDateFilter = startDateParsed;
-            previousValidEndDateFilter = endDateParsed;
-  
-            List<MeasurementDto> filteredMeasurements = getFilteredMeasurements(startDateParsed, endDateParsed);
-            updateMeasurementListView(filteredMeasurements);
+            if (! allMeasurements.isEmpty())
+            {
+              Toast.makeText(getBaseContext(),
+                             getString(R.string.filtered_from_to, startDate, endDate),
+                             Toast.LENGTH_LONG)
+                   .show();
+    
+              previousValidStartDateFilter = startDateParsed;
+              previousValidEndDateFilter = endDateParsed;
+    
+              List<MeasurementDto> filteredMeasurements = getFilteredMeasurements(startDateParsed, endDateParsed);
+              updateMeasurementListView(filteredMeasurements);
+            }
+            else
+            {
+              Toast.makeText(getBaseContext(),
+                             getString(R.string.no_data_to_filter),
+                             Toast.LENGTH_LONG)
+                   .show();
+            }
           }
           else
           {
             setUpPreviousValidDateFilters();
             Toast.makeText(getBaseContext(), R.string.filters_were_not_applied, Toast.LENGTH_LONG).show();
           }
+  
         });
   
     btn_resetFilters.setOnClickListener(
         v ->
         {
-          updateMeasurementListView(allMeasurements);
-          Toast.makeText(getBaseContext(),
-                         getString(R.string.filtered_from_to,
-                                   oldestMeasurementDateTime.format(dateTimeFormatter),
-                                   newestMeasurementDateTime.format(dateTimeFormatter)),
-                         Toast.LENGTH_LONG)
-               .show();
+          if (! allMeasurements.isEmpty())
+          {
+            updateMeasurementListView(allMeasurements);
+            Toast.makeText(getBaseContext(),
+                           getString(R.string.filtered_from_to,
+                                     oldestMeasurementDateTime.format(dateTimeFormatter),
+                                     newestMeasurementDateTime.format(dateTimeFormatter)),
+                           Toast.LENGTH_LONG)
+                 .show();
+          }
+          else
+          {
+            Toast.makeText(getBaseContext(),
+                           getString(R.string.no_data_to_filter),
+                           Toast.LENGTH_LONG)
+                 .show();
+          }
         });
   }
   
