@@ -73,11 +73,14 @@ public class MainActivity extends AppCompatActivity
   
   // user information
   private UserDto user;
+  private boolean isUserLogged;
+  private List<MeasurementDto> allMeasurements;
+  
+  // list view
   private List<String> stringListWithMeasurements;
   private ArrayAdapter arrayAdapter; // need for list view component
-  private boolean isUserLogged;
   
-  // measurements information
+  // oldest and newest measurements date time
   private LocalDateTime oldestMeasurementDateTime;
   private LocalDateTime newestMeasurementDateTime;
   
@@ -121,16 +124,42 @@ public class MainActivity extends AppCompatActivity
     mapper = new ObjectMapper();
     
     dateTimeFormatter = DateTimeFormatter.ofPattern(getString(R.string.date_format));
-    
-    resetUser();
+  
+    resetUserInformation();
     
     resetListView();
     
     resetOldestAndNewestMeasurement();
-    
-    resetFilters();
+  
+    resetFiltersTextAndHintsAndErrors();
     
     resetPreviousValidFilterDates();
+  }
+  
+  private void resetPreviousValidFilterDates()
+  {
+    previousValidStartDateFilter = null;
+    previousValidEndDateFilter = null;
+  }
+  
+  private void resetOldestAndNewestMeasurement()
+  {
+    oldestMeasurementDateTime = null;
+    newestMeasurementDateTime = null;
+  }
+  
+  private void resetListView()
+  {
+    stringListWithMeasurements = new ArrayList<>();
+    arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, stringListWithMeasurements);
+    lv_measurements.setAdapter(arrayAdapter);
+  }
+  
+  private void resetUserInformation()
+  {
+    user = null;
+    isUserLogged = false;
+    allMeasurements = new ArrayList<>();
   }
   
   @Override
@@ -272,6 +301,9 @@ public class MainActivity extends AppCompatActivity
   
             previousValidStartDateFilter = startDateParsed;
             previousValidEndDateFilter = endDateParsed;
+  
+            List<MeasurementDto> filteredMeasurements = getFilteredMeasurements(startDateParsed, endDateParsed);
+            updateMeasurementListView(filteredMeasurements);
           }
           else
           {
@@ -283,29 +315,22 @@ public class MainActivity extends AppCompatActivity
     // TODO: implement remaining buttons on click behavior
   }
   
-  private void resetPreviousValidFilterDates()
+  private List<MeasurementDto> getFilteredMeasurements(LocalDate startDate, LocalDate endDate)
   {
-    previousValidStartDateFilter = null;
-    previousValidEndDateFilter = null;
-  }
-  
-  private void resetOldestAndNewestMeasurement()
-  {
-    oldestMeasurementDateTime = null;
-    newestMeasurementDateTime = null;
-  }
-  
-  private void resetListView()
-  {
-    stringListWithMeasurements = new ArrayList<>();
-    arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, stringListWithMeasurements);
-    lv_measurements.setAdapter(arrayAdapter);
-  }
-  
-  private void resetUser()
-  {
-    user = null;
-    isUserLogged = false;
+    List<MeasurementDto> result = new ArrayList<>();
+    
+    for (MeasurementDto measurement : allMeasurements)
+    {
+      LocalDate measurementDate = measurement.getLocalDateTime().toLocalDate();
+      if (measurementDate.equals(startDate)
+          || measurementDate.equals(endDate)
+          || measurementDate.isAfter(startDate) && measurementDate.isBefore(endDate))
+      {
+        result.add(measurement);
+      }
+    }
+    
+    return result;
   }
   
   private void setUpPreviousValidDateFilters()
@@ -318,7 +343,7 @@ public class MainActivity extends AppCompatActivity
     }
   }
   
-  private void resetFilters()
+  private void resetFiltersTextAndHintsAndErrors()
   {
     resetFilterErrors();
   
@@ -413,50 +438,13 @@ public class MainActivity extends AppCompatActivity
         {
           String jsonString = response.body().string();
   
-          List<MeasurementDto> measurements = Arrays.asList(mapper.readValue(jsonString, MeasurementDto[].class));
-          stringListWithMeasurements.clear();
-  
-          // sort by date time
-          // date closest to present day will be shown at top place in list view
-          Collections.sort(measurements, new CustomComparator());
-  
+          allMeasurements = Arrays.asList(mapper.readValue(jsonString, MeasurementDto[].class));
+          
           // update list view and Start Date / End Date
           MainActivity.this.runOnUiThread(
               () ->
               {
-                resetFilters();
-                
-                if (measurements.isEmpty())
-                {
-                  stringListWithMeasurements.add(getString(R.string.no_measurements_from_server));
-                  
-                  resetOldestAndNewestMeasurement();
-  
-                  resetPreviousValidFilterDates();
-                }
-                else
-                {
-                  for (int i = 0; i < measurements.size(); i++)
-                  {
-                    stringListWithMeasurements.add(measurements.get(i).toString());
-                  }
-  
-                  // update oldest and newest date measurement
-                  oldestMeasurementDateTime = measurements.get(measurements.size() - 1).getLocalDateTime();
-                  newestMeasurementDateTime = measurements.get(0).getLocalDateTime();
-  
-                  // set up previous valid dates
-                  previousValidStartDateFilter = oldestMeasurementDateTime.toLocalDate();
-                  previousValidEndDateFilter = newestMeasurementDateTime.toLocalDate();
-  
-                  // update UI filters start date and end date
-                  et_startDate.setText(oldestMeasurementDateTime.format(dateTimeFormatter));
-                  et_endDate.setText(newestMeasurementDateTime.format(dateTimeFormatter));
-                }
-  
-                // update list view
-                arrayAdapter.notifyDataSetChanged();
-                lv_measurements.invalidateViews();
+                updateMeasurementListView(allMeasurements);
               });
         }
         else
@@ -467,6 +455,50 @@ public class MainActivity extends AppCompatActivity
         }
       }
     });
+  }
+  
+  private void updateMeasurementListView(List<MeasurementDto> measurements)
+  {
+    // clear list view content
+    stringListWithMeasurements.clear();
+    
+    // sort by date time
+    // date closest to present day will be shown at top place in list view
+    Collections.sort(allMeasurements, new CustomComparator());
+    
+    resetFiltersTextAndHintsAndErrors();
+    
+    if (measurements.isEmpty())
+    {
+      stringListWithMeasurements.add(getString(R.string.no_measurements_from_server));
+      
+      resetOldestAndNewestMeasurement();
+      
+      resetPreviousValidFilterDates();
+    }
+    else
+    {
+      for (int i = 0; i < measurements.size(); i++)
+      {
+        stringListWithMeasurements.add(measurements.get(i).toString());
+      }
+      
+      // update oldest and newest date measurement
+      oldestMeasurementDateTime = measurements.get(measurements.size() - 1).getLocalDateTime();
+      newestMeasurementDateTime = measurements.get(0).getLocalDateTime();
+      
+      // set up previous valid dates
+      previousValidStartDateFilter = oldestMeasurementDateTime.toLocalDate();
+      previousValidEndDateFilter = newestMeasurementDateTime.toLocalDate();
+      
+      // update UI filters start date and end date
+      et_startDate.setText(oldestMeasurementDateTime.format(dateTimeFormatter));
+      et_endDate.setText(newestMeasurementDateTime.format(dateTimeFormatter));
+    }
+    
+    // update list view
+    arrayAdapter.notifyDataSetChanged();
+    lv_measurements.invalidateViews();
   }
   
   
