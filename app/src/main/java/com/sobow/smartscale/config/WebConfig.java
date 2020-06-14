@@ -15,8 +15,8 @@ public class WebConfig
   
   public WebConfig()
   {
-    //currentBaseUrl = LOCAL_BASE_URL;
-    currentBaseUrl = PRODUCTION_BASE_URL;
+    currentBaseUrl = LOCAL_BASE_URL;
+    //currentBaseUrl = PRODUCTION_BASE_URL;
   }
   
   public String getUserControllerURL()

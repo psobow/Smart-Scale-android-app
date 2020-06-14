@@ -49,6 +49,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 // TODO: test app. and prevent crashing !
+// TODO: after choosing device from list view display toast msg
 
 public class BluetoothActivity extends AppCompatActivity implements AdapterView.OnItemClickListener
 {

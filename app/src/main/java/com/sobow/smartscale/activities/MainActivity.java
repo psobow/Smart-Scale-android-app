@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -87,6 +88,8 @@ public class MainActivity extends AppCompatActivity
   private LocalDate previousValidEndDateFilter;
   
   // GUI components
+  @BindView(R.id.sv_main)
+  ScrollView sv_main;
   @BindView(R.id.lv_measurements)
   ListView lv_measurements;
   @BindView(R.id.btn_newMeasurement)
@@ -116,9 +119,8 @@ public class MainActivity extends AppCompatActivity
   
   private void init()
   {
-    // clear focus
-    getWindow().getDecorView().clearFocus();
-    
+    clearFocusAndScrollViewToTheTop();
+  
     // init dependencies
     client = new OkHttpClient();
     mapper = new ObjectMapper();
@@ -412,10 +414,8 @@ public class MainActivity extends AppCompatActivity
   protected void onActivityResult(int requestCode, int resultCode, Intent intent)
   {
     super.onActivityResult(requestCode, resultCode, intent);
+    clearFocusAndScrollViewToTheTop();
   
-    // clear focus
-    getWindow().getDecorView().clearFocus();
-    
     if (requestCode == REQUEST_LOGIN)
     {
       if (resultCode == Activity.RESULT_OK)
@@ -435,6 +435,15 @@ public class MainActivity extends AppCompatActivity
         sentPostForMeasurementsAndUpdateListView();
       }
     }
+  }
+  
+  private void clearFocusAndScrollViewToTheTop()
+  {
+    // clear focus
+    getWindow().getDecorView().clearFocus();
+    
+    // scroll to top
+    sv_main.fullScroll(ScrollView.FOCUS_UP);
   }
   
   void sentPostForMeasurementsAndUpdateListView()

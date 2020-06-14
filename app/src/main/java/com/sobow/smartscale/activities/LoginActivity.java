@@ -99,7 +99,6 @@ public class LoginActivity extends AppCompatActivity
     progressDialog.setCancelable(false);
     progressDialog.show();
   
-  
     new android.os.Handler().postDelayed(
         () ->
         {
@@ -108,7 +107,6 @@ public class LoginActivity extends AppCompatActivity
   
           String requestUrl = webConfig.getUserControllerURL() + "/" + emailInput + "/" + passwordInput;
           Request request = new Request.Builder().url(requestUrl).build();
-  
   
           // Execute HTTP requests in background thread
           client.newCall(request).enqueue(new Callback()
@@ -119,9 +117,6 @@ public class LoginActivity extends AppCompatActivity
               LoginActivity.this.runOnUiThread(
                   () ->
                   {
-                    progressDialog.setMessage(getString(R.string.connection_with_server_failed));
-      
-      
                     Toast.makeText(getBaseContext(), R.string.connection_with_server_failed, Toast.LENGTH_LONG)
                          .show();
                   });
