@@ -238,6 +238,7 @@ public class MainActivity extends AppCompatActivity
     btn_applyFilters.setOnClickListener(
         v ->
         {
+          // TODO: move this logic to InputValidator
           // Validate input
           String startDate = et_startDate.getText().toString();
           String endDate = et_endDate.getText().toString();
