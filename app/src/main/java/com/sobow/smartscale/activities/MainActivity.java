@@ -48,7 +48,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 
-// TODO: fix issue with close application after screen orientation change. VERY IMPORTANT !
+// TODO: fix issue with close application after screen orientation change. VERY IMPORTANT ! implement onPause onStart!!!
 // TODO: implement functionality to remove given measurement from the list by pressing it. display confirmation dialog before removing.
 
 

@@ -2,6 +2,7 @@ package com.sobow.smartscale.validation;
 
 
 // TODO: Implement validation logic here!
+// TODO: Implement singleton
 public class InputValidator
 {
   // Remember to update strings.xml messages after changing constraints!!
