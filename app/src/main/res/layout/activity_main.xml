@@ -76,7 +76,12 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:layout_marginBottom="8dp"
-                        android:layout_marginEnd="8dp">
+                        android:layout_marginEnd="8dp"
+
+                        android:focusable="true"
+                        android:focusableInTouchMode="true">
+                    <!-- Upper two lines are need for disable init focus on first
+                    editText after method clearFocus() call-->
 
                     <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/et_startDate"
