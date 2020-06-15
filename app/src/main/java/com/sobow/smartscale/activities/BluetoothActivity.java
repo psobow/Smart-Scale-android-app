@@ -50,6 +50,14 @@ import okhttp3.Response;
 
 // TODO: test app. and prevent crashing !
 // TODO: after choosing device from list view display toast msg and change background of this element in the list view
+/* TODO: Przemyśleć implementacji trezch trybów pracy wagi.
+    - tryb manualny - użytkownik z klawiatury wprowadza pomiar
+    - tryb detaliczny - użytkownik waży coś i może wprowadzić kategorie pomiaru oraz opis
+    - tryb do pomiaru masy ciała człowieka gdzie domyślną kategorią będzie masa ciała - automatyczny zapis pomiaru na serwer.
+*/
+
+// TODO: Pytanie do pana doktora? jak zebrać logi z działającej aplikacji na telefonie stacktrace itp.
+
 
 public class BluetoothActivity extends AppCompatActivity implements AdapterView.OnItemClickListener
 {
