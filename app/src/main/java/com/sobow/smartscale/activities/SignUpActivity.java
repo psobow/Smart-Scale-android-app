@@ -242,12 +242,12 @@ public class SignUpActivity extends AppCompatActivity
   private boolean validate(String email, String password, String reEnteredPassword, String userName, String age,
                            String height, String userSex)
   {
-    boolean valid = true;
+    boolean isValid = true;
   
     // EMAIL
     if (! inputValidator.isEmailValid(email))
     {
-      valid = false;
+      isValid = false;
       et_email.setError(getString(R.string.invalid_email));
     }
     else { et_email.setError(null); }
@@ -255,14 +255,14 @@ public class SignUpActivity extends AppCompatActivity
     // PASSWORD
     if (! inputValidator.isPasswordValid(password))
     {
-      valid = false;
+      isValid = false;
       et_password.setError(getString(R.string.invalid_password));
     }
     else { et_password.setError(null); }
   
     if (! inputValidator.arePasswordsEquals(password, reEnteredPassword))
     {
-      valid = false;
+      isValid = false;
       et_reEnterPassword.setError(getString(R.string.passwords_do_not_match));
     }
     else { et_reEnterPassword.setError(null); }
@@ -270,7 +270,7 @@ public class SignUpActivity extends AppCompatActivity
     // USER NAME
     if (! inputValidator.isUserNameValid(userName))
     {
-      valid = false;
+      isValid = false;
       et_userName.setError(getString(R.string.invalid_user_name));
     }
     else { et_userName.setError(null); }
@@ -278,7 +278,7 @@ public class SignUpActivity extends AppCompatActivity
     // AGE
     if (! inputValidator.isAgeValid(age))
     {
-      valid = false;
+      isValid = false;
       et_age.setError(getString(R.string.invalid_age));
     }
     else { et_age.setError(null); }
@@ -286,7 +286,7 @@ public class SignUpActivity extends AppCompatActivity
     // HEIGHT
     if (! inputValidator.isHeightValid(height))
     {
-      valid = false;
+      isValid = false;
       et_height.setError(getString(R.string.invalid_height));
     }
     else { et_height.setError(null); }
@@ -294,13 +294,13 @@ public class SignUpActivity extends AppCompatActivity
     // SEX
     if (! inputValidator.isSexValid(userSex))
     {
-      valid = false;
+      isValid = false;
       tv_chooseYourSex.setError(getString(R.string.invalid_sex_choice));
     }
     else { tv_chooseYourSex.setError(null); }
-    
-    
-    return valid;
+  
+  
+    return isValid;
   }
   
   private void finishAndPushRight()

@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sobow.smartscale.R;
 import com.sobow.smartscale.config.WebConfig;
 import com.sobow.smartscale.dto.UserDto;
+import com.sobow.smartscale.validation.InputValidator;
 
 import java.io.IOException;
 
@@ -37,6 +38,7 @@ public class LoginActivity extends AppCompatActivity
   private OkHttpClient client;
   private ObjectMapper mapper;
   private WebConfig webConfig;
+  private InputValidator inputValidator;
   
   // GUI components
   @BindView(R.id.et_email)
@@ -56,6 +58,7 @@ public class LoginActivity extends AppCompatActivity
     client = new OkHttpClient();
     mapper = new ObjectMapper();
     webConfig = new WebConfig();
+    inputValidator = new InputValidator();
   }
   
   
@@ -89,14 +92,15 @@ public class LoginActivity extends AppCompatActivity
   private void signIn()
   {
     Log.d(TAG, "Sign in");
-    
-    
-    if (! validate())
+  
+    String email = et_email.getText().toString();
+    String password = et_password.getText().toString();
+  
+    if (! validate(email, password))
     {
       onSignInFailed();
       return;
     }
-    
     
     btn_signIn.setEnabled(false);
   
@@ -110,8 +114,6 @@ public class LoginActivity extends AppCompatActivity
     new android.os.Handler().postDelayed(
         () ->
         {
-          String email = et_email.getText().toString();
-          String password = et_password.getText().toString();
   
           String requestUrl = webConfig.getUserControllerURL() + "/" + email + "/" + password;
           Request request = new Request.Builder().url(requestUrl).build();
@@ -183,37 +185,27 @@ public class LoginActivity extends AppCompatActivity
     Toast.makeText(getBaseContext(), R.string.login_failed, Toast.LENGTH_LONG).show();
   }
   
-  private boolean validate()
+  private boolean validate(String email, String password)
   {
-    boolean valid = true;
-  
-    String email = et_email.getText().toString();
-    String password = et_password.getText().toString();
-  
-    // email
-    if (! email.matches(
-        "^((\"[\\w-\\s]+\")|([\\w-]+(?:\\.[\\w-]+)*)|(\"[\\w-\\s]+\")([\\w-]+(?:\\.[\\w-]+)*))(@((?:[\\w-]+\\.)*\\w[\\w-]{0,66})\\.([a-z]{2,6}(?:\\.[a-z]{2})?)$)|(@\\[?((25[0-5]\\.|2[0-4][0-9]\\.|1[0-9]{2}\\.|[0-9]{1,2}\\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\\]?$)"))
-    {
-      et_email.setError(getString(R.string.invalid_email));
-      valid = false;
-    }
-    else
-    {
-      et_email.setError(null);
-    }
-  
-    // password
-    if (! password.matches("[^\\s]{3,20}"))
-    {
-      et_password.setError(getString(R.string.invalid_password));
-      valid = false;
-    }
-    else
-    {
-      et_password.setError(null);
-    }
+    boolean isValid = true;
     
-    return valid;
+    // EMAIL
+    if (! inputValidator.isEmailValid(email))
+    {
+      isValid = false;
+      et_email.setError(getString(R.string.invalid_email));
+    }
+    else { et_email.setError(null); }
+    
+    // PASSWORD
+    if (! inputValidator.isPasswordValid(password))
+    {
+      isValid = false;
+      et_password.setError(getString(R.string.invalid_password));
+    }
+    else { et_password.setError(null); }
+    
+    return isValid;
   }
   
   @Override
