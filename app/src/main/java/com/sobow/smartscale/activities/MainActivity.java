@@ -195,7 +195,7 @@ public class MainActivity extends AppCompatActivity
       startActivityForResult(newIntent, REQUEST_LOGIN);
     }
   
-    // lv measurements on click behavior
+    // lv measurements on click behavior // TODO: implement removing measurement after click. Ask for confirmation before removing.
     lv_measurements.setOnItemClickListener(
         (parent, view, position, id) ->
         {
@@ -452,7 +452,7 @@ public class MainActivity extends AppCompatActivity
     {
       if (resultCode == Activity.RESULT_OK)
       {
-    
+        // TODO: Implement receving data from userdata activity after successfull data update
       }
     }
   }
