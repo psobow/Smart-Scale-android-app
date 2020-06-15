@@ -95,15 +95,18 @@
     <string name="progress_updating_data">Updating data</string>
 
     <!-- Error flags -->
+    <!-- Sign in and Sign up input validators -->
     <string name="email_or_password_incorrect">Email or password incorrect!</string>
     <string name="invalid_email">Invalid email address!</string>
     <string name="invalid_password">Invalid password!\nEnter from 3 to 20 characters, no spaces.</string>
     <string name="email_already_exists">Email already exists in database!</string>
     <string name="invalid_sex_choice">Invalid sex choice!</string>
     <string name="invalid_user_name">Invalid user name!\nEnter from 3 to 20 alphanumeric characters.</string>
-    <string name="invalid_height">Invalid height!\nEnter number of centimetres from 0 to 299.</string>
-    <string name="invalid_age">Invalid age!\nEnter number from 0 to 100.</string>
+    <string name="invalid_height">Invalid height!\nEnter number of centimetres from 1 to 300.</string>
+    <string name="invalid_age">Invalid age!\nEnter number from 1 to 150.</string>
     <string name="passwords_do_not_match">Passwords do not match!</string>
+
+    <!-- Main activity input validators -->
     <string name="invalid_start_date">Enter valid start date!\nEnter format: %1$s</string>
     <string name="invalid_end_date">Enter valid end date!\nEnter format: %1$s</string>
     <string name="start_date_cant_be_before">Start date can\'t be before: %1$s!</string>

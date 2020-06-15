@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sobow.smartscale.R;
 import com.sobow.smartscale.config.WebConfig;
 import com.sobow.smartscale.dto.UserDto;
+import com.sobow.smartscale.validation.InputValidator;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -35,11 +36,12 @@ import okhttp3.Response;
 
 public class SignUpActivity extends AppCompatActivity
 {
-  private static final String TAG = "SignupActivity";
+  private static final String TAG = "SignUpActivity";
   
   private OkHttpClient client;
   private ObjectMapper mapper;
   private WebConfig webConfig;
+  private InputValidator inputValidator;
   
   // GUI components
   @BindView(R.id.et_userName)
@@ -87,6 +89,7 @@ public class SignUpActivity extends AppCompatActivity
     client = new OkHttpClient();
     mapper = new ObjectMapper();
     webConfig = new WebConfig();
+    inputValidator = new InputValidator();
     
     // Spinner values
     List<String> spinnerValues = new ArrayList<>();
@@ -105,8 +108,19 @@ public class SignUpActivity extends AppCompatActivity
   private void signUp()
   {
     Log.d(TAG, "SignUp");
-    
-    if (! validate())
+  
+    // read input
+    String email = et_email.getText().toString();
+    String password = et_password.getText().toString();
+    String reEnteredPassword = et_reEnterPassword.getText().toString();
+    String name = et_userName.getText().toString();
+    String age = et_age.getText().toString();
+    String height = et_height.getText().toString();
+  
+    int spinnerChoicePosition = spinner_sex.getSelectedItemPosition();
+    String sex = spinner_sex.getItemAtPosition(spinnerChoicePosition).toString();
+  
+    if (! validate(email, password, reEnteredPassword, name, age, height, sex))
     {
       onSignUpFailed();
       return;
@@ -115,6 +129,7 @@ public class SignUpActivity extends AppCompatActivity
     btn_signUp.setEnabled(false);
   
     // display loading component
+  
     ProgressDialog progressDialog = new ProgressDialog(SignUpActivity.this,
                                                        R.style.AppTheme_Dark_Dialog);
     progressDialog.setIndeterminate(true);
@@ -127,15 +142,7 @@ public class SignUpActivity extends AppCompatActivity
     new android.os.Handler().postDelayed(
         () ->
         {
-          // read input
-          String name = et_userName.getText().toString();
-          String height = et_height.getText().toString();
-          String age = et_age.getText().toString();
-          String email = et_email.getText().toString();
-          String password = et_password.getText().toString();
-          int spinnerChoicePosition = spinner_sex.getSelectedItemPosition();
-          String sex = spinner_sex.getItemAtPosition(spinnerChoicePosition).toString();
-        
+  
           // initialize UserDto object
           UserDto newUser = new UserDto();
           newUser.setUserName(name);
@@ -145,7 +152,7 @@ public class SignUpActivity extends AppCompatActivity
           newUser.setEmail(email);
           newUser.setPassword(password);
           newUser.setMeasurementIds(new ArrayList<>());
-        
+  
           // map object to JSON string
           String userJsonString = "";
           try
@@ -157,18 +164,18 @@ public class SignUpActivity extends AppCompatActivity
           {
             e.printStackTrace();
           }
-        
+  
           // json request body
           RequestBody body = RequestBody.create(MediaType.parse(getString(R.string.json_media_type)), userJsonString);
   
           String requestUrl = webConfig.getUserControllerURL();
-        
+  
           Request request = new Request.Builder()
               .url(requestUrl)
               .post(body)
               .build();
-        
-        
+  
+  
           // Execute HTTP requests in background thread
           client.newCall(request).enqueue(new Callback()
           {
@@ -178,10 +185,10 @@ public class SignUpActivity extends AppCompatActivity
               SignUpActivity.this.runOnUiThread(
                   () -> Toast.makeText(getBaseContext(), R.string.connection_with_server_failed, Toast.LENGTH_LONG)
                              .show());
-            
+  
               e.printStackTrace();
             }
-          
+  
             @Override
             public void onResponse(Call call, Response response) throws IOException
             {
@@ -232,99 +239,66 @@ public class SignUpActivity extends AppCompatActivity
     Toast.makeText(getBaseContext(), R.string.sign_up_failed, Toast.LENGTH_LONG).show();
   }
   
-  private boolean validate()
+  private boolean validate(String email, String password, String reEnteredPassword, String userName, String age,
+                           String height, String userSex)
   {
     boolean valid = true;
   
-    String name = et_userName.getText().toString();
-    String height = et_height.getText().toString();
-    String age = et_age.getText().toString();
-    String email = et_email.getText().toString();
-    String password = et_password.getText().toString();
-    String reEnterPassword = et_reEnterPassword.getText().toString();
-    
-    // Sex spinner
-    if (spinner_sex.getSelectedItemPosition() == 0)
+    // EMAIL
+    if (! inputValidator.isEmailValid(email))
     {
-      tv_chooseYourSex.setError(getString(R.string.invalid_sex_choice));
-  
       valid = false;
-    }
-    else
-    {
-      tv_chooseYourSex.setError(null);
-    }
-  
-    // user name
-    if (! name.matches("[A-Za-z0-9]{3,20}"))
-    {
-      et_userName.setError(getString(R.string.invalid_user_name));
-      valid = false;
-    }
-    else
-    {
-      et_userName.setError(null);
-    }
-  
-    // Height
-    if (! height.matches("^(?:[1-9]\\d?|[12]\\d{2})$"))
-    {
-      et_height.setError(getString(R.string.invalid_height));
-      valid = false;
-    }
-    else
-    {
-      et_height.setError(null);
-    }
-    
-    // age
-    if (! age.matches("^[1-9][0-9]?$|^100$"))
-    {
-      et_age.setError(getString(R.string.invalid_age));
-      valid = false;
-    }
-    else
-    {
-      et_age.setError(null);
-    }
-    
-    // email
-    if (! email.matches(
-        "^((\"[\\w-\\s]+\")|([\\w-]+(?:\\.[\\w-]+)*)|(\"[\\w-\\s]+\")([\\w-]+(?:\\.[\\w-]+)*))(@((?:[\\w-]+\\.)*\\w[\\w-]{0,66})\\.([a-z]{2,6}(?:\\.[a-z]{2})?)$)|(@\\[?((25[0-5]\\.|2[0-4][0-9]\\.|1[0-9]{2}\\.|[0-9]{1,2}\\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\\]?$)"))
-    {
       et_email.setError(getString(R.string.invalid_email));
-      valid = false;
     }
-    else
-    {
-      et_email.setError(null);
-    }
-    
-    // password
-    if (! password.matches("[^\\s]{3,20}"))
-    {
-      et_password.setError(getString(R.string.invalid_password));
-      valid = false;
-    }
-    else
-    {
-      et_password.setError(null);
-    }
+    else { et_email.setError(null); }
   
-    if (reEnterPassword.isEmpty())
+    // PASSWORD
+    if (! inputValidator.isPasswordValid(password))
     {
-      et_reEnterPassword.setError(getString(R.string.invalid_password));
       valid = false;
+      et_password.setError(getString(R.string.invalid_password));
     }
-    else if (! (reEnterPassword.equals(password)))
+    else { et_password.setError(null); }
+  
+    if (! inputValidator.arePasswordsEquals(password, reEnteredPassword))
     {
+      valid = false;
       et_reEnterPassword.setError(getString(R.string.passwords_do_not_match));
-      valid = false;
     }
-    else
+    else { et_reEnterPassword.setError(null); }
+  
+    // USER NAME
+    if (! inputValidator.isUserNameValid(userName))
     {
-      et_reEnterPassword.setError(null);
+      valid = false;
+      et_userName.setError(getString(R.string.invalid_user_name));
     }
+    else { et_userName.setError(null); }
+  
+    // AGE
+    if (! inputValidator.isAgeValid(age))
+    {
+      valid = false;
+      et_age.setError(getString(R.string.invalid_age));
+    }
+    else { et_age.setError(null); }
+  
+    // HEIGHT
+    if (! inputValidator.isHeightValid(height))
+    {
+      valid = false;
+      et_height.setError(getString(R.string.invalid_height));
+    }
+    else { et_height.setError(null); }
+  
+    // SEX
+    if (! inputValidator.isSexValid(userSex))
+    {
+      valid = false;
+      tv_chooseYourSex.setError(getString(R.string.invalid_sex_choice));
+    }
+    else { tv_chooseYourSex.setError(null); }
+    
     
     return valid;
   }
