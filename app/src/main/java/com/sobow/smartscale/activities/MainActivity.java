@@ -239,6 +239,7 @@ public class MainActivity extends AppCompatActivity
         v ->
         {
           // TODO: move this logic to InputValidator
+          // TODO: create methods isDateBefore isDateAfter
           // Validate input
           String startDate = et_startDate.getText().toString();
           String endDate = et_endDate.getText().toString();
@@ -291,6 +292,10 @@ public class MainActivity extends AppCompatActivity
               et_startDate.setError(getString(R.string.start_date_cant_be_after, newestMeasurementDateTime
                   .format(dateTimeFormatter)));
             }
+            else
+            {
+              et_startDate.setError(null);
+            }
   
   
             // END DATE
@@ -308,6 +313,10 @@ public class MainActivity extends AppCompatActivity
               et_endDate.setError(getString(R.string.end_date_cant_be_after, newestMeasurementDateTime
                   .format(dateTimeFormatter)));
             }
+            else
+            {
+              et_endDate.setError(null);
+            }
   
   
             // in case if start date and end date are between oldest and newest
@@ -318,6 +327,7 @@ public class MainActivity extends AppCompatActivity
               et_endDate.setError(getString(R.string.end_date_before_start_date));
               et_startDate.setError(getString(R.string.start_date_after_end_date));
             }
+  
           }
   
   

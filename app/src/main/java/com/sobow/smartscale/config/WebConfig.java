@@ -13,10 +13,18 @@ public class WebConfig
   
   private String currentBaseUrl;
   
+  private Configuration currentConfiguration = Configuration.LOCAL;
+  
   public WebConfig()
   {
-    currentBaseUrl = LOCAL_BASE_URL;
-    //currentBaseUrl = PRODUCTION_BASE_URL;
+    if (currentConfiguration.equals(Configuration.LOCAL))
+    {
+      currentBaseUrl = LOCAL_BASE_URL;
+    }
+    else if (currentConfiguration.equals(Configuration.PRODUCTION))
+    {
+      currentBaseUrl = PRODUCTION_BASE_URL;
+    }
   }
   
   public String getUserControllerURL()
@@ -34,4 +42,8 @@ public class WebConfig
     return currentBaseUrl + MEASUREMENT_CONTROLLER + MEASUREMENT_CREATE_ENDPOINT;
   }
   
+  private enum Configuration
+  {
+    LOCAL, PRODUCTION
+  }
 }
