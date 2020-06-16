@@ -75,20 +75,19 @@ public class MainActivity extends AppCompatActivity
   
   // user information
   private UserDto user;
-  private boolean isUserLogged;
-  private List<MeasurementDto> allMeasurements;
+  private ArrayList<MeasurementDto> allMeasurements;
   
   // list view
-  private List<String> stringListWithMeasurements;
+  private ArrayList<String> stringListWithMeasurements;
   private ArrayAdapter arrayAdapter; // need for list view component
   
-  // oldest and newest measurements date time
+  // oldest and newest measurements date time. These fields are need for proper filtering workflow
   private LocalDateTime oldestMeasurementDateTime;
   private LocalDateTime newestMeasurementDateTime;
-  
   // valid date filters
   private LocalDate previousValidStartDateFilter;
   private LocalDate previousValidEndDateFilter;
+  
   
   // GUI components
   @BindView(R.id.sv_main)
@@ -120,24 +119,26 @@ public class MainActivity extends AppCompatActivity
   @BindView(R.id.til_endDate)
   TextInputLayout til_endDate;
   
+  
+  // App initialization
   private void init()
   {
     clearFocusAndScrollViewToTheTop();
-  
+    
     // init dependencies
     client = new OkHttpClient();
     mapper = new ObjectMapper();
     webConfig = new WebConfig();
     
     dateTimeFormatter = DateTimeFormatter.ofPattern(getString(R.string.date_format));
-  
+    
     resetUserInformation();
     
     resetListView();
     
     resetOldestAndNewestMeasurement();
-  
-    resetFiltersTextAndHintsAndErrors();
+    
+    resetFiltersTextAndHintAndError();
     
     resetPreviousValidFilterDates();
   }
@@ -173,8 +174,67 @@ public class MainActivity extends AppCompatActivity
   private void resetUserInformation()
   {
     user = null;
-    isUserLogged = false;
     allMeasurements = new ArrayList<>();
+  }
+  
+  // App restore state
+  
+  @Override
+  public void onSaveInstanceState(Bundle bundle)
+  {
+    super.onSaveInstanceState(bundle);
+    // Save UI state changes to the bundle.
+    // This bundle will be passed to onCreate if the process is
+    // killed and restarted.
+    
+    bundle.putSerializable("user", user);
+    
+    bundle.putSerializable("allMeasurements", allMeasurements);
+    
+    bundle.putSerializable("stringListWithMeasurements", stringListWithMeasurements);
+    
+    bundle.putSerializable("oldestMeasurementDateTime", oldestMeasurementDateTime);
+    bundle.putSerializable("newestMeasurementDateTime", newestMeasurementDateTime);
+    
+    bundle.putSerializable("previousValidStartDateFilter", previousValidStartDateFilter);
+    bundle.putSerializable("previousValidEndDateFilter", previousValidEndDateFilter);
+  }
+  
+  @Override
+  public void onRestoreInstanceState(Bundle bundle)
+  {
+    super.onRestoreInstanceState(bundle);
+    // Restore UI state from the bundle.
+    // This bundle has also been passed to onCreate.
+    
+    clearFocusAndScrollViewToTheTop();
+    
+    // init dependencies
+    client = new OkHttpClient();
+    mapper = new ObjectMapper();
+    webConfig = new WebConfig();
+    
+    dateTimeFormatter = DateTimeFormatter.ofPattern(getString(R.string.date_format));
+    
+    user = (UserDto) bundle.getSerializable("user");
+    tv_yourMeasurements.setText(getString(R.string.hello_user_name_your_measurements,
+                                          (user == null ? "null_user" : user.getUserName())));
+    
+    allMeasurements = (ArrayList<MeasurementDto>) bundle.getSerializable("allMeasurements");
+    
+    // Restore list view
+    stringListWithMeasurements = (ArrayList<String>) bundle.getSerializable("stringListWithMeasurements");
+    arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, stringListWithMeasurements);
+    lv_measurements.setAdapter(arrayAdapter);
+    
+    oldestMeasurementDateTime = (LocalDateTime) bundle.getSerializable("oldestMeasurementDateTime");
+    newestMeasurementDateTime = (LocalDateTime) bundle.getSerializable("newestMeasurementDateTime");
+    
+    previousValidStartDateFilter = (LocalDate) bundle.getSerializable("previousValidStartDateFilter");
+    previousValidEndDateFilter = (LocalDate) bundle.getSerializable("previousValidEndDateFilter");
+    
+    
+    setUpPreviousValidDateInEditTextFilters();
   }
   
   @Override
@@ -185,15 +245,16 @@ public class MainActivity extends AppCompatActivity
     ButterKnife.bind(this);
     AndroidThreeTen.init(this);
   
-  
-    init();
-    
-    // Start login activity for result if user is not logged in
-    if (! isUserLogged)
+    if (savedInstanceState == null)
     {
+      init();
+    
+      // Start login activity for result if user is not logged in
       Intent newIntent = new Intent(getApplicationContext(), LoginActivity.class);
       startActivityForResult(newIntent, REQUEST_LOGIN);
     }
+    // if savedInstanceState != null then onRestoreState method will restore previous app state
+  
   
     // lv measurements on click behavior // TODO: implement removing measurement after click. Ask for confirmation before removing.
     lv_measurements.setOnItemClickListener(
@@ -339,12 +400,12 @@ public class MainActivity extends AppCompatActivity
                              getString(R.string.filtered_from_to, startDate, endDate),
                              Toast.LENGTH_LONG)
                    .show();
-    
+  
               previousValidStartDateFilter = startDateParsed;
               previousValidEndDateFilter = endDateParsed;
-    
-              List<MeasurementDto> filteredMeasurements = getFilteredMeasurements(startDateParsed, endDateParsed);
-              updateMeasurementListView(filteredMeasurements);
+  
+              List<MeasurementDto> filteredMeasurements = getMeasurementsFromTimeSpan(startDateParsed, endDateParsed);
+              updateListView(filteredMeasurements);
             }
             else
             {
@@ -356,7 +417,7 @@ public class MainActivity extends AppCompatActivity
           }
           else
           {
-            setUpPreviousValidDateFilters();
+            setUpPreviousValidDateInEditTextFilters();
             Toast.makeText(getBaseContext(), R.string.filters_were_not_applied, Toast.LENGTH_LONG).show();
           }
   
@@ -367,7 +428,7 @@ public class MainActivity extends AppCompatActivity
         {
           if (! allMeasurements.isEmpty())
           {
-            updateMeasurementListView(allMeasurements);
+            updateListView(allMeasurements);
             Toast.makeText(getBaseContext(),
                            getString(R.string.filtered_from_to,
                                      oldestMeasurementDateTime.format(dateTimeFormatter),
@@ -385,7 +446,7 @@ public class MainActivity extends AppCompatActivity
         });
   }
   
-  private List<MeasurementDto> getFilteredMeasurements(LocalDate startDate, LocalDate endDate)
+  private List<MeasurementDto> getMeasurementsFromTimeSpan(LocalDate startDate, LocalDate endDate)
   {
     List<MeasurementDto> result = new ArrayList<>();
     
@@ -403,7 +464,7 @@ public class MainActivity extends AppCompatActivity
     return result;
   }
   
-  private void setUpPreviousValidDateFilters()
+  private void setUpPreviousValidDateInEditTextFilters()
   {
     // set up previous valid dates
     if (previousValidStartDateFilter != null && previousValidEndDateFilter != null)
@@ -413,7 +474,7 @@ public class MainActivity extends AppCompatActivity
     }
   }
   
-  private void resetFiltersTextAndHintsAndErrors()
+  private void resetFiltersTextAndHintAndError()
   {
     resetFilterErrors();
   
@@ -443,7 +504,6 @@ public class MainActivity extends AppCompatActivity
     {
       if (resultCode == Activity.RESULT_OK)
       {
-        isUserLogged = true;
         user = (UserDto) intent.getSerializableExtra("user");
         tv_yourMeasurements.setText(getString(R.string.hello_user_name_your_measurements,
                                               (user == null ? "null_user" : user.getUserName())));
@@ -514,13 +574,13 @@ public class MainActivity extends AppCompatActivity
         {
           String jsonString = response.body().string();
   
-          allMeasurements = Arrays.asList(mapper.readValue(jsonString, MeasurementDto[].class));
+          allMeasurements = new ArrayList<>(Arrays.asList(mapper.readValue(jsonString, MeasurementDto[].class)));
           
           // update list view and Start Date / End Date
           MainActivity.this.runOnUiThread(
               () ->
               {
-                updateMeasurementListView(allMeasurements);
+                updateListView(allMeasurements);
               });
         }
         else
@@ -533,16 +593,16 @@ public class MainActivity extends AppCompatActivity
     });
   }
   
-  private void updateMeasurementListView(List<MeasurementDto> measurements)
+  private void updateListView(List<MeasurementDto> measurements)
   {
     // clear list view content
     stringListWithMeasurements.clear();
     
     // sort by date time
     // date closest to present day will be shown at top place in list view
-    Collections.sort(allMeasurements, new CustomComparator());
-    
-    resetFiltersTextAndHintsAndErrors();
+    Collections.sort(measurements, new CustomComparator());
+  
+    resetFiltersTextAndHintAndError();
     
     if (measurements.isEmpty())
     {
@@ -562,8 +622,8 @@ public class MainActivity extends AppCompatActivity
       // update oldest and newest date measurement
       oldestMeasurementDateTime = measurements.get(measurements.size() - 1).getLocalDateTime();
       newestMeasurementDateTime = measurements.get(0).getLocalDateTime();
-      
-      // set up previous valid dates
+  
+      // set up new previous valid dates
       previousValidStartDateFilter = oldestMeasurementDateTime.toLocalDate();
       previousValidEndDateFilter = newestMeasurementDateTime.toLocalDate();
       

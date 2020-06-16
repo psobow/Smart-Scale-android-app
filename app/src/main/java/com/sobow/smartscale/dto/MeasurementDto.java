@@ -10,7 +10,9 @@ import com.sobow.smartscale.serialization.LocalDateTimeSerializer;
 import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.format.DateTimeFormatter;
 
-public class MeasurementDto
+import java.io.Serializable;
+
+public class MeasurementDto implements Serializable
 {
   private static final String DATE_FORMATTER = "yyyy-MM-dd HH:mm";
   
