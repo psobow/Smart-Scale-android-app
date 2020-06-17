@@ -98,7 +98,7 @@
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="0dp"
-                        android:layout_marginBottom="8dp"
+                        android:layout_marginBottom="0dp"
                         android:text="@string/btn_apply_filters" />
             </LinearLayout>
 
@@ -128,7 +128,7 @@
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="0dp"
-                        android:layout_marginBottom="8dp"
+                        android:layout_marginBottom="0dp"
                         android:text="@string/btn_reset_filters" />
             </LinearLayout>
         </LinearLayout>
@@ -145,7 +145,7 @@
         <ListView
                 android:id="@+id/lv_measurements"
                 android:layout_width="wrap_content"
-                android:layout_height="450dp"
+                android:layout_height="400dp"
                 android:nestedScrollingEnabled="true"
                 android:fadeScrollbars="false" />
 
