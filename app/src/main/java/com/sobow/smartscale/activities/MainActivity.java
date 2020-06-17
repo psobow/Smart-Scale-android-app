@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.material.textfield.TextInputLayout;
 import com.jakewharton.threetenabp.AndroidThreeTen;
 import com.sobow.smartscale.R;
-import com.sobow.smartscale.activities.results.CustomActivityResults;
+import com.sobow.smartscale.activities.results.CustomActivityResultCodes;
 import com.sobow.smartscale.config.WebConfig;
 import com.sobow.smartscale.dto.MeasurementDto;
 import com.sobow.smartscale.dto.UserDto;
@@ -525,14 +525,14 @@ public class MainActivity extends AppCompatActivity
     }
     else if (requestCode == REQUEST_USERDATA)
     {
-      if (resultCode == CustomActivityResults.USER_DATA_UPDATED || resultCode == CustomActivityResults.USER_MEASUREMENTS_DELETED)
+      if (resultCode == CustomActivityResultCodes.USER_DATA_UPDATED || resultCode == CustomActivityResultCodes.USER_MEASUREMENTS_DELETED)
       {
         user = (UserDto) intent.getSerializableExtra("user");
         tv_yourMeasurements.setText(getString(R.string.hello_user_name_your_measurements,
                                               (user == null ? "null_user" : user.getUserName())));
         sentPostForMeasurementsAndUpdateListView();
       }
-      else if (resultCode == CustomActivityResults.ACCOUNT_DELETED)
+      else if (resultCode == CustomActivityResultCodes.ACCOUNT_DELETED)
       {
         resetMainAndStartLogin();
       }

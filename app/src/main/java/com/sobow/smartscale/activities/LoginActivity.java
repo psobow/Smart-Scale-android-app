@@ -124,13 +124,7 @@ public class LoginActivity extends AppCompatActivity
             @Override
             public void onFailure(Call call, IOException e)
             {
-              LoginActivity.this.runOnUiThread(
-                  () ->
-                  {
-                    Toast.makeText(getBaseContext(), R.string.connection_with_server_failed, Toast.LENGTH_LONG)
-                         .show();
-                  });
-              
+              onServerResponseFailure(e);
             }
   
             @Override
@@ -170,6 +164,16 @@ public class LoginActivity extends AppCompatActivity
         }, 3000);
     
   }
+  
+  private void onServerResponseFailure(IOException e)
+  {
+    LoginActivity.this.runOnUiThread(
+        () -> Toast.makeText(getBaseContext(), R.string.connection_with_server_failed, Toast.LENGTH_LONG)
+                   .show());
+    
+    e.printStackTrace();
+  }
+  
   
   private void onSignInSuccess(UserDto user)
   {

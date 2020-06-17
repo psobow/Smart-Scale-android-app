@@ -19,7 +19,7 @@ import androidx.appcompat.view.ContextThemeWrapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sobow.smartscale.R;
-import com.sobow.smartscale.activities.results.CustomActivityResults;
+import com.sobow.smartscale.activities.results.CustomActivityResultCodes;
 import com.sobow.smartscale.config.WebConfig;
 import com.sobow.smartscale.dto.UserDto;
 import com.sobow.smartscale.validation.InputValidator;
@@ -267,7 +267,7 @@ public class UserDataActivity extends AppCompatActivity
                                                              Toast.LENGTH_LONG).show());
     
     getIntent().putExtra("user", user);
-    setResult(CustomActivityResults.USER_MEASUREMENTS_DELETED, getIntent());
+    setResult(CustomActivityResultCodes.USER_MEASUREMENTS_DELETED, getIntent());
   }
   
   private void onDeleteMeasurementsFailed(Response response)
@@ -435,7 +435,7 @@ public class UserDataActivity extends AppCompatActivity
   
     getIntent().putExtra("user", user);
   
-    setResult(CustomActivityResults.USER_DATA_UPDATED, getIntent());
+    setResult(CustomActivityResultCodes.USER_DATA_UPDATED, getIntent());
     
     // clear focus
     getWindow().getDecorView().clearFocus();
@@ -483,7 +483,7 @@ public class UserDataActivity extends AppCompatActivity
   
   private void onDeleteSuccess()
   {
-    setResult(CustomActivityResults.ACCOUNT_DELETED, getIntent());
+    setResult(CustomActivityResultCodes.ACCOUNT_DELETED, getIntent());
     finish();
   }
   
