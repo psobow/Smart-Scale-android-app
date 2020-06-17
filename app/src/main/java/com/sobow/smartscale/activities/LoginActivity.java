@@ -174,12 +174,10 @@ public class LoginActivity extends AppCompatActivity
     if (response.code() == 404)
     {
       LoginActivity.this.runOnUiThread(
-          () ->
-          {
-            et_email.setError(getString(R.string.email_or_password_incorrect));
-            et_password.setError(getString(R.string.email_or_password_incorrect));
-            Toast.makeText(getBaseContext(), R.string.login_failed, Toast.LENGTH_LONG).show();
-          });
+          () -> Toast.makeText(getBaseContext(), R.string.login_failed, Toast.LENGTH_LONG).show());
+  
+      et_email.setError(getString(R.string.email_or_password_incorrect));
+      et_password.setError(getString(R.string.email_or_password_incorrect));
     }
     else
     {

@@ -13,11 +13,10 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sobow.smartscale.R;
 import com.sobow.smartscale.config.WebConfig;
 import com.sobow.smartscale.dto.UserDto;
+import com.sobow.smartscale.mapper.CustomMapper;
 import com.sobow.smartscale.validation.InputValidator;
 
 import java.io.IOException;
@@ -39,7 +38,7 @@ public class SignUpActivity extends AppCompatActivity
   private static final String TAG = "SignUpActivity";
   
   private OkHttpClient client;
-  private ObjectMapper mapper;
+  private CustomMapper mapper;
   private WebConfig webConfig;
   private InputValidator inputValidator;
   
@@ -65,6 +64,27 @@ public class SignUpActivity extends AppCompatActivity
   @BindView(R.id.link_sign_in)
   TextView link_sign_in;
   
+  private void init()
+  {
+    client = new OkHttpClient();
+    mapper = new CustomMapper();
+    webConfig = new WebConfig();
+    inputValidator = new InputValidator();
+    
+    // Spinner values
+    List<String> spinnerValues = new ArrayList<>();
+    spinnerValues.add(getString(R.string.spinner_default_choice));
+    spinnerValues.add(getString(R.string.spinner_male_choice));
+    spinnerValues.add(getString(R.string.spinner_female_choice));
+    
+    // Create an ArrayAdapter using the string array and a default spinner layout
+    ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, spinnerValues);
+    // Specify the layout to use when the list of choices appears
+    dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    // Apply the adapter to the spinner
+    spinner_sex.setAdapter(dataAdapter);
+  }
+  
   @Override
   public void onCreate(Bundle savedInstanceState)
   {
@@ -84,26 +104,6 @@ public class SignUpActivity extends AppCompatActivity
         });
   }
   
-  private void init()
-  {
-    client = new OkHttpClient();
-    mapper = new ObjectMapper();
-    webConfig = new WebConfig();
-    inputValidator = new InputValidator();
-    
-    // Spinner values
-    List<String> spinnerValues = new ArrayList<>();
-    spinnerValues.add(getString(R.string.spinner_default_choice));
-    spinnerValues.add(getString(R.string.spinner_male_choice));
-    spinnerValues.add(getString(R.string.spinner_female_choice));
-    
-    // Create an ArrayAdapter using the string array and a default spinner layout
-    ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, spinnerValues);
-    // Specify the layout to use when the list of choices appears
-    dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-    // Apply the adapter to the spinner
-    spinner_sex.setAdapter(dataAdapter);
-  }
   
   private void signUp()
   {
@@ -153,16 +153,7 @@ public class SignUpActivity extends AppCompatActivity
           newUser.setMeasurementIds(new ArrayList<>());
   
           // map object to JSON string
-          String userJsonString = "";
-          try
-          {
-            userJsonString = mapper.writeValueAsString(newUser);
-            Log.d(TAG, "Mapped User Json String = " + userJsonString);
-          }
-          catch (JsonProcessingException e)
-          {
-            e.printStackTrace();
-          }
+          String userJsonString = mapper.mapObjectToJSONString(newUser);
   
           // json request body
           RequestBody body = RequestBody.create(MediaType.parse(getString(R.string.json_media_type)), userJsonString);
@@ -190,8 +181,7 @@ public class SignUpActivity extends AppCompatActivity
               if (response.isSuccessful())
               {
                 String jsonString = response.body().string();
-                UserDto userFromServer = mapper.readValue(jsonString, UserDto.class);
-                SignUpActivity.this.runOnUiThread(() -> onSignUpSuccess(userFromServer));
+                SignUpActivity.this.runOnUiThread(() -> onSignUpSuccess(jsonString));
               }
               else
               {
@@ -215,8 +205,10 @@ public class SignUpActivity extends AppCompatActivity
   }
   
   
-  private void onSignUpSuccess(UserDto userFromServer)
+  private void onSignUpSuccess(String jsonString)
   {
+    UserDto userFromServer = mapper.mapJSONStringToObject(jsonString, UserDto.class);
+    
     Intent intent = getIntent();
     intent.putExtra("user", userFromServer);
     

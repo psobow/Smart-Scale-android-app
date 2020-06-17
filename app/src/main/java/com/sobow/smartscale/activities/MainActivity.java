@@ -16,8 +16,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.material.textfield.TextInputLayout;
 import com.jakewharton.threetenabp.AndroidThreeTen;
 import com.sobow.smartscale.R;
@@ -25,6 +23,7 @@ import com.sobow.smartscale.activities.results.CustomActivityResultCodes;
 import com.sobow.smartscale.config.WebConfig;
 import com.sobow.smartscale.dto.MeasurementDto;
 import com.sobow.smartscale.dto.UserDto;
+import com.sobow.smartscale.mapper.CustomMapper;
 
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
@@ -70,7 +69,7 @@ public class MainActivity extends AppCompatActivity
   
   // dependencies
   private OkHttpClient client;
-  private ObjectMapper mapper;
+  private CustomMapper mapper;
   private WebConfig webConfig;
   
   // date format
@@ -130,7 +129,7 @@ public class MainActivity extends AppCompatActivity
     
     // init dependencies
     client = new OkHttpClient();
-    mapper = new ObjectMapper();
+    mapper = new CustomMapper();
     webConfig = new WebConfig();
     
     dateTimeFormatter = DateTimeFormatter.ofPattern(getString(R.string.date_format));
@@ -214,7 +213,7 @@ public class MainActivity extends AppCompatActivity
     
     // init dependencies
     client = new OkHttpClient();
-    mapper = new ObjectMapper();
+    mapper = new CustomMapper();
     webConfig = new WebConfig();
     
     dateTimeFormatter = DateTimeFormatter.ofPattern(getString(R.string.date_format));
@@ -543,16 +542,7 @@ public class MainActivity extends AppCompatActivity
   void sentPostForMeasurementsAndUpdateListView()
   {
     // map user object to JSON string
-    String userJsonString = "";
-    try
-    {
-      userJsonString = mapper.writeValueAsString(user);
-      Log.d(TAG, "Mapped User Json String = " + userJsonString);
-    }
-    catch (JsonProcessingException e)
-    {
-      e.printStackTrace();
-    }
+    String userJsonString = mapper.mapObjectToJSONString(user);
     
     // create json request body
     RequestBody body = RequestBody.create(MediaType.parse(getString(R.string.json_media_type)), userJsonString);
@@ -581,24 +571,31 @@ public class MainActivity extends AppCompatActivity
         if (response.isSuccessful())
         {
           String jsonString = response.body().string();
-  
-          allMeasurements = new ArrayList<>(Arrays.asList(mapper.readValue(jsonString, MeasurementDto[].class)));
-          
-          // update list view and Start Date / End Date
-          MainActivity.this.runOnUiThread(
-              () ->
-              {
-                updateListView(allMeasurements);
-              });
+          onPostSuccess(jsonString);
         }
         else
         {
-          Toast.makeText(getBaseContext(), getString(R.string.something_went_wrong, response.code()), Toast.LENGTH_LONG)
-               .show();
-          Log.d(TAG, "response code = " + response.code());
+          onPostFailure(response);
         }
       }
     });
+  }
+  
+  private void onPostSuccess(String jsonString)
+  {
+    allMeasurements = new ArrayList<>(Arrays.asList(mapper.mapJSONStringToObject(jsonString, MeasurementDto[].class)));
+    // update list view and filters Start Date, End Date
+    MainActivity.this.runOnUiThread(() -> updateListView(allMeasurements));
+  }
+  
+  private void onPostFailure(Response response)
+  {
+    MainActivity.this.runOnUiThread(() ->
+                                        Toast.makeText(getBaseContext(),
+                                                       getString(R.string.something_went_wrong, response.code()),
+                                                       Toast.LENGTH_LONG)
+                                             .show());
+    Log.d(TAG, "response code = " + response.code());
   }
   
   private void onServerResponseFailure(IOException e)

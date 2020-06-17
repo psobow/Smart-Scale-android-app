@@ -16,12 +16,11 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ContextThemeWrapper;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sobow.smartscale.R;
 import com.sobow.smartscale.activities.results.CustomActivityResultCodes;
 import com.sobow.smartscale.config.WebConfig;
 import com.sobow.smartscale.dto.UserDto;
+import com.sobow.smartscale.mapper.CustomMapper;
 import com.sobow.smartscale.validation.InputValidator;
 
 import java.io.IOException;
@@ -46,7 +45,7 @@ public class UserDataActivity extends AppCompatActivity
   
   // dependencies
   private OkHttpClient client;
-  private ObjectMapper mapper;
+  private CustomMapper mapper;
   private WebConfig webConfig;
   private InputValidator inputValidator;
   
@@ -85,6 +84,32 @@ public class UserDataActivity extends AppCompatActivity
   Button btn_deleteAllYourMeasurements;
   @BindView(R.id.btn_deleteYourAccount)
   Button btn_deleteYourAccount;
+  
+  private void init()
+  {
+    // init dependencies
+    client = new OkHttpClient();
+    mapper = new CustomMapper();
+    webConfig = new WebConfig();
+    inputValidator = new InputValidator();
+    
+    user = (UserDto) getIntent().getSerializableExtra("user");
+    
+    updateUserDataUI();
+    
+    // Spinner values
+    List<String> spinnerValues = new ArrayList<>();
+    spinnerValues.add(getString(R.string.spinner_default_choice));
+    spinnerValues.add(getString(R.string.spinner_male_choice));
+    spinnerValues.add(getString(R.string.spinner_female_choice));
+    
+    // Create an ArrayAdapter using the string array and a default spinner layout
+    ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, spinnerValues);
+    // Specify the layout to use when the list of choices appears
+    dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    // Apply the adapter to the spinner
+    spinner_sex.setAdapter(dataAdapter);
+  }
   
   @Override
   protected void onCreate(Bundle savedInstanceState)
@@ -135,17 +160,8 @@ public class UserDataActivity extends AppCompatActivity
                       () ->
                       {
                         // map user object to JSON string
-        
-                        String userJsonString = "";
-                        try
-                        {
-                          userJsonString = mapper.writeValueAsString(user);
-                          Log.d(TAG, "Mapped User Json String = " + userJsonString);
-                        }
-                        catch (JsonProcessingException e)
-                        {
-                          e.printStackTrace();
-                        }
+  
+                        String userJsonString = mapper.mapObjectToJSONString(user);
         
                         // create json request body
                         RequestBody body = RequestBody.create(MediaType.parse(getString(R.string.json_media_type)),
@@ -281,32 +297,6 @@ public class UserDataActivity extends AppCompatActivity
   }
   
   
-  private void init()
-  {
-    // init dependencies
-    client = new OkHttpClient();
-    mapper = new ObjectMapper();
-    webConfig = new WebConfig();
-    inputValidator = new InputValidator();
-    
-    user = (UserDto) getIntent().getSerializableExtra("user");
-    
-    updateUserDataUI();
-    
-    // Spinner values
-    List<String> spinnerValues = new ArrayList<>();
-    spinnerValues.add(getString(R.string.spinner_default_choice));
-    spinnerValues.add(getString(R.string.spinner_male_choice));
-    spinnerValues.add(getString(R.string.spinner_female_choice));
-    
-    // Create an ArrayAdapter using the string array and a default spinner layout
-    ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, spinnerValues);
-    // Specify the layout to use when the list of choices appears
-    dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-    // Apply the adapter to the spinner
-    spinner_sex.setAdapter(dataAdapter);
-  }
-  
   private void updateUserDataUI()
   {
     tv_currentEmail.setText(getString(R.string.current_email, user.getEmail()));
@@ -368,16 +358,7 @@ public class UserDataActivity extends AppCompatActivity
           newUser.setMeasurementIds(user.getMeasurementIds());
           
           // map object to JSON string
-          String userJsonString = "";
-          try
-          {
-            userJsonString = mapper.writeValueAsString(newUser);
-            Log.d(TAG, "Mapped User Json String = " + userJsonString);
-          }
-          catch (JsonProcessingException e)
-          {
-            e.printStackTrace();
-          }
+          String userJsonString = mapper.mapObjectToJSONString(user);
           
           // json request body
           RequestBody body = RequestBody.create(MediaType.parse(getString(R.string.json_media_type)), userJsonString);
@@ -408,8 +389,7 @@ public class UserDataActivity extends AppCompatActivity
               if (response.isSuccessful())
               {
                 String jsonString = response.body().string();
-                user = mapper.readValue(jsonString, UserDto.class);
-                onUpdateSuccess();
+                onUpdateSuccess(jsonString);
               }
               else
               {
@@ -424,7 +404,7 @@ public class UserDataActivity extends AppCompatActivity
         }, 3000);
   }
   
-  private void onUpdateSuccess()
+  private void onUpdateSuccess(String jsonString)
   {
     UserDataActivity.this.runOnUiThread(() ->
                                         {
@@ -433,6 +413,8 @@ public class UserDataActivity extends AppCompatActivity
                                           updateUserDataUI();
                                         });
   
+    user = mapper.mapJSONStringToObject(jsonString, UserDto.class);
+    
     getIntent().putExtra("user", user);
   
     setResult(CustomActivityResultCodes.USER_DATA_UPDATED, getIntent());
