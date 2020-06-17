@@ -122,7 +122,6 @@ public class SignUpActivity extends AppCompatActivity
   
     if (! validate(email, password, reEnteredPassword, name, age, height, sex))
     {
-      onSignUpFailed();
       return;
     }
     
@@ -182,11 +181,7 @@ public class SignUpActivity extends AppCompatActivity
             @Override
             public void onFailure(Call call, IOException e)
             {
-              SignUpActivity.this.runOnUiThread(
-                  () -> Toast.makeText(getBaseContext(), R.string.connection_with_server_failed, Toast.LENGTH_LONG)
-                             .show());
-  
-              e.printStackTrace();
+              onServerResponseFailure(e);
             }
   
             @Override
@@ -198,22 +193,9 @@ public class SignUpActivity extends AppCompatActivity
                 UserDto userFromServer = mapper.readValue(jsonString, UserDto.class);
                 SignUpActivity.this.runOnUiThread(() -> onSignUpSuccess(userFromServer));
               }
-              else if (response.code() == 400)
-              {
-                SignUpActivity.this.runOnUiThread(
-                    () ->
-                    {
-                      et_email.setError(getString(R.string.email_already_exists));
-                      onSignUpFailed();
-                    });
-              }
               else
               {
-                SignUpActivity.this.runOnUiThread(
-                    () -> Toast.makeText(getBaseContext(),
-                                         getString(R.string.something_went_wrong, response.code()),
-                                         Toast.LENGTH_LONG).show());
-                Log.d(TAG, "response code = " + response.code());
+                onSignUpFailed(response);
               }
             }
           });
@@ -222,6 +204,16 @@ public class SignUpActivity extends AppCompatActivity
           progressDialog.dismiss();
         }, 3000);
   }
+  
+  private void onServerResponseFailure(IOException e)
+  {
+    SignUpActivity.this.runOnUiThread(
+        () -> Toast.makeText(getBaseContext(), R.string.connection_with_server_failed, Toast.LENGTH_LONG)
+                   .show());
+    
+    e.printStackTrace();
+  }
+  
   
   private void onSignUpSuccess(UserDto userFromServer)
   {
@@ -234,9 +226,25 @@ public class SignUpActivity extends AppCompatActivity
     overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
   }
   
-  private void onSignUpFailed()
+  private void onSignUpFailed(Response response)
   {
-    Toast.makeText(getBaseContext(), R.string.sign_up_failed, Toast.LENGTH_LONG).show();
+    if (response.code() == 400)
+    {
+      SignUpActivity.this.runOnUiThread(
+          () ->
+          {
+            Toast.makeText(getBaseContext(), R.string.sign_up_failed, Toast.LENGTH_LONG).show();
+            et_email.setError(getString(R.string.email_already_exists));
+          });
+    }
+    else
+    {
+      SignUpActivity.this.runOnUiThread(
+          () -> Toast.makeText(getBaseContext(),
+                               getString(R.string.something_went_wrong, response.code()),
+                               Toast.LENGTH_LONG).show());
+      Log.d(TAG, "response code = " + response.code());
+    }
   }
   
   private boolean validate(String email, String password, String reEnteredPassword, String userName, String age,

@@ -266,7 +266,6 @@ public class UserDataActivity extends AppCompatActivity
                                                              R.string.measurements_deleted,
                                                              Toast.LENGTH_LONG).show());
     
-    user.setMeasurementIds(new ArrayList<>());
     getIntent().putExtra("user", user);
     setResult(CustomActivityResults.USER_MEASUREMENTS_DELETED, getIntent());
   }
@@ -410,7 +409,7 @@ public class UserDataActivity extends AppCompatActivity
               {
                 String jsonString = response.body().string();
                 user = mapper.readValue(jsonString, UserDto.class);
-                onUpdateSuccess(response);
+                onUpdateSuccess();
               }
               else
               {
@@ -425,7 +424,7 @@ public class UserDataActivity extends AppCompatActivity
         }, 3000);
   }
   
-  private void onUpdateSuccess(Response response)
+  private void onUpdateSuccess()
   {
     UserDataActivity.this.runOnUiThread(() ->
                                         {
