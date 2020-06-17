@@ -11,10 +11,10 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sobow.smartscale.R;
 import com.sobow.smartscale.config.WebConfig;
 import com.sobow.smartscale.dto.UserDto;
+import com.sobow.smartscale.mapper.CustomMapper;
 import com.sobow.smartscale.validation.InputValidator;
 
 import java.io.IOException;
@@ -36,7 +36,7 @@ public class LoginActivity extends AppCompatActivity
   
   // dependencies
   private OkHttpClient client;
-  private ObjectMapper mapper;
+  private CustomMapper mapper;
   private WebConfig webConfig;
   private InputValidator inputValidator;
   
@@ -56,7 +56,7 @@ public class LoginActivity extends AppCompatActivity
   private void init()
   {
     client = new OkHttpClient();
-    mapper = new ObjectMapper();
+    mapper = new CustomMapper();
     webConfig = new WebConfig();
     inputValidator = new InputValidator();
   }
@@ -132,8 +132,7 @@ public class LoginActivity extends AppCompatActivity
               if (response.isSuccessful())
               {
                 String jsonString = response.body().string();
-                UserDto user = mapper.readValue(jsonString, UserDto.class);
-                LoginActivity.this.runOnUiThread(() -> onSignInSuccess(user));
+                LoginActivity.this.runOnUiThread(() -> onSignInSuccess(jsonString));
               }
               else
               {
@@ -159,8 +158,10 @@ public class LoginActivity extends AppCompatActivity
   }
   
   
-  private void onSignInSuccess(UserDto user)
+  private void onSignInSuccess(String jsonString)
   {
+    UserDto user = mapper.mapJSONStringToObject(jsonString, UserDto.class);
+    
     Intent intent = getIntent();
     intent.putExtra("user", user);
   
