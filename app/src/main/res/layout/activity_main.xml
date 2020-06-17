@@ -62,7 +62,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:baselineAligned="false">
+                android:baselineAligned="false"
+                android:focusable="true"
+                android:focusableInTouchMode="true">
 
             <LinearLayout
                     android:layout_width="wrap_content"
@@ -78,8 +80,7 @@
                         android:layout_marginBottom="8dp"
                         android:layout_marginEnd="8dp"
 
-                        android:focusable="true"
-                        android:focusableInTouchMode="true">
+                        >
                     <!-- Upper two lines are need for disable init focus on first
                     editText after method clearFocus() call-->
 

@@ -93,6 +93,11 @@
     <string name="progress_please_wait">Please wait...</string>
     <string name="progress_connecting_bluetooth">Connecting bluetooth</string>
     <string name="progress_updating_data">Updating data</string>
+    <string name="deleting_account">Deleting account</string>
+
+    <!-- Confirmation dialogs -->
+    <string name="warning">Warning!</string>
+    <string name="account_delete_confirmation">Do you really want to delete your account?</string>
 
     <!-- Error flags -->
     <!-- Sign in and Sign up input validators -->

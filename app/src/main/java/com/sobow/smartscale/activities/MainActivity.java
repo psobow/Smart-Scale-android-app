@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.material.textfield.TextInputLayout;
 import com.jakewharton.threetenabp.AndroidThreeTen;
 import com.sobow.smartscale.R;
+import com.sobow.smartscale.activities.results.CustomActivityResults;
 import com.sobow.smartscale.config.WebConfig;
 import com.sobow.smartscale.dto.MeasurementDto;
 import com.sobow.smartscale.dto.UserDto;
@@ -247,11 +248,7 @@ public class MainActivity extends AppCompatActivity
   
     if (savedInstanceState == null)
     {
-      init();
-    
-      // Start login activity for result if user is not logged in
-      Intent newIntent = new Intent(getApplicationContext(), LoginActivity.class);
-      startActivityForResult(newIntent, REQUEST_LOGIN);
+      resetMainAndStartLogin();
     }
     // if savedInstanceState != null then onRestoreState method will restore previous app state
   
@@ -291,9 +288,7 @@ public class MainActivity extends AppCompatActivity
     btn_logout.setOnClickListener(
         v ->
         {
-          init();
-          Intent newIntent = new Intent(getApplicationContext(), LoginActivity.class);
-          startActivityForResult(newIntent, REQUEST_LOGIN);
+          resetMainAndStartLogin();
         });
   
     btn_applyFilters.setOnClickListener(
@@ -446,6 +441,13 @@ public class MainActivity extends AppCompatActivity
         });
   }
   
+  private void resetMainAndStartLogin()
+  {
+    init();
+    Intent newIntent = new Intent(getApplicationContext(), LoginActivity.class);
+    startActivityForResult(newIntent, REQUEST_LOGIN);
+  }
+  
   private List<MeasurementDto> getMeasurementsFromTimeSpan(LocalDate startDate, LocalDate endDate)
   {
     List<MeasurementDto> result = new ArrayList<>();
@@ -520,11 +522,18 @@ public class MainActivity extends AppCompatActivity
     }
     else if (requestCode == REQUEST_USERDATA)
     {
-      if (resultCode == Activity.RESULT_OK)
+      if (resultCode == CustomActivityResults.USER_DATA_UPDATED)
       {
-        // TODO: Implement receving data from userdata activity after successfull data update
+        user = (UserDto) intent.getSerializableExtra("user");
+        tv_yourMeasurements.setText(getString(R.string.hello_user_name_your_measurements,
+                                              (user == null ? "null_user" : user.getUserName())));
+      }
+      else if (resultCode == CustomActivityResults.ACCOUNT_DELETED)
+      {
+        resetMainAndStartLogin();
       }
     }
+  
   }
   
   

@@ -3,6 +3,7 @@ package com.sobow.smartscale.activities;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -18,6 +19,7 @@ import androidx.appcompat.view.ContextThemeWrapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sobow.smartscale.R;
+import com.sobow.smartscale.activities.results.CustomActivityResults;
 import com.sobow.smartscale.config.WebConfig;
 import com.sobow.smartscale.dto.UserDto;
 import com.sobow.smartscale.validation.InputValidator;
@@ -128,19 +130,71 @@ public class UserDataActivity extends AppCompatActivity
         v ->
         {
           new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AppTheme_Dark_Dialog))
-              .setTitle("Warning!")
-              .setMessage("Do you really want to delete your account?")
+              .setTitle(R.string.warning)
+              .setMessage(R.string.account_delete_confirmation)
               .setIcon(android.R.drawable.ic_dialog_alert)
               .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener()
               {
                 public void onClick(DialogInterface dialog, int whichButton)
                 {
-                  Toast.makeText(UserDataActivity.this, "To be implemented...", Toast.LENGTH_SHORT).show();
+                  btn_deleteYourAccount.setEnabled(false);
+  
+                  // Display loading component
+                  ProgressDialog progressDialog = new ProgressDialog(UserDataActivity.this,
+                                                                     R.style.AppTheme_Dark_Dialog);
+                  progressDialog.setIndeterminate(true);
+                  progressDialog.setTitle(getString(R.string.deleting_account));
+                  progressDialog.setMessage(getString(R.string.progress_please_wait));
+                  progressDialog.setCancelable(false);
+                  progressDialog.show();
+  
+                  new Handler().postDelayed(
+                      () ->
+                      {
+        
+                        String email = user.getEmail();
+                        String password = user.getPassword();
+        
+                        String requestUrl = webConfig.getUserControllerURL() + "/" + email + "/" + password;
+        
+                        Request request = new Request.Builder()
+                            .url(requestUrl)
+                            .delete()
+                            .build();
+        
+        
+                        // Execute HTTP requests in background thread
+                        client.newCall(request).enqueue(new Callback()
+                        {
+                          @Override
+                          public void onFailure(Call call, IOException e)
+                          {
+                            onServerResponseFailure(e);
+                          }
+          
+                          @Override
+                          public void onResponse(Call call, Response response) throws IOException
+                          {
+                            if (response.isSuccessful())
+                            {
+                              onDeleteSuccess();
+                            }
+                            else
+                            {
+                              onDeleteFailed(response);
+                            }
+                          }
+                        });
+        
+                        btn_deleteYourAccount.setEnabled(true);
+                        progressDialog.dismiss();
+                      }, 3000);
                 }
               })
               .setNegativeButton(android.R.string.no, null).show();
         });
   }
+  
   
   private void init()
   {
@@ -201,7 +255,6 @@ public class UserDataActivity extends AppCompatActivity
   
     if (! validate(email, password, reEnteredPassword, name, age, height, sex))
     {
-      onUpdateDataFailed();
       return;
     }
     
@@ -219,7 +272,6 @@ public class UserDataActivity extends AppCompatActivity
     new android.os.Handler().postDelayed(
         () ->
         {
-          
           // initialize UserDto object
           UserDto newUser = new UserDto();
           newUser.setUserName(name);
@@ -262,11 +314,7 @@ public class UserDataActivity extends AppCompatActivity
             @Override
             public void onFailure(Call call, IOException e)
             {
-              UserDataActivity.this.runOnUiThread(
-                  () -> Toast.makeText(getBaseContext(), R.string.connection_with_server_failed, Toast.LENGTH_LONG)
-                             .show());
-              
-              e.printStackTrace();
+              onServerResponseFailure(e);
             }
             
             @Override
@@ -276,25 +324,13 @@ public class UserDataActivity extends AppCompatActivity
               {
                 String jsonString = response.body().string();
                 user = mapper.readValue(jsonString, UserDto.class);
-                UserDataActivity.this.runOnUiThread(() -> onUpdateDataSuccess());
-              }
-              else if (response.code() == 400)
-              {
-                UserDataActivity.this.runOnUiThread(
-                    () ->
-                    {
-                      et_email.setError(getString(R.string.email_already_exists));
-                      onUpdateDataFailed();
-                    });
+                UserDataActivity.this.runOnUiThread(() -> onUpdateSuccess(response));
               }
               else
               {
-                UserDataActivity.this.runOnUiThread(
-                    () -> Toast.makeText(getBaseContext(),
-                                         getString(R.string.something_went_wrong, response.code()),
-                                         Toast.LENGTH_LONG).show());
-                Log.d(TAG, "response code = " + response.code());
+                UserDataActivity.this.runOnUiThread(() -> onUpdateDataFailed(response));
               }
+  
             }
           });
           
@@ -303,22 +339,59 @@ public class UserDataActivity extends AppCompatActivity
         }, 3000);
   }
   
-  private void onUpdateDataSuccess()
+  private void onUpdateSuccess(Response response)
   {
-    setResult(RESULT_OK);
     Toast.makeText(getBaseContext(), R.string.data_updated, Toast.LENGTH_LONG).show();
+  
+    setResult(CustomActivityResults.USER_DATA_UPDATED);
+    
     getIntent().putExtra("user", user);
+  
     updateUserDataUI();
     
     // clear focus
     getWindow().getDecorView().clearFocus();
   }
   
-  private void onUpdateDataFailed()
+  private void onUpdateDataFailed(Response response)
   {
-    Toast.makeText(getBaseContext(), R.string.update_data_failed, Toast.LENGTH_LONG).show();
+    if (response.code() == 400)
+    {
+      et_email.setError(getString(R.string.email_already_exists));
+      Toast.makeText(getBaseContext(), R.string.update_data_failed, Toast.LENGTH_LONG).show();
+    }
+    else
+    {
+      Toast.makeText(getBaseContext(), getString(R.string.something_went_wrong, response.code()), Toast.LENGTH_LONG)
+           .show();
+      Log.d(TAG, "response code = " + response.code());
+    }
   }
   
+  
+  private void onServerResponseFailure(IOException e)
+  {
+    UserDataActivity.this.runOnUiThread(
+        () -> Toast.makeText(getBaseContext(), R.string.connection_with_server_failed, Toast.LENGTH_LONG)
+                   .show());
+    
+    e.printStackTrace();
+  }
+  
+  private void onDeleteFailed(Response response)
+  {
+    UserDataActivity.this.runOnUiThread(
+        () -> Toast.makeText(getBaseContext(),
+                             getString(R.string.something_went_wrong, response.code()),
+                             Toast.LENGTH_LONG).show());
+    Log.d(TAG, "response code = " + response.code());
+  }
+  
+  private void onDeleteSuccess()
+  {
+    setResult(CustomActivityResults.ACCOUNT_DELETED);
+    finish();
+  }
   
   private boolean validate(String email, String password, String reEnteredPassword, String userName, String age,
                            String height, String userSex)
