@@ -80,11 +80,13 @@
     <string name="device_does_not_support_bluetooth">Device does not have bluetooth capabilities.</string>
     <string name="enabling_bluetooth">Enabling Bluetooth.</string>
     <string name="disabling_bluetooth">Disabling Bluetooth.</string>
+    <string name="first_pair_with_device">First pair with device!</string>
     <string name="no_data_to_filter">No data to filter. Create one!</string>
     <string name="device_discoverable_for_300_seconds">Making device discoverable for 300 seconds.</string>
     <string name="data_updated">Data successfully updated!</string>
     <string name="measurements_deleted">Your measurements has been deleted!</string>
     <string name="update_data_failed">Update data failed.</string>
+
 
     <!-- Progress dialog messages -->
     <string name="progress_authenticating">Authenticating</string>

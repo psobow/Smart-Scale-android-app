@@ -306,7 +306,7 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
           Toast.makeText(getBaseContext(), R.string.device_discoverable_for_300_seconds, Toast.LENGTH_LONG).show();
           Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
           discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
-        
+  
           IntentFilter IntentFilter = new IntentFilter(bluetoothAdapter.ACTION_SCAN_MODE_CHANGED);
           registerReceiver(mBroadcastReceiver2, IntentFilter);
         });
@@ -327,7 +327,7 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
             progressDialog.setMessage(getString(R.string.progress_please_wait));
             progressDialog.setCancelable(false);
             progressDialog.show();
-          
+  
             new android.os.Handler().postDelayed(
                 () ->
                 {
@@ -335,7 +335,7 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
                   {
                     bluetoothAdapter.cancelDiscovery();
                     Log.d(TAG, "onClick: canceling discovery.");
-                  
+  
                     bluetoothAdapter.startDiscovery();
                     IntentFilter discoverDevicesIntent = new IntentFilter(BluetoothDevice.ACTION_FOUND);
                     registerReceiver(mBroadcastReceiver3, discoverDevicesIntent);
@@ -343,12 +343,12 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
                   else
                   {
                     checkBTPermissions();
-                  
+  
                     bluetoothAdapter.startDiscovery();
                     IntentFilter discoverDevicesIntent = new IntentFilter(BluetoothDevice.ACTION_FOUND);
                     registerReceiver(mBroadcastReceiver3, discoverDevicesIntent);
                   }
-                
+  
                   progressDialog.dismiss();
                   btn_discoverDevices.setEnabled(true);
                 }, 3000);
@@ -358,14 +358,24 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
     lv_devices.setOnItemClickListener(BluetoothActivity.this);
   
     btn_startConnection.setOnClickListener(
-        v -> startBTConnection(bluetoothDevice, MY_UUID_INSECURE));
-  
+        v ->
+        {
+          if (bluetoothDevice != null)
+          {
+            startBTConnection(bluetoothDevice, MY_UUID_INSECURE);
+          }
+          else
+          {
+            Toast.makeText(getBaseContext(), R.string.first_pair_with_device, Toast.LENGTH_LONG).show();
+          }
+        });
+    
     btn_saveData.setOnClickListener(
         v ->
         {
           boolean isValidWeight = true;
-        
-        
+  
+  
           try
           {
             String inputWeight = et_weight.getText().toString();
@@ -375,12 +385,12 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
           {
             isValidWeight = false;
           }
-        
-        
+  
+  
           if (isValidWeight)
           {
             btn_saveData.setEnabled(false);
-          
+  
             final ProgressDialog progressDialog = new ProgressDialog(BluetoothActivity.this,
                                                                      R.style.AppTheme_Dark_Dialog);
             progressDialog.setIndeterminate(true);
@@ -388,12 +398,12 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
             progressDialog.setMessage(getString(R.string.progress_please_wait));
             progressDialog.setCancelable(false);
             progressDialog.show();
-          
+  
             new android.os.Handler().postDelayed(
                 () ->
                 {
                   // sentMeasurementToServer
-                
+  
                   MeasurementDto newMeasurement = new MeasurementDto();
                   newMeasurement.setLocalDateTime(LocalDateTime.now());
                   double weight = Double.parseDouble(userWeight);
@@ -401,7 +411,7 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
                   double height = user.getHeight() / 100.0;
                   newMeasurement.setBMI(weight / (height * height));
                   newMeasurement.setUserId(user.getIdFromServer());
-                
+  
                   // map object to JSON string
                   String measurementJsonString = "";
                   try
@@ -413,18 +423,18 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
                   {
                     e.printStackTrace();
                   }
-                
+  
                   // json request body
                   RequestBody body = RequestBody.create(MediaType.parse(getString(R.string.json_media_type)),
                                                         measurementJsonString);
-                
+  
                   String requestUrl = webConfig.getCreateMeasurementURL();
-                
+  
                   Request request = new Request.Builder()
                       .url(requestUrl)
                       .post(body)
                       .build();
-                
+  
                   // Execute HTTP requests in background thread
                   client.newCall(request).enqueue(new Callback()
                   {
@@ -433,7 +443,7 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
                     {
                       onServerResponseFailure(e);
                     }
-                  
+  
                     @Override
                     public void onResponse(Call call, Response response) throws IOException
                     {
@@ -455,7 +465,7 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
           {
             Toast.makeText(getBaseContext(), R.string.wait_for_data_or_insert, Toast.LENGTH_LONG).show();
           }
-        
+  
         });
   
   
