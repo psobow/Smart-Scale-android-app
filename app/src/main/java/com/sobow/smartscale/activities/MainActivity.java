@@ -151,9 +151,9 @@ public class MainActivity extends AppCompatActivity
     getWindow().getDecorView().clearFocus();
     
     // scroll to top
+    lv_measurements.setSelection(0);
     sv_main.fullScroll(ScrollView.FOCUS_UP);
   
-    lv_measurements.setSelectionAfterHeaderView();
   }
   
   private void resetPreviousValidFilterDates()
@@ -583,9 +583,19 @@ public class MainActivity extends AppCompatActivity
     });
   }
   
+  private void onServerResponseFailure(IOException e)
+  {
+    MainActivity.this.runOnUiThread(
+        () -> Toast.makeText(getBaseContext(), R.string.connection_with_server_failed, Toast.LENGTH_LONG)
+                   .show());
+    
+    e.printStackTrace();
+  }
+  
   private void onPostSuccess(String jsonString)
   {
     allMeasurements = new ArrayList<>(Arrays.asList(mapper.mapJSONStringToObject(jsonString, MeasurementDto[].class)));
+  
     // update list view and filters Start Date, End Date
     MainActivity.this.runOnUiThread(() -> updateListView(allMeasurements));
   }
@@ -597,16 +607,8 @@ public class MainActivity extends AppCompatActivity
                                                        getString(R.string.something_went_wrong, response.code()),
                                                        Toast.LENGTH_LONG)
                                              .show());
-    Log.d(TAG, "response code = " + response.code());
-  }
   
-  private void onServerResponseFailure(IOException e)
-  {
-    MainActivity.this.runOnUiThread(
-        () -> Toast.makeText(getBaseContext(), R.string.connection_with_server_failed, Toast.LENGTH_LONG)
-                   .show());
-    
-    e.printStackTrace();
+    Log.d(TAG, "response code = " + response.code());
   }
   
   
