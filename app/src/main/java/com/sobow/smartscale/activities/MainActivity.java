@@ -152,6 +152,8 @@ public class MainActivity extends AppCompatActivity
     
     // scroll to top
     sv_main.fullScroll(ScrollView.FOCUS_UP);
+  
+    lv_measurements.setSelectionAfterHeaderView();
   }
   
   private void resetPreviousValidFilterDates()
