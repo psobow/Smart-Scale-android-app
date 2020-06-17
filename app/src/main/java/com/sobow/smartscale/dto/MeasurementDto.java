@@ -11,6 +11,7 @@ import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.format.DateTimeFormatter;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class MeasurementDto implements Serializable
 {
@@ -90,6 +91,24 @@ public class MeasurementDto implements Serializable
     return "Date Time: " + localDateTime.format(DateTimeFormatter.ofPattern(DATE_FORMATTER)) +
         ", weight: " + String.format("%.1f", weight) + " kg" +
         ", BMI: " + String.format("%.1f", BMI);
+  }
+  
+  @Override
+  public boolean equals(Object o)
+  {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    MeasurementDto that = (MeasurementDto) o;
+    return Double.compare(that.weight, weight) == 0 &&
+        Double.compare(that.BMI, BMI) == 0 &&
+        userId == that.userId &&
+        Objects.equals(localDateTime, that.localDateTime);
+  }
+  
+  @Override
+  public int hashCode()
+  {
+    return Objects.hash(localDateTime, weight, BMI, userId);
   }
 }
 

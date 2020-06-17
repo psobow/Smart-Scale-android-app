@@ -1,8 +1,11 @@
 package com.sobow.smartscale.activities;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,7 +17,9 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.ContextThemeWrapper;
 
 import com.google.android.material.textfield.TextInputLayout;
 import com.jakewharton.threetenabp.AndroidThreeTen;
@@ -204,6 +209,8 @@ public class MainActivity extends AppCompatActivity
     
     bundle.putSerializable("previousValidStartDateFilter", previousValidStartDateFilter);
     bundle.putSerializable("previousValidEndDateFilter", previousValidEndDateFilter);
+  
+    bundle.putString("filterInfo", tv_filterInfo.getText().toString());
   }
   
   @Override
@@ -238,7 +245,14 @@ public class MainActivity extends AppCompatActivity
     
     previousValidStartDateFilter = (LocalDate) bundle.getSerializable("previousValidStartDateFilter");
     previousValidEndDateFilter = (LocalDate) bundle.getSerializable("previousValidEndDateFilter");
-    
+  
+  
+    // reset filter hints
+    til_startDate.setHint(getString(R.string.hint_start_date_filter, getString(R.string.date_format)));
+    til_endDate.setHint(getString(R.string.hint_end_date_filter, getString(R.string.date_format)));
+  
+    // restore filter info
+    tv_filterInfo.setText(bundle.getString("filterInfo"));
     
     setUpPreviousValidDateInEditTextFilters();
   }
@@ -258,13 +272,75 @@ public class MainActivity extends AppCompatActivity
     // if savedInstanceState != null then onRestoreState method will restore previous app state
   
   
-    // lv measurements on click behavior // TODO: implement removing measurement after click. Ask for confirmation before removing.
+    // lv measurements on click behavior
     lv_measurements.setOnItemClickListener(
         (parent, view, position, id) ->
         {
-          // TODO: rozstrzygnać sytuacje gdy nie ma żadnych pomiarów
-  
-          MeasurementDto clickedMeasurement = (MeasurementDto) parent.getItemAtPosition(position);
+          if (! currentMeasurements.isEmpty())
+          {
+            MeasurementDto clickedMeasurement = (MeasurementDto) parent.getItemAtPosition(position);
+    
+            // Display confirmation:
+    
+            new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AppTheme_Dark_Dialog))
+                .setTitle(R.string.warning)
+                .setMessage(getString(R.string.delete_specific_measurement_confirmation, clickedMeasurement.toString()))
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener()
+                {
+                  public void onClick(DialogInterface dialog, int whichButton)
+                  {
+            
+                    // Display loading component
+                    ProgressDialog progressDialog = new ProgressDialog(MainActivity.this,
+                                                                       R.style.AppTheme_Dark_Dialog);
+                    progressDialog.setIndeterminate(true);
+                    progressDialog.setTitle(getString(R.string.deleting_measurement));
+                    progressDialog.setMessage(getString(R.string.progress_please_wait));
+                    progressDialog.setCancelable(false);
+                    progressDialog.show();
+            
+                    new Handler().postDelayed(
+                        () ->
+                        {
+                          String measurementId = String.valueOf(clickedMeasurement.getIdFromServer());
+                          String requestUrl = webConfig.getMeasurementControllerURL() + "/" + measurementId;
+                  
+                          Request request = new Request.Builder()
+                              .url(requestUrl)
+                              .delete()
+                              .build();
+                  
+                  
+                          // Execute HTTP requests in background thread
+                          client.newCall(request).enqueue(new Callback()
+                          {
+                            @Override
+                            public void onFailure(Call call, IOException e)
+                            {
+                              onServerResponseFailure(e);
+                            }
+                    
+                            @Override
+                            public void onResponse(Call call, Response response) throws IOException
+                            {
+                              if (response.isSuccessful())
+                              {
+                                onDeleteMeasurementSuccess(clickedMeasurement);
+                              }
+                              else
+                              {
+                                onDeleteMeasurementFailure(response);
+                              }
+                            }
+                          });
+                  
+                          progressDialog.dismiss();
+                        }, 3000);
+                  }
+                })
+                .setNegativeButton(android.R.string.no, null).show();
+          }
           
         });
     
@@ -467,6 +543,35 @@ public class MainActivity extends AppCompatActivity
                  .show();
           }
         });
+  }
+  
+  private void onDeleteMeasurementFailure(Response response)
+  {
+    MainActivity.this.runOnUiThread(() ->
+                                        Toast.makeText(getBaseContext(),
+                                                       getString(R.string.something_went_wrong, response.code()),
+                                                       Toast.LENGTH_LONG)
+                                             .show());
+    
+    Log.d(TAG, "response code = " + response.code());
+  }
+  
+  private void onDeleteMeasurementSuccess(MeasurementDto deletedMeasurement)
+  {
+    currentMeasurements.remove(deletedMeasurement);
+    
+    MainActivity.this.runOnUiThread(() ->
+                                    {
+                                      Toast.makeText(getBaseContext(),
+                                                     R.string.measurement_deleted,
+                                                     Toast.LENGTH_LONG)
+                                           .show();
+                                      // refresh list view
+                                      arrayAdapter.notifyDataSetChanged();
+                                      lv_measurements.invalidateViews();
+                                    });
+    
+    
   }
   
   private void resetMainAndStartLogin()
@@ -676,8 +781,8 @@ public class MainActivity extends AppCompatActivity
       et_startDate.setText(previousValidStartDateFilter.format(dateTimeFormatter));
       et_endDate.setText(previousValidEndDateFilter.format(dateTimeFormatter));
     }
-    
-    // update list view
+  
+    // refresh list view
     arrayAdapter.notifyDataSetChanged();
     lv_measurements.invalidateViews();
   }

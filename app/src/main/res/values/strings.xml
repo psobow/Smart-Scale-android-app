@@ -84,8 +84,9 @@
     <string name="no_data_to_filter">No data to filter. Create one!</string>
     <string name="device_discoverable_for_300_seconds">Making device discoverable for 300 seconds.</string>
     <string name="data_updated">Data successfully updated!</string>
-    <string name="measurements_deleted">Your measurements has been deleted!</string>
+    <string name="measurements_deleted">Your all measurements has been deleted.</string>
     <string name="update_data_failed">Update data failed.</string>
+    <string name="measurement_deleted">Measurement has been deleted.</string>
 
 
     <!-- Progress dialog messages -->
@@ -98,11 +99,13 @@
     <string name="progress_updating_data">Updating data</string>
     <string name="deleting_account">Deleting account</string>
     <string name="deleting_measurements">Deleting measurements</string>
+    <string name="deleting_measurement">Deleting measurement</string>
 
     <!-- Confirmation dialogs -->
     <string name="warning">Warning!</string>
     <string name="account_delete_confirmation">Do you really want to delete your account?</string>
     <string name="delete_measurements_confirmation">Do you really want to delete all your measurements?</string>
+    <string name="delete_specific_measurement_confirmation">Do you really want to delete measurement\n%1$s?</string>
 
     <!-- Error flags -->
     <!-- Sign in and Sign up input validators -->
