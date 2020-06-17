@@ -114,6 +114,8 @@ public class MainActivity extends AppCompatActivity
   EditText et_startDate;
   @BindView(R.id.et_endDate)
   EditText et_endDate;
+  @BindView(R.id.tv_filterInfo)
+  TextView tv_filterInfo;
   
   // need to set up hint properly in the source code
   @BindView(R.id.til_startDate)
@@ -414,6 +416,12 @@ public class MainActivity extends AppCompatActivity
   
               currentMeasurements.addAll(filteredMeasurements);
   
+              if (currentMeasurements.isEmpty())
+              {
+                tv_filterInfo.setText(getString(R.string.no_measurements_from_to, startDate, endDate));
+              }
+              else { tv_filterInfo.setText(""); }
+  
               // update list view
               arrayAdapter.notifyDataSetChanged();
               lv_measurements.invalidateViews();
@@ -642,12 +650,13 @@ public class MainActivity extends AppCompatActivity
     
     if (measurements.isEmpty())
     {
-      // TODO: inform somehow about that there is no measurements
+      tv_filterInfo.setText(R.string.no_measurements_from_server);
       resetOldestAndNewestMeasurement();
       resetPreviousValidFilterDates();
     }
     else
     {
+      tv_filterInfo.setText("");
       for (int i = 0; i < measurements.size(); i++)
       {
         currentMeasurements.add(measurements.get(i));

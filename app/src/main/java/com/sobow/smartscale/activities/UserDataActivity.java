@@ -49,6 +49,8 @@ public class UserDataActivity extends AppCompatActivity
   private WebConfig webConfig;
   private InputValidator inputValidator;
   
+  List<String> spinnerValues;
+  
   // GUI components
   @BindView(R.id.tv_currentEmail)
   TextView tv_currentEmail;
@@ -95,10 +97,8 @@ public class UserDataActivity extends AppCompatActivity
     
     user = (UserDto) getIntent().getSerializableExtra("user");
     
-    updateUserDataUI();
-    
     // Spinner values
-    List<String> spinnerValues = new ArrayList<>();
+    spinnerValues = new ArrayList<>();
     spinnerValues.add(getString(R.string.spinner_default_choice));
     spinnerValues.add(getString(R.string.spinner_male_choice));
     spinnerValues.add(getString(R.string.spinner_female_choice));
@@ -109,6 +109,8 @@ public class UserDataActivity extends AppCompatActivity
     dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
     // Apply the adapter to the spinner
     spinner_sex.setAdapter(dataAdapter);
+  
+    updateUserDataUI();
   }
   
   @Override
@@ -304,14 +306,17 @@ public class UserDataActivity extends AppCompatActivity
     tv_currentAge.setText(getString(R.string.current_age, user.getAge()));
     tv_currentHeight.setText(getString(R.string.current_height, user.getHeight()));
     tv_currentSex.setText(getString(R.string.current_sex, user.getSex()));
-    
-    et_email.setText("");
-    et_password.setText("");
-    et_reEnterPassword.setText("");
-    et_userName.setText("");
-    et_age.setText("");
-    et_height.setText("");
-    spinner_sex.setSelection(0);
+  
+    et_email.setText(user.getEmail());
+    et_password.setText(user.getPassword());
+    et_reEnterPassword.setText(user.getPassword());
+    et_userName.setText(user.getUserName());
+    et_age.setText(String.valueOf(user.getAge()));
+    et_height.setText(String.valueOf(user.getHeight()));
+  
+    String currentSex = user.getSex();
+    int selectedPosition = spinnerValues.indexOf(currentSex);
+    spinner_sex.setSelection(selectedPosition);
   }
   
   private void updateData()
@@ -358,7 +363,7 @@ public class UserDataActivity extends AppCompatActivity
           newUser.setMeasurementIds(user.getMeasurementIds());
           
           // map object to JSON string
-          String userJsonString = mapper.mapObjectToJSONString(user);
+          String userJsonString = mapper.mapObjectToJSONString(newUser);
           
           // json request body
           RequestBody body = RequestBody.create(MediaType.parse(getString(R.string.json_media_type)), userJsonString);
@@ -406,21 +411,19 @@ public class UserDataActivity extends AppCompatActivity
   
   private void onUpdateSuccess(String jsonString)
   {
+    user = mapper.mapJSONStringToObject(jsonString, UserDto.class);
+    
     UserDataActivity.this.runOnUiThread(() ->
                                         {
                                           Toast.makeText(getBaseContext(), R.string.data_updated, Toast.LENGTH_LONG)
                                                .show();
                                           updateUserDataUI();
+                                          // clear focus
+                                          getWindow().getDecorView().clearFocus();
                                         });
-  
-    user = mapper.mapJSONStringToObject(jsonString, UserDto.class);
     
     getIntent().putExtra("user", user);
-  
     setResult(CustomActivityResultCodes.USER_DATA_UPDATED, getIntent());
-    
-    // clear focus
-    getWindow().getDecorView().clearFocus();
   }
   
   private void onUpdateDataFailure(Response response)
