@@ -53,11 +53,8 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 
-// TODO: create mapper class implement Map user to json. map json to User object etc.
-
-
-// TODO: implement functionality to remove given measurement from the list by pressing it. display confirmation dialog before removing.
-
+// TODO: Implement Forgot Password functionality
+// TODO: Implement print chart functionality
 
 // TODO: implement feature for sending request for validation constraints on each field. Constraints will be stored in one place then. less important
 // TODO: find better way to handle requests in background thread. how to wait for the response? less important
@@ -385,7 +382,7 @@ public class MainActivity extends AppCompatActivity
           String endDate = et_endDate.getText().toString();
   
           // reset error flags
-          resetFilterErrors();
+          resetFiltersError();
   
           boolean isInputValid = true;
   
@@ -486,8 +483,6 @@ public class MainActivity extends AppCompatActivity
               List<MeasurementDto> filteredMeasurements = getMeasurementsFromTimeSpan(startDateParsed, endDateParsed);
   
               // Update list view
-  
-              // clear list view content
               currentMeasurements.clear();
   
               currentMeasurements.addAll(filteredMeasurements);
@@ -545,6 +540,14 @@ public class MainActivity extends AppCompatActivity
         });
   }
   
+  private void resetMainAndStartLogin()
+  {
+    init();
+    Intent newIntent = new Intent(getApplicationContext(), LoginActivity.class);
+    startActivityForResult(newIntent, REQUEST_LOGIN);
+  }
+  
+  // onDelete Success and Failure
   private void onDeleteMeasurementFailure(Response response)
   {
     MainActivity.this.runOnUiThread(() ->
@@ -558,7 +561,7 @@ public class MainActivity extends AppCompatActivity
   
   private void onDeleteMeasurementSuccess(MeasurementDto deletedMeasurement)
   {
-    currentMeasurements.remove(deletedMeasurement);
+    allMeasurements.remove(deletedMeasurement);
     
     MainActivity.this.runOnUiThread(() ->
                                     {
@@ -566,20 +569,13 @@ public class MainActivity extends AppCompatActivity
                                                      R.string.measurement_deleted,
                                                      Toast.LENGTH_LONG)
                                            .show();
-                                      // refresh list view
-                                      arrayAdapter.notifyDataSetChanged();
-                                      lv_measurements.invalidateViews();
+  
+                                      initListView(allMeasurements);
                                     });
     
     
   }
   
-  private void resetMainAndStartLogin()
-  {
-    init();
-    Intent newIntent = new Intent(getApplicationContext(), LoginActivity.class);
-    startActivityForResult(newIntent, REQUEST_LOGIN);
-  }
   
   private List<MeasurementDto> getMeasurementsFromTimeSpan(LocalDate startDate, LocalDate endDate)
   {
@@ -611,7 +607,7 @@ public class MainActivity extends AppCompatActivity
   
   private void resetFiltersTextAndHintAndError()
   {
-    resetFilterErrors();
+    resetFiltersError();
   
     // reset edit texts
     et_startDate.setText("");
@@ -622,7 +618,7 @@ public class MainActivity extends AppCompatActivity
     til_endDate.setHint(getString(R.string.hint_end_date_filter, getString(R.string.date_format)));
   }
   
-  private void resetFilterErrors()
+  private void resetFiltersError()
   {
     et_startDate.setError(null);
     et_endDate.setError(null);
