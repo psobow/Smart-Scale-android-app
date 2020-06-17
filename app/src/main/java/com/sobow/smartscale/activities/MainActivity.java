@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity
   private ArrayList<MeasurementDto> allMeasurements;
   
   // list view
-  private ArrayList<String> stringListWithMeasurements;
+  private ArrayList<MeasurementDto> currentMeasurements;
   private ArrayAdapter arrayAdapter; // need for list view component
   
   // oldest and newest measurements date time. These fields are need for proper filtering workflow
@@ -170,8 +170,8 @@ public class MainActivity extends AppCompatActivity
   
   private void resetListView()
   {
-    stringListWithMeasurements = new ArrayList<>();
-    arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, stringListWithMeasurements);
+    currentMeasurements = new ArrayList<>();
+    arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, currentMeasurements);
     lv_measurements.setAdapter(arrayAdapter);
   }
   
@@ -194,8 +194,8 @@ public class MainActivity extends AppCompatActivity
     bundle.putSerializable("user", user);
     
     bundle.putSerializable("allMeasurements", allMeasurements);
-    
-    bundle.putSerializable("stringListWithMeasurements", stringListWithMeasurements);
+  
+    bundle.putSerializable("currentMeasurements", currentMeasurements);
     
     bundle.putSerializable("oldestMeasurementDateTime", oldestMeasurementDateTime);
     bundle.putSerializable("newestMeasurementDateTime", newestMeasurementDateTime);
@@ -227,8 +227,8 @@ public class MainActivity extends AppCompatActivity
     allMeasurements = (ArrayList<MeasurementDto>) bundle.getSerializable("allMeasurements");
     
     // Restore list view
-    stringListWithMeasurements = (ArrayList<String>) bundle.getSerializable("stringListWithMeasurements");
-    arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, stringListWithMeasurements);
+    currentMeasurements = (ArrayList<MeasurementDto>) bundle.getSerializable("currentMeasurements");
+    arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, currentMeasurements);
     lv_measurements.setAdapter(arrayAdapter);
     
     oldestMeasurementDateTime = (LocalDateTime) bundle.getSerializable("oldestMeasurementDateTime");
@@ -260,7 +260,10 @@ public class MainActivity extends AppCompatActivity
     lv_measurements.setOnItemClickListener(
         (parent, view, position, id) ->
         {
-        
+          // TODO: rozstrzygnać sytuacje gdy nie ma żadnych pomiarów
+  
+          MeasurementDto clickedMeasurement = (MeasurementDto) parent.getItemAtPosition(position);
+          
         });
     
     // buttons on click behavior
@@ -403,7 +406,21 @@ public class MainActivity extends AppCompatActivity
               previousValidEndDateFilter = endDateParsed;
   
               List<MeasurementDto> filteredMeasurements = getMeasurementsFromTimeSpan(startDateParsed, endDateParsed);
-              updateListView(filteredMeasurements);
+  
+              // Update list view
+  
+              // clear list view content
+              currentMeasurements.clear();
+  
+              currentMeasurements.addAll(filteredMeasurements);
+  
+              // update list view
+              arrayAdapter.notifyDataSetChanged();
+              lv_measurements.invalidateViews();
+  
+              // update UI filters start date and end date
+              et_startDate.setText(previousValidStartDateFilter.format(dateTimeFormatter));
+              et_endDate.setText(previousValidEndDateFilter.format(dateTimeFormatter));
             }
             else
             {
@@ -426,7 +443,7 @@ public class MainActivity extends AppCompatActivity
         {
           if (! allMeasurements.isEmpty())
           {
-            updateListView(allMeasurements);
+            initListView(allMeasurements);
             Toast.makeText(getBaseContext(),
                            getString(R.string.filtered_from_to,
                                      oldestMeasurementDateTime.format(dateTimeFormatter),
@@ -597,7 +614,7 @@ public class MainActivity extends AppCompatActivity
     allMeasurements = new ArrayList<>(Arrays.asList(mapper.mapJSONStringToObject(jsonString, MeasurementDto[].class)));
   
     // update list view and filters Start Date, End Date
-    MainActivity.this.runOnUiThread(() -> updateListView(allMeasurements));
+    MainActivity.this.runOnUiThread(() -> initListView(allMeasurements));
   }
   
   private void onPostFailure(Response response)
@@ -612,10 +629,10 @@ public class MainActivity extends AppCompatActivity
   }
   
   
-  private void updateListView(List<MeasurementDto> measurements)
+  private void initListView(List<MeasurementDto> measurements)
   {
     // clear list view content
-    stringListWithMeasurements.clear();
+    currentMeasurements.clear();
     
     // sort by date time
     // date closest to present day will be shown at top place in list view
@@ -625,30 +642,30 @@ public class MainActivity extends AppCompatActivity
     
     if (measurements.isEmpty())
     {
-      stringListWithMeasurements.add(getString(R.string.no_measurements_from_server));
-      
+      // TODO: inform somehow about that there is no measurements
       resetOldestAndNewestMeasurement();
-      
       resetPreviousValidFilterDates();
     }
     else
     {
       for (int i = 0; i < measurements.size(); i++)
       {
-        stringListWithMeasurements.add(measurements.get(i).toString());
+        currentMeasurements.add(measurements.get(i));
       }
-      
-      // update oldest and newest date measurement
-      oldestMeasurementDateTime = measurements.get(measurements.size() - 1).getLocalDateTime();
-      newestMeasurementDateTime = measurements.get(0).getLocalDateTime();
+  
+      // set up oldest and newest date measurement
+      oldestMeasurementDateTime = allMeasurements.get(allMeasurements.size() - 1).getLocalDateTime();
+      newestMeasurementDateTime = allMeasurements.get(0).getLocalDateTime();
   
       // set up new previous valid dates
-      previousValidStartDateFilter = oldestMeasurementDateTime.toLocalDate();
-      previousValidEndDateFilter = newestMeasurementDateTime.toLocalDate();
+      previousValidStartDateFilter = currentMeasurements.get(currentMeasurements.size() - 1)
+                                                        .getLocalDateTime()
+                                                        .toLocalDate();
+      previousValidEndDateFilter = currentMeasurements.get(0).getLocalDateTime().toLocalDate();
       
       // update UI filters start date and end date
-      et_startDate.setText(oldestMeasurementDateTime.format(dateTimeFormatter));
-      et_endDate.setText(newestMeasurementDateTime.format(dateTimeFormatter));
+      et_startDate.setText(previousValidStartDateFilter.format(dateTimeFormatter));
+      et_endDate.setText(previousValidEndDateFilter.format(dateTimeFormatter));
     }
     
     // update list view
