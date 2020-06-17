@@ -49,6 +49,9 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 
+// TODO: create mapper class implement Map user to json. map json to User object etc.
+
+
 // TODO: fix issue with close application after screen orientation change. VERY IMPORTANT ! implement onPause onStart!!!
 // TODO: implement functionality to remove given measurement from the list by pressing it. display confirmation dialog before removing.
 
@@ -522,11 +525,12 @@ public class MainActivity extends AppCompatActivity
     }
     else if (requestCode == REQUEST_USERDATA)
     {
-      if (resultCode == CustomActivityResults.USER_DATA_UPDATED)
+      if (resultCode == CustomActivityResults.USER_DATA_UPDATED || resultCode == CustomActivityResults.USER_MEASUREMENTS_DELETED)
       {
         user = (UserDto) intent.getSerializableExtra("user");
         tv_yourMeasurements.setText(getString(R.string.hello_user_name_your_measurements,
                                               (user == null ? "null_user" : user.getUserName())));
+        sentPostForMeasurementsAndUpdateListView();
       }
       else if (resultCode == CustomActivityResults.ACCOUNT_DELETED)
       {

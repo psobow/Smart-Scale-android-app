@@ -453,7 +453,7 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
                         BluetoothActivity.this.runOnUiThread(
                             () -> Toast.makeText(getBaseContext(), R.string.data_saved_successfully, Toast.LENGTH_LONG)
                                        .show());
-                        setResult(RESULT_OK);
+                        setResult(RESULT_OK, getIntent());
                       }
                       else
                       {

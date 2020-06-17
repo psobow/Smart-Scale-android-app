@@ -113,14 +113,79 @@ public class UserDataActivity extends AppCompatActivity
         v ->
         {
           new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AppTheme_Dark_Dialog))
-              .setTitle("Warning!")
-              .setMessage("Do you really want to delete all your measurements?")
+              .setTitle(R.string.warning)
+              .setMessage(R.string.delete_measurements_confirmation)
               .setIcon(android.R.drawable.ic_dialog_alert)
               .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener()
               {
                 public void onClick(DialogInterface dialog, int whichButton)
                 {
-                  Toast.makeText(UserDataActivity.this, "To be implemented...", Toast.LENGTH_SHORT).show();
+                  btn_deleteAllYourMeasurements.setEnabled(false);
+  
+                  // Display loading component
+                  ProgressDialog progressDialog = new ProgressDialog(UserDataActivity.this,
+                                                                     R.style.AppTheme_Dark_Dialog);
+                  progressDialog.setIndeterminate(true);
+                  progressDialog.setTitle(getString(R.string.deleting_measurements));
+                  progressDialog.setMessage(getString(R.string.progress_please_wait));
+                  progressDialog.setCancelable(false);
+                  progressDialog.show();
+  
+                  new Handler().postDelayed(
+                      () ->
+                      {
+                        // map user object to JSON string
+        
+                        String userJsonString = "";
+                        try
+                        {
+                          userJsonString = mapper.writeValueAsString(user);
+                          Log.d(TAG, "Mapped User Json String = " + userJsonString);
+                        }
+                        catch (JsonProcessingException e)
+                        {
+                          e.printStackTrace();
+                        }
+        
+                        // create json request body
+                        RequestBody body = RequestBody.create(MediaType.parse(getString(R.string.json_media_type)),
+                                                              userJsonString);
+        
+        
+                        String requestUrl = webConfig.getMeasurementControllerURL();
+        
+                        Request request = new Request.Builder()
+                            .url(requestUrl)
+                            .delete(body)
+                            .build();
+        
+        
+                        // Execute HTTP requests in background thread
+                        client.newCall(request).enqueue(new Callback()
+                        {
+                          @Override
+                          public void onFailure(Call call, IOException e)
+                          {
+                            onServerResponseFailure(e);
+                          }
+          
+                          @Override
+                          public void onResponse(Call call, Response response) throws IOException
+                          {
+                            if (response.isSuccessful())
+                            {
+                              onDeleteMeasurementsSuccess();
+                            }
+                            else
+                            {
+                              onDeleteMeasurementsFailed(response);
+                            }
+                          }
+                        });
+        
+                        btn_deleteAllYourMeasurements.setEnabled(true);
+                        progressDialog.dismiss();
+                      }, 3000);
                 }
               })
               .setNegativeButton(android.R.string.no, null).show();
@@ -151,18 +216,18 @@ public class UserDataActivity extends AppCompatActivity
                   new Handler().postDelayed(
                       () ->
                       {
-        
+  
                         String email = user.getEmail();
                         String password = user.getPassword();
-        
+  
                         String requestUrl = webConfig.getUserControllerURL() + "/" + email + "/" + password;
-        
+  
                         Request request = new Request.Builder()
                             .url(requestUrl)
                             .delete()
                             .build();
-        
-        
+  
+  
                         // Execute HTTP requests in background thread
                         client.newCall(request).enqueue(new Callback()
                         {
@@ -171,7 +236,7 @@ public class UserDataActivity extends AppCompatActivity
                           {
                             onServerResponseFailure(e);
                           }
-          
+  
                           @Override
                           public void onResponse(Call call, Response response) throws IOException
                           {
@@ -185,7 +250,7 @@ public class UserDataActivity extends AppCompatActivity
                             }
                           }
                         });
-        
+  
                         btn_deleteYourAccount.setEnabled(true);
                         progressDialog.dismiss();
                       }, 3000);
@@ -193,6 +258,27 @@ public class UserDataActivity extends AppCompatActivity
               })
               .setNegativeButton(android.R.string.no, null).show();
         });
+  }
+  
+  private void onDeleteMeasurementsSuccess()
+  {
+    UserDataActivity.this.runOnUiThread(() -> Toast.makeText(getBaseContext(),
+                                                             R.string.measurements_deleted,
+                                                             Toast.LENGTH_LONG).show());
+    
+    user.setMeasurementIds(new ArrayList<>());
+    getIntent().putExtra("user", user);
+    setResult(CustomActivityResults.USER_MEASUREMENTS_DELETED, getIntent());
+  }
+  
+  private void onDeleteMeasurementsFailed(Response response)
+  {
+    UserDataActivity.this.runOnUiThread(() -> Toast.makeText(getBaseContext(),
+                                                             getString(R.string.something_went_wrong, response.code()),
+                                                             Toast.LENGTH_LONG)
+                                                   .show());
+    
+    Log.d(TAG, "response code = " + response.code());
   }
   
   
@@ -324,11 +410,11 @@ public class UserDataActivity extends AppCompatActivity
               {
                 String jsonString = response.body().string();
                 user = mapper.readValue(jsonString, UserDto.class);
-                UserDataActivity.this.runOnUiThread(() -> onUpdateSuccess(response));
+                onUpdateSuccess(response);
               }
               else
               {
-                UserDataActivity.this.runOnUiThread(() -> onUpdateDataFailed(response));
+                onUpdateDataFailed(response);
               }
   
             }
@@ -341,13 +427,16 @@ public class UserDataActivity extends AppCompatActivity
   
   private void onUpdateSuccess(Response response)
   {
-    Toast.makeText(getBaseContext(), R.string.data_updated, Toast.LENGTH_LONG).show();
+    UserDataActivity.this.runOnUiThread(() ->
+                                        {
+                                          Toast.makeText(getBaseContext(), R.string.data_updated, Toast.LENGTH_LONG)
+                                               .show();
+                                          updateUserDataUI();
+                                        });
   
-    setResult(CustomActivityResults.USER_DATA_UPDATED);
-    
     getIntent().putExtra("user", user);
   
-    updateUserDataUI();
+    setResult(CustomActivityResults.USER_DATA_UPDATED, getIntent());
     
     // clear focus
     getWindow().getDecorView().clearFocus();
@@ -358,12 +447,18 @@ public class UserDataActivity extends AppCompatActivity
     if (response.code() == 400)
     {
       et_email.setError(getString(R.string.email_already_exists));
-      Toast.makeText(getBaseContext(), R.string.update_data_failed, Toast.LENGTH_LONG).show();
+      UserDataActivity.this.runOnUiThread(() -> Toast.makeText(getBaseContext(),
+                                                               R.string.update_data_failed,
+                                                               Toast.LENGTH_LONG).show());
     }
     else
     {
-      Toast.makeText(getBaseContext(), getString(R.string.something_went_wrong, response.code()), Toast.LENGTH_LONG)
-           .show();
+      UserDataActivity.this.runOnUiThread(() -> Toast.makeText(getBaseContext(),
+                                                               getString(R.string.something_went_wrong,
+                                                                         response.code()),
+                                                               Toast.LENGTH_LONG)
+                                                     .show());
+      
       Log.d(TAG, "response code = " + response.code());
     }
   }
@@ -389,7 +484,7 @@ public class UserDataActivity extends AppCompatActivity
   
   private void onDeleteSuccess()
   {
-    setResult(CustomActivityResults.ACCOUNT_DELETED);
+    setResult(CustomActivityResults.ACCOUNT_DELETED, getIntent());
     finish();
   }
   
