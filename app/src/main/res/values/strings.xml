@@ -87,6 +87,7 @@
     <string name="measurements_deleted">Your all measurements has been deleted.</string>
     <string name="update_data_failed">Update data failed.</string>
     <string name="measurement_deleted">Measurement has been deleted.</string>
+    <string name="password_incorrect">Password incorrect!</string>
 
 
     <!-- Progress dialog messages -->
@@ -103,8 +104,8 @@
 
     <!-- Confirmation dialogs -->
     <string name="warning">Warning!</string>
-    <string name="account_delete_confirmation">Do you really want to delete your account?</string>
-    <string name="delete_measurements_confirmation">Do you really want to delete all your measurements?</string>
+    <string name="account_delete_confirmation">Enter password and press OK to delete your account.</string>
+    <string name="delete_measurements_confirmation">Enter password and press OK to delete all your measurements.</string>
     <string name="delete_specific_measurement_confirmation">Do you really want to delete measurement\n%1$s?</string>
 
     <!-- Error flags -->

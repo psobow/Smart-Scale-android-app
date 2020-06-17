@@ -5,6 +5,8 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -120,6 +122,7 @@ public class UserDataActivity extends AppCompatActivity
     setContentView(R.layout.activity_userdata);
     ButterKnife.bind(this);
   
+  
     init();
   
     // buttons on click behavior
@@ -139,6 +142,8 @@ public class UserDataActivity extends AppCompatActivity
     btn_deleteAllYourMeasurements.setOnClickListener(
         v ->
         {
+          
+          /*
           new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AppTheme_Dark_Dialog))
               .setTitle(R.string.warning)
               .setMessage(R.string.delete_measurements_confirmation)
@@ -148,7 +153,7 @@ public class UserDataActivity extends AppCompatActivity
                 public void onClick(DialogInterface dialog, int whichButton)
                 {
                   btn_deleteAllYourMeasurements.setEnabled(false);
-  
+                  
                   // Display loading component
                   ProgressDialog progressDialog = new ProgressDialog(UserDataActivity.this,
                                                                      R.style.AppTheme_Dark_Dialog);
@@ -157,27 +162,27 @@ public class UserDataActivity extends AppCompatActivity
                   progressDialog.setMessage(getString(R.string.progress_please_wait));
                   progressDialog.setCancelable(false);
                   progressDialog.show();
-  
+                  
                   new Handler().postDelayed(
                       () ->
                       {
                         // map user object to JSON string
-  
+                        
                         String userJsonString = mapper.mapObjectToJSONString(user);
-        
+                        
                         // create json request body
                         RequestBody body = RequestBody.create(MediaType.parse(getString(R.string.json_media_type)),
                                                               userJsonString);
-        
-        
+                        
+                        
                         String requestUrl = webConfig.getMeasurementControllerURL();
-        
+                        
                         Request request = new Request.Builder()
                             .url(requestUrl)
                             .delete(body)
                             .build();
-        
-        
+                        
+                        
                         // Execute HTTP requests in background thread
                         client.newCall(request).enqueue(new Callback()
                         {
@@ -186,7 +191,7 @@ public class UserDataActivity extends AppCompatActivity
                           {
                             onServerResponseFailure(e);
                           }
-          
+                          
                           @Override
                           public void onResponse(Call call, Response response) throws IOException
                           {
@@ -200,18 +205,127 @@ public class UserDataActivity extends AppCompatActivity
                             }
                           }
                         });
-        
+                        
                         btn_deleteAllYourMeasurements.setEnabled(true);
                         progressDialog.dismiss();
                       }, 3000);
                 }
               })
               .setNegativeButton(android.R.string.no, null).show();
+              
+              
+           */
+  
+  
+          AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this,
+                                                                                        R.style.AppTheme_Dark_Dialog));
+          builder.setTitle(R.string.delete_measurements_confirmation);
+  
+          // I'm using fragment here so I'm using getView() to provide ViewGroup
+          // but you can provide here any other instance of ViewGroup from your Fragment / Activity
+          View viewInflated = LayoutInflater.from(UserDataActivity.this)
+                                            .inflate(R.layout.delete_confirmation_view,
+                                                     findViewById(android.R.id.content),
+                                                     false);
+  
+          // Set up the input
+          final EditText input = viewInflated.findViewById(R.id.et_password_for_delete_confirm);
+          // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+          builder.setView(viewInflated);
+  
+  
+          // Set up the buttons
+          builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener()
+          {
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+              dialog.dismiss();
+              String enteredPassword = input.getText().toString();
+              if (enteredPassword.equals(user.getPassword()))
+              {
+                btn_deleteAllYourMeasurements.setEnabled(false);
+        
+                // Display loading component
+                ProgressDialog progressDialog = new ProgressDialog(UserDataActivity.this,
+                                                                   R.style.AppTheme_Dark_Dialog);
+                progressDialog.setIndeterminate(true);
+                progressDialog.setTitle(getString(R.string.deleting_measurements));
+                progressDialog.setMessage(getString(R.string.progress_please_wait));
+                progressDialog.setCancelable(false);
+                progressDialog.show();
+        
+                new Handler().postDelayed(
+                    () ->
+                    {
+                      // map user object to JSON string
+              
+                      String userJsonString = mapper.mapObjectToJSONString(user);
+              
+                      // create json request body
+                      RequestBody body = RequestBody.create(MediaType.parse(getString(R.string.json_media_type)),
+                                                            userJsonString);
+              
+              
+                      String requestUrl = webConfig.getMeasurementControllerURL();
+              
+                      Request request = new Request.Builder()
+                          .url(requestUrl)
+                          .delete(body)
+                          .build();
+              
+              
+                      // Execute HTTP requests in background thread
+                      client.newCall(request).enqueue(new Callback()
+                      {
+                        @Override
+                        public void onFailure(Call call, IOException e)
+                        {
+                          onServerResponseFailure(e);
+                        }
+                
+                        @Override
+                        public void onResponse(Call call, Response response) throws IOException
+                        {
+                          if (response.isSuccessful())
+                          {
+                            onDeleteMeasurementsSuccess();
+                          }
+                          else
+                          {
+                            onDeleteMeasurementsFailed(response);
+                          }
+                        }
+                      });
+              
+                      btn_deleteAllYourMeasurements.setEnabled(true);
+                      progressDialog.dismiss();
+                    }, 3000);
+              }
+              else
+              {
+                UserDataActivity.this.runOnUiThread(() -> Toast.makeText(getBaseContext(),
+                                                                         R.string.password_incorrect,
+                                                                         Toast.LENGTH_LONG).show());
+              }
+            }
+          });
+          builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener()
+          {
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+              dialog.cancel();
+            }
+          });
+  
+          builder.show();
         });
   
     btn_deleteYourAccount.setOnClickListener(
         v ->
         {
+          /*
           new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AppTheme_Dark_Dialog))
               .setTitle(R.string.warning)
               .setMessage(R.string.account_delete_confirmation)
@@ -221,7 +335,7 @@ public class UserDataActivity extends AppCompatActivity
                 public void onClick(DialogInterface dialog, int whichButton)
                 {
                   btn_deleteYourAccount.setEnabled(false);
-  
+                  
                   // Display loading component
                   ProgressDialog progressDialog = new ProgressDialog(UserDataActivity.this,
                                                                      R.style.AppTheme_Dark_Dialog);
@@ -230,22 +344,22 @@ public class UserDataActivity extends AppCompatActivity
                   progressDialog.setMessage(getString(R.string.progress_please_wait));
                   progressDialog.setCancelable(false);
                   progressDialog.show();
-  
+                  
                   new Handler().postDelayed(
                       () ->
                       {
-  
+                        
                         String email = user.getEmail();
                         String password = user.getPassword();
-  
+                        
                         String requestUrl = webConfig.getUserControllerURL() + "/" + email + "/" + password;
-  
+                        
                         Request request = new Request.Builder()
                             .url(requestUrl)
                             .delete()
                             .build();
-  
-  
+                        
+                        
                         // Execute HTTP requests in background thread
                         client.newCall(request).enqueue(new Callback()
                         {
@@ -254,7 +368,7 @@ public class UserDataActivity extends AppCompatActivity
                           {
                             onServerResponseFailure(e);
                           }
-  
+                          
                           @Override
                           public void onResponse(Call call, Response response) throws IOException
                           {
@@ -268,13 +382,114 @@ public class UserDataActivity extends AppCompatActivity
                             }
                           }
                         });
-  
+                        
                         btn_deleteYourAccount.setEnabled(true);
                         progressDialog.dismiss();
                       }, 3000);
                 }
               })
               .setNegativeButton(android.R.string.no, null).show();
+          */
+  
+  
+          AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this,
+                                                                                        R.style.AppTheme_Dark_Dialog));
+          builder.setTitle(R.string.account_delete_confirmation);
+  
+          // I'm using fragment here so I'm using getView() to provide ViewGroup
+          // but you can provide here any other instance of ViewGroup from your Fragment / Activity
+          View viewInflated = LayoutInflater.from(UserDataActivity.this)
+                                            .inflate(R.layout.delete_confirmation_view,
+                                                     findViewById(android.R.id.content),
+                                                     false);
+  
+          // Set up the input
+          final EditText input = viewInflated.findViewById(R.id.et_password_for_delete_confirm);
+          // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+          builder.setView(viewInflated);
+  
+  
+          // Set up the buttons
+          builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener()
+          {
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+              dialog.dismiss();
+              String enteredPassword = input.getText().toString();
+              if (enteredPassword.equals(user.getPassword()))
+              {
+                // Display loading component
+                ProgressDialog progressDialog = new ProgressDialog(UserDataActivity.this,
+                                                                   R.style.AppTheme_Dark_Dialog);
+                progressDialog.setIndeterminate(true);
+                progressDialog.setTitle(getString(R.string.deleting_account));
+                progressDialog.setMessage(getString(R.string.progress_please_wait));
+                progressDialog.setCancelable(false);
+                progressDialog.show();
+        
+                new Handler().postDelayed(
+                    () ->
+                    {
+              
+                      String email = user.getEmail();
+                      String password = user.getPassword();
+              
+                      String requestUrl = webConfig.getUserControllerURL() + "/" + email + "/" + password;
+              
+                      Request request = new Request.Builder()
+                          .url(requestUrl)
+                          .delete()
+                          .build();
+              
+              
+                      // Execute HTTP requests in background thread
+                      client.newCall(request).enqueue(new Callback()
+                      {
+                        @Override
+                        public void onFailure(Call call, IOException e)
+                        {
+                          onServerResponseFailure(e);
+                        }
+                
+                        @Override
+                        public void onResponse(Call call, Response response) throws IOException
+                        {
+                          if (response.isSuccessful())
+                          {
+                            onDeleteSuccess();
+                          }
+                          else
+                          {
+                            onDeleteFailure(response);
+                          }
+                        }
+                      });
+              
+                      btn_deleteYourAccount.setEnabled(true);
+                      progressDialog.dismiss();
+                    }, 3000);
+              }
+              else
+              {
+                UserDataActivity.this.runOnUiThread(() -> Toast.makeText(getBaseContext(),
+                                                                         R.string.password_incorrect,
+                                                                         Toast.LENGTH_LONG).show());
+              }
+            }
+          });
+          builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener()
+          {
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+              dialog.cancel();
+            }
+          });
+  
+          builder.show();
+           
+          
         });
   }
   
