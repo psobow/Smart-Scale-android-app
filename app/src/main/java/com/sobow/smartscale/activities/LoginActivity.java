@@ -98,7 +98,6 @@ public class LoginActivity extends AppCompatActivity
   
     if (! validate(email, password))
     {
-      onSignInFailed();
       return;
     }
     
@@ -136,24 +135,9 @@ public class LoginActivity extends AppCompatActivity
                 UserDto user = mapper.readValue(jsonString, UserDto.class);
                 LoginActivity.this.runOnUiThread(() -> onSignInSuccess(user));
               }
-              else if (response.code() == 404)
-              {
-                LoginActivity.this.runOnUiThread(
-                    () ->
-                    {
-                      et_email.setError(getString(R.string.email_or_password_incorrect));
-                      et_password.setError(getString(R.string.email_or_password_incorrect));
-  
-                      onSignInFailed();
-                    });
-              }
               else
               {
-                LoginActivity.this.runOnUiThread(
-                    () -> Toast.makeText(getBaseContext(),
-                                         getString(R.string.something_went_wrong, response.code()),
-                                         Toast.LENGTH_LONG).show());
-                Log.d(TAG, "response code = " + response.code());
+                onSignInFailed(response);
               }
             }
           });
@@ -184,9 +168,27 @@ public class LoginActivity extends AppCompatActivity
     finish();
   }
   
-  private void onSignInFailed()
+  private void onSignInFailed(Response response)
   {
-    Toast.makeText(getBaseContext(), R.string.login_failed, Toast.LENGTH_LONG).show();
+    if (response.code() == 404)
+    {
+      LoginActivity.this.runOnUiThread(
+          () ->
+          {
+            et_email.setError(getString(R.string.email_or_password_incorrect));
+            et_password.setError(getString(R.string.email_or_password_incorrect));
+            Toast.makeText(getBaseContext(), R.string.login_failed, Toast.LENGTH_LONG).show();
+          });
+    }
+    else
+    {
+      LoginActivity.this.runOnUiThread(
+          () -> Toast.makeText(getBaseContext(),
+                               getString(R.string.something_went_wrong, response.code()),
+                               Toast.LENGTH_LONG).show());
+      Log.d(TAG, "response code = " + response.code());
+    }
+    
   }
   
   private boolean validate(String email, String password)
