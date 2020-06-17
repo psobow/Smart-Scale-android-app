@@ -52,7 +52,6 @@ import okhttp3.Response;
 // TODO: create mapper class implement Map user to json. map json to User object etc.
 
 
-// TODO: fix issue with close application after screen orientation change. VERY IMPORTANT ! implement onPause onStart!!!
 // TODO: implement functionality to remove given measurement from the list by pressing it. display confirmation dialog before removing.
 
 
@@ -573,11 +572,7 @@ public class MainActivity extends AppCompatActivity
       @Override
       public void onFailure(Call call, IOException e)
       {
-        MainActivity.this.runOnUiThread(
-            () -> Toast.makeText(getBaseContext(), getString(R.string.connection_with_server_failed), Toast.LENGTH_LONG)
-                       .show());
-        
-        e.printStackTrace();
+        onServerResponseFailure(e);
       }
       
       @Override
@@ -605,6 +600,16 @@ public class MainActivity extends AppCompatActivity
       }
     });
   }
+  
+  private void onServerResponseFailure(IOException e)
+  {
+    MainActivity.this.runOnUiThread(
+        () -> Toast.makeText(getBaseContext(), R.string.connection_with_server_failed, Toast.LENGTH_LONG)
+                   .show());
+    
+    e.printStackTrace();
+  }
+  
   
   private void updateListView(List<MeasurementDto> measurements)
   {

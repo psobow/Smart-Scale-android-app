@@ -137,7 +137,7 @@ public class LoginActivity extends AppCompatActivity
               }
               else
               {
-                onSignInFailed(response);
+                onSignInFailure(response);
               }
             }
           });
@@ -168,7 +168,7 @@ public class LoginActivity extends AppCompatActivity
     finish();
   }
   
-  private void onSignInFailed(Response response)
+  private void onSignInFailure(Response response)
   {
     if (response.code() == 404)
     {

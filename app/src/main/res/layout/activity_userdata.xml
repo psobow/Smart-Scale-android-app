@@ -5,7 +5,8 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:fitsSystemWindows="true"
-        tools:context=".activities.UserDataActivity">
+        tools:context=".activities.UserDataActivity"
+        android:fadeScrollbars="false">
 
     <LinearLayout
             android:orientation="vertical"

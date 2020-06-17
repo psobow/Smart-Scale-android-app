@@ -5,7 +5,8 @@
         android:layout_height="fill_parent"
         xmlns:tools="http://schemas.android.com/tools"
         android:fitsSystemWindows="true"
-        tools:context=".activities.MainActivity">
+        tools:context=".activities.MainActivity"
+        android:fadeScrollbars="false">
 
     <LinearLayout
             android:layout_width="match_parent"
@@ -136,7 +137,8 @@
                 android:id="@+id/lv_measurements"
                 android:layout_width="wrap_content"
                 android:layout_height="450dp"
-                android:nestedScrollingEnabled="true" />
+                android:nestedScrollingEnabled="true"
+                android:fadeScrollbars="false" />
 
     </LinearLayout>
 </ScrollView>

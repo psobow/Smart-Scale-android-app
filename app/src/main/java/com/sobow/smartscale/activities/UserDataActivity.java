@@ -246,7 +246,7 @@ public class UserDataActivity extends AppCompatActivity
                             }
                             else
                             {
-                              onDeleteFailed(response);
+                              onDeleteFailure(response);
                             }
                           }
                         });
@@ -413,7 +413,7 @@ public class UserDataActivity extends AppCompatActivity
               }
               else
               {
-                onUpdateDataFailed(response);
+                onUpdateDataFailure(response);
               }
   
             }
@@ -441,7 +441,7 @@ public class UserDataActivity extends AppCompatActivity
     getWindow().getDecorView().clearFocus();
   }
   
-  private void onUpdateDataFailed(Response response)
+  private void onUpdateDataFailure(Response response)
   {
     if (response.code() == 400)
     {
@@ -472,7 +472,7 @@ public class UserDataActivity extends AppCompatActivity
     e.printStackTrace();
   }
   
-  private void onDeleteFailed(Response response)
+  private void onDeleteFailure(Response response)
   {
     UserDataActivity.this.runOnUiThread(
         () -> Toast.makeText(getBaseContext(),

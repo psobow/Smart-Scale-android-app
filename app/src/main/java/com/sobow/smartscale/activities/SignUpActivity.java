@@ -195,7 +195,7 @@ public class SignUpActivity extends AppCompatActivity
               }
               else
               {
-                onSignUpFailed(response);
+                onSignUpFailure(response);
               }
             }
           });
@@ -226,7 +226,7 @@ public class SignUpActivity extends AppCompatActivity
     overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
   }
   
-  private void onSignUpFailed(Response response)
+  private void onSignUpFailure(Response response)
   {
     if (response.code() == 400)
     {
