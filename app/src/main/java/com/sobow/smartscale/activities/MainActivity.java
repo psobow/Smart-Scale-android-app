@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -130,7 +131,8 @@ public class MainActivity extends AppCompatActivity
   private void init()
   {
     clearFocusAndScrollViewToTheTop();
-    
+  
+  
     // init dependencies
     client = new OkHttpClient();
     mapper = new CustomMapper();
@@ -372,6 +374,30 @@ public class MainActivity extends AppCompatActivity
           resetMainAndStartLogin();
         });
   
+    et_startDate.setOnClickListener(new View.OnClickListener()
+    {
+      @Override
+      public void onClick(View v)
+      {
+        if (et_startDate.getError() != null)
+        {
+          et_startDate.setError(null);
+        }
+      }
+    });
+  
+    et_endDate.setOnClickListener(new View.OnClickListener()
+    {
+      @Override
+      public void onClick(View v)
+      {
+        if (et_endDate.getError() != null)
+        {
+          et_endDate.setError(null);
+        }
+      }
+    });
+    
     btn_applyFilters.setOnClickListener(
         v ->
         {

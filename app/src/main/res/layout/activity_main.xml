@@ -6,7 +6,7 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:fitsSystemWindows="true"
         tools:context=".activities.MainActivity"
-        android:fadeScrollbars="false">
+        android:scrollbarFadeDuration="0">
 
     <LinearLayout
             android:layout_width="match_parent"
@@ -50,7 +50,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="0dp"
-                android:layout_marginBottom="24dp"
+                android:layout_marginBottom="0dp"
                 android:text="@string/btn_logout" />
 
         <TextView
@@ -78,8 +78,8 @@
                         android:id="@+id/til_startDate"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginBottom="8dp"
+                        android:layout_marginTop="0dp"
+                        android:layout_marginBottom="0dp"
                         android:layout_marginEnd="8dp"
 
                         >
@@ -113,8 +113,8 @@
                         android:id="@+id/til_endDate"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginBottom="8dp"
+                        android:layout_marginTop="0dp"
+                        android:layout_marginBottom="0dp"
                         android:layout_marginStart="8dp">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -141,15 +141,24 @@
                 android:layout_height="wrap_content"
                 android:text="Filter information"
                 android:gravity="center_horizontal"
-                android:textSize="24sp"
+                android:textSize="16sp"
                 android:textStyle="bold" />
 
         <ListView
                 android:id="@+id/lv_measurements"
                 android:layout_width="wrap_content"
                 android:layout_height="400dp"
-                android:nestedScrollingEnabled="true"
-                android:fadeScrollbars="false" />
+                android:nestedScrollingEnabled="true" />
+
+        <TextView
+                android:id="@+id/tv_tipHowToDelete"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="* You can delete measurement by tapping it's row"
+                android:gravity="left"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="4dp" />
 
     </LinearLayout>
 </ScrollView>
