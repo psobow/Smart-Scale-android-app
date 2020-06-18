@@ -14,7 +14,7 @@ public class WebConfig
   private String currentBaseUrl;
   
   // Change configuration here!
-  private Configuration currentConfiguration = Configuration.LOCAL;
+  private Configuration currentConfiguration = Configuration.PRODUCTION;
   
   public WebConfig()
   {
