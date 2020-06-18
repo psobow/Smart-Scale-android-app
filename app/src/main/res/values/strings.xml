@@ -27,7 +27,7 @@
     <string name="already_a_member_sign_in"><u>Already a member? Sign in.</u></string>
 
     <!-- Main activity -->
-    <string name="hello_user_name_your_measurements">Hello, %1$s!\nYour measurements</string>
+    <string name="greetings_user">Hello, %1$s!</string>
     <string name="btn_new_measurement">NEW MEASUREMENT</string>
     <string name="btn_user_data">USER DATA</string>
     <string name="btn_print_chart">PRINT CHART</string>
@@ -36,6 +36,7 @@
     <string name="btn_reset_filters">RESET FILTERS</string>
     <string name="hint_start_date_filter">Start date %1$s</string>
     <string name="hint_end_date_filter">End date %1$s</string>
+    <string name="your_measurements">Your measurements</string>
     <string name="no_measurements_from_server">You haven\'t added any measurements yet.</string>
 
     <!-- Bluetooth activity -->

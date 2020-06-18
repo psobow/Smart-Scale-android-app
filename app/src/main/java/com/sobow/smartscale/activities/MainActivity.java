@@ -111,8 +111,8 @@ public class MainActivity extends AppCompatActivity
   Button btn_applyFilters;
   @BindView(R.id.btn_resetFilters)
   Button btn_resetFilters;
-  @BindView(R.id.tv_yourMeasurements)
-  TextView tv_yourMeasurements;
+  @BindView(R.id.tv_greetingsUser)
+  TextView tv_greetingUser;
   @BindView(R.id.et_startDate)
   EditText et_startDate;
   @BindView(R.id.et_endDate)
@@ -229,8 +229,8 @@ public class MainActivity extends AppCompatActivity
     dateTimeFormatter = DateTimeFormatter.ofPattern(getString(R.string.date_format));
     
     user = (UserDto) bundle.getSerializable("user");
-    tv_yourMeasurements.setText(getString(R.string.hello_user_name_your_measurements,
-                                          (user == null ? "null_user" : user.getUserName())));
+    tv_greetingUser.setText(getString(R.string.greetings_user,
+                                      (user == null ? "null_user" : user.getUserName())));
     
     allMeasurements = (ArrayList<MeasurementDto>) bundle.getSerializable("allMeasurements");
     
@@ -662,8 +662,8 @@ public class MainActivity extends AppCompatActivity
       if (resultCode == Activity.RESULT_OK)
       {
         user = (UserDto) intent.getSerializableExtra("user");
-        tv_yourMeasurements.setText(getString(R.string.hello_user_name_your_measurements,
-                                              (user == null ? "null_user" : user.getUserName())));
+        tv_greetingUser.setText(getString(R.string.greetings_user,
+                                          (user == null ? "null_user" : user.getUserName())));
         sentPostForMeasurementsAndUpdateListView();
       }
       
@@ -680,8 +680,8 @@ public class MainActivity extends AppCompatActivity
       if (resultCode == CustomActivityResultCodes.USER_DATA_UPDATED || resultCode == CustomActivityResultCodes.USER_MEASUREMENTS_DELETED)
       {
         user = (UserDto) intent.getSerializableExtra("user");
-        tv_yourMeasurements.setText(getString(R.string.hello_user_name_your_measurements,
-                                              (user == null ? "null_user" : user.getUserName())));
+        tv_greetingUser.setText(getString(R.string.greetings_user,
+                                          (user == null ? "null_user" : user.getUserName())));
         sentPostForMeasurementsAndUpdateListView();
       }
       else if (resultCode == CustomActivityResultCodes.ACCOUNT_DELETED)

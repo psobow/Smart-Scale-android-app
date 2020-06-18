@@ -21,6 +21,14 @@
                 android:focusable="true"
                 android:focusableInTouchMode="true" />
 
+        <TextView
+                android:id="@+id/tv_greetingsUser"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/greetings_user"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
         <Button
                 android:id="@+id/btn_newMeasurement"
                 android:layout_width="fill_parent"
@@ -57,7 +65,7 @@
                 android:id="@+id/tv_yourMeasurements"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/hello_user_name_your_measurements"
+                android:text="@string/your_measurements"
                 android:textSize="24sp"
                 android:textStyle="bold" />
 
