@@ -142,7 +142,7 @@ public class UserDataActivity extends AppCompatActivity
     btn_deleteAllYourMeasurements.setOnClickListener(
         v ->
         {
-          
+          btn_deleteAllYourMeasurements.setEnabled(false);
   
           AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this,
                                                                                         R.style.AppTheme_Dark_Dialog));
@@ -160,7 +160,8 @@ public class UserDataActivity extends AppCompatActivity
           // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
           builder.setView(viewInflated);
   
-  
+          builder.setCancelable(false);
+          
           // Set up the buttons
           builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener()
           {
@@ -171,7 +172,6 @@ public class UserDataActivity extends AppCompatActivity
               String enteredPassword = input.getText().toString();
               if (enteredPassword.equals(user.getPassword()))
               {
-                btn_deleteAllYourMeasurements.setEnabled(false);
         
                 // Display loading component
                 ProgressDialog progressDialog = new ProgressDialog(UserDataActivity.this,
@@ -224,8 +224,7 @@ public class UserDataActivity extends AppCompatActivity
                           }
                         }
                       });
-              
-                      btn_deleteAllYourMeasurements.setEnabled(true);
+  
                       progressDialog.dismiss();
                     }, 3000);
               }
@@ -247,12 +246,14 @@ public class UserDataActivity extends AppCompatActivity
           });
   
           builder.show();
+  
+          btn_deleteAllYourMeasurements.setEnabled(true);
         });
   
     btn_deleteYourAccount.setOnClickListener(
         v ->
         {
-  
+          btn_deleteYourAccount.setEnabled(false);
           AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this,
                                                                                         R.style.AppTheme_Dark_Dialog));
           builder.setTitle(R.string.account_delete_confirmation);
@@ -269,7 +270,8 @@ public class UserDataActivity extends AppCompatActivity
           // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
           builder.setView(viewInflated);
   
-  
+          builder.setCancelable(false);
+          
           // Set up the buttons
           builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener()
           {
@@ -326,8 +328,7 @@ public class UserDataActivity extends AppCompatActivity
                           }
                         }
                       });
-              
-                      btn_deleteYourAccount.setEnabled(true);
+  
                       progressDialog.dismiss();
                     }, 3000);
               }
@@ -349,7 +350,7 @@ public class UserDataActivity extends AppCompatActivity
           });
   
           builder.show();
-           
+          btn_deleteYourAccount.setEnabled(true);
           
         });
   }

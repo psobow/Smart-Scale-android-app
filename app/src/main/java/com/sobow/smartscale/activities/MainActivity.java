@@ -10,6 +10,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -275,6 +277,7 @@ public class MainActivity extends AppCompatActivity
     lv_measurements.setOnItemClickListener(
         (parent, view, position, id) ->
         {
+          lv_measurements.setEnabled(false);
           if (! currentMeasurements.isEmpty())
           {
             MeasurementDto clickedMeasurement = (MeasurementDto) parent.getItemAtPosition(position);
@@ -285,6 +288,7 @@ public class MainActivity extends AppCompatActivity
                 .setTitle(R.string.warning)
                 .setMessage(getString(R.string.delete_specific_measurement_confirmation, clickedMeasurement.toString()))
                 .setIcon(android.R.drawable.ic_dialog_alert)
+                .setCancelable(false)
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener()
                 {
                   public void onClick(DialogInterface dialog, int whichButton)
@@ -325,7 +329,7 @@ public class MainActivity extends AppCompatActivity
                             {
                               if (response.isSuccessful())
                               {
-                                onDeleteMeasurementSuccess(clickedMeasurement);
+                                onDeleteMeasurementSuccess(clickedMeasurement, view);
                               }
                               else
                               {
@@ -333,14 +337,14 @@ public class MainActivity extends AppCompatActivity
                               }
                             }
                           });
-                  
+  
                           progressDialog.dismiss();
                         }, 3000);
                   }
                 })
                 .setNegativeButton(android.R.string.no, null).show();
           }
-          
+          lv_measurements.setEnabled(true);
         });
     
     // buttons on click behavior
@@ -585,18 +589,35 @@ public class MainActivity extends AppCompatActivity
     Log.d(TAG, "response code = " + response.code());
   }
   
-  private void onDeleteMeasurementSuccess(MeasurementDto deletedMeasurement)
+  private void onDeleteMeasurementSuccess(MeasurementDto deletedMeasurement, View rowView)
   {
-    allMeasurements.remove(deletedMeasurement);
+  
     
     MainActivity.this.runOnUiThread(() ->
                                     {
+                                      final Animation animation = AnimationUtils.loadAnimation(MainActivity.this,
+                                                                                               android.R.anim.slide_out_right);
+                                      rowView.startAnimation(animation);
+                                      Handler handle = new Handler();
+                                      handle.postDelayed(new Runnable()
+                                      {
+    
+                                        @Override
+                                        public void run()
+                                        {
+      
+                                          allMeasurements.remove(deletedMeasurement);
+                                          initListView(allMeasurements);
+                                          animation.cancel();
+                                        }
+                                      }, 250);
                                       Toast.makeText(getBaseContext(),
                                                      R.string.measurement_deleted,
                                                      Toast.LENGTH_LONG)
                                            .show();
   
-                                      initListView(allMeasurements);
+                                      //initListView(allMeasurements);
+                                      
                                     });
     
     
