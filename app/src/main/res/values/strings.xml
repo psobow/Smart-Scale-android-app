@@ -81,6 +81,7 @@
     <string name="enabling_bluetooth">Enabling Bluetooth.</string>
     <string name="disabling_bluetooth">Disabling Bluetooth.</string>
     <string name="first_pair_with_device">First pair with device!</string>
+    <string name="enable_bluetooth_first">First enable bluetooth!</string>
     <string name="no_data_to_filter">No data to filter. Create one!</string>
     <string name="device_discoverable_for_300_seconds">Making device discoverable for 300 seconds.</string>
     <string name="data_updated">Data successfully updated!</string>

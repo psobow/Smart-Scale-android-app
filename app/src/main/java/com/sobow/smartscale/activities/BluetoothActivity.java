@@ -321,37 +321,46 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
             btn_discoverDevices.setEnabled(false);
             Log.d(TAG, "onClick: looking for unpaired devices.");
             bluetoothDevices.clear();
-            ProgressDialog progressDialog = new ProgressDialog(BluetoothActivity.this, R.style.AppTheme_Dark_Dialog);
-            progressDialog.setIndeterminate(true);
-            progressDialog.setTitle(getString(R.string.progress_discovering_devices));
-            progressDialog.setMessage(getString(R.string.progress_please_wait));
-            progressDialog.setCancelable(false);
-            progressDialog.show();
   
-            new android.os.Handler().postDelayed(
-                () ->
-                {
-                  if (bluetoothAdapter.isDiscovering())
+            if (bluetoothAdapter.isEnabled())
+            {
+    
+              ProgressDialog progressDialog = new ProgressDialog(BluetoothActivity.this, R.style.AppTheme_Dark_Dialog);
+              progressDialog.setIndeterminate(true);
+              progressDialog.setTitle(getString(R.string.progress_discovering_devices));
+              progressDialog.setMessage(getString(R.string.progress_please_wait));
+              progressDialog.setCancelable(false);
+              progressDialog.show();
+    
+              new android.os.Handler().postDelayed(
+                  () ->
                   {
-                    bluetoothAdapter.cancelDiscovery();
-                    Log.d(TAG, "onClick: canceling discovery.");
-  
-                    bluetoothAdapter.startDiscovery();
-                    IntentFilter discoverDevicesIntent = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-                    registerReceiver(mBroadcastReceiver3, discoverDevicesIntent);
-                  }
-                  else
-                  {
-                    checkBTPermissions();
-  
-                    bluetoothAdapter.startDiscovery();
-                    IntentFilter discoverDevicesIntent = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-                    registerReceiver(mBroadcastReceiver3, discoverDevicesIntent);
-                  }
-  
-                  progressDialog.dismiss();
-                  btn_discoverDevices.setEnabled(true);
-                }, 3000);
+                    if (bluetoothAdapter.isDiscovering())
+                    {
+                      bluetoothAdapter.cancelDiscovery();
+                      Log.d(TAG, "onClick: canceling discovery.");
+            
+                      bluetoothAdapter.startDiscovery();
+                      IntentFilter discoverDevicesIntent = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+                      registerReceiver(mBroadcastReceiver3, discoverDevicesIntent);
+                    }
+                    else
+                    {
+                      checkBTPermissions();
+            
+                      bluetoothAdapter.startDiscovery();
+                      IntentFilter discoverDevicesIntent = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+                      registerReceiver(mBroadcastReceiver3, discoverDevicesIntent);
+                    }
+          
+                    progressDialog.dismiss();
+                    btn_discoverDevices.setEnabled(true);
+                  }, 3000);
+            }
+            else
+            {
+              Toast.makeText(getBaseContext(), R.string.enable_bluetooth_first, Toast.LENGTH_LONG).show();
+            }
           }
         });
   
