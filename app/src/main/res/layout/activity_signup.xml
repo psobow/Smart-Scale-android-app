@@ -86,12 +86,29 @@
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp">
 
-            <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/et_age"
+
+            <TextView
+                    android:id="@+id/tv_chooseYourBirthDate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/age"
-                    android:inputType="number" />
+                    android:layout_weight="1"
+                    android:gravity="start"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:clickable="true"
+                    android:text="@string/choose_your_birth_date"
+                    android:textSize="20sp"
+                    android:textStyle="bold"></TextView>
+
+
+            <DatePicker
+                    android:id="@+id/datePicker1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:datePickerMode="spinner"
+                    android:calendarViewShown="false" />
+
+
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Height -->

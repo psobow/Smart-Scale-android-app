@@ -51,6 +51,8 @@ import okhttp3.Response;
 // TODO: test app. and prevent crashing !
 // TODO: after choosing device from list view display toast msg and change background of this element in the list view
 
+// TODO: Odtworzyć stan pomiaru w przypadku gdyby aplikacja została zabita w momencie kiedy edittext z pomiarem ma jakąś wartość
+
 /* TODO: Przemyśleć implementacji trezch trybów pracy wagi.
     - tryb manualny - użytkownik z klawiatury wprowadza pomiar
     - tryb detaliczny - użytkownik waży coś i może wprowadzić kategorie pomiaru oraz opis
@@ -58,9 +60,11 @@ import okhttp3.Response;
     serwer ( po zmianie wartość text w componentcie EditText).
 */
 
-// TODO: Pytanie do pana doktora? jak zebrać logi z działającej aplikacji na telefonie stacktrace itp.
 // TODO: implement restore state after changing screen orientation (found devices, list view, broad cast reciver etc...)
 // BluetoothDevice is not implementing Serializable
+
+// TODO: simplify UI. When bluetooth is OFF other buttons should be disabled
+
 
 public class BluetoothActivity extends AppCompatActivity implements AdapterView.OnItemClickListener
 {

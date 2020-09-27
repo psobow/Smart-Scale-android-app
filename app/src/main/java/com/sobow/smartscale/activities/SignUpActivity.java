@@ -4,8 +4,11 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -18,6 +21,8 @@ import com.sobow.smartscale.config.WebConfig;
 import com.sobow.smartscale.dto.UserDto;
 import com.sobow.smartscale.mapper.CustomMapper;
 import com.sobow.smartscale.validation.InputValidator;
+
+import org.threeten.bp.LocalDate;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -33,6 +38,8 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+// TODO: Zmodyfikować sposób wprowadzenia wieku. zmienic na date urodzenia. trzy pola jedno pod drugim rok, miesiac, dzien
+
 public class SignUpActivity extends AppCompatActivity
 {
   private static final String TAG = "SignUpActivity";
@@ -47,8 +54,10 @@ public class SignUpActivity extends AppCompatActivity
   EditText et_userName;
   @BindView(R.id.et_height)
   EditText et_height;
-  @BindView(R.id.et_age)
-  EditText et_age;
+  @BindView(R.id.tv_chooseYourBirthDate)
+  TextView tv_chooseBirthDate;
+  @BindView(R.id.datePicker1)
+  DatePicker datePicker;
   @BindView(R.id.et_email)
   EditText et_email;
   @BindView(R.id.tv_chooseYourSex)
@@ -63,6 +72,7 @@ public class SignUpActivity extends AppCompatActivity
   Button btn_signUp;
   @BindView(R.id.link_sign_in)
   TextView link_sign_in;
+  
   
   private void init()
   {
@@ -83,6 +93,34 @@ public class SignUpActivity extends AppCompatActivity
     dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
     // Apply the adapter to the spinner
     spinner_sex.setAdapter(dataAdapter);
+  
+    spinner_sex.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+    {
+      @Override
+      public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id)
+      {
+        tv_chooseYourSex.setError(null);
+      }
+    
+      @Override
+      public void onNothingSelected(AdapterView<?> parentView)
+      {
+        // your code here
+      }
+    
+    });
+  
+    datePicker.init(LocalDate.now().getYear(),
+                    LocalDate.now().getMonthValue() - 1,
+                    LocalDate.now().getDayOfMonth(),
+                    new DatePicker.OnDateChangedListener()
+                    {
+                      @Override
+                      public void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth)
+                      {
+                        tv_chooseBirthDate.setError(null);
+                      }
+                    });
   }
   
   @Override
@@ -114,13 +152,14 @@ public class SignUpActivity extends AppCompatActivity
     String password = et_password.getText().toString();
     String reEnteredPassword = et_reEnterPassword.getText().toString();
     String name = et_userName.getText().toString();
-    String age = et_age.getText().toString();
     String height = et_height.getText().toString();
+    LocalDate birthDate = LocalDate.of(datePicker.getYear(), datePicker.getMonth() + 1, datePicker.getDayOfMonth());
   
     int spinnerChoicePosition = spinner_sex.getSelectedItemPosition();
     String sex = spinner_sex.getItemAtPosition(spinnerChoicePosition).toString();
   
-    if (! validate(email, password, reEnteredPassword, name, age, height, sex))
+    // TODO: add age validation
+    if (! validate(email, password, reEnteredPassword, name, birthDate, height, sex))
     {
       return;
     }
@@ -146,11 +185,11 @@ public class SignUpActivity extends AppCompatActivity
           UserDto newUser = new UserDto();
           newUser.setUserName(name);
           newUser.setHeight(Integer.parseInt(height));
-          newUser.setAge(Integer.parseInt(age));
           newUser.setSex(sex);
           newUser.setEmail(email);
           newUser.setPassword(password);
           newUser.setMeasurementIds(new ArrayList<>());
+          newUser.setBirthDate(birthDate);
   
           // map object to JSON string
           String userJsonString = mapper.mapObjectToJSONString(newUser);
@@ -239,7 +278,8 @@ public class SignUpActivity extends AppCompatActivity
     }
   }
   
-  private boolean validate(String email, String password, String reEnteredPassword, String userName, String age,
+  private boolean validate(String email, String password, String reEnteredPassword, String userName,
+                           LocalDate birthDate,
                            String height, String userSex)
   {
     boolean isValid = true;
@@ -276,12 +316,12 @@ public class SignUpActivity extends AppCompatActivity
     else { et_userName.setError(null); }
   
     // AGE
-    if (! inputValidator.isAgeValid(age))
+    if (! inputValidator.isBirthDateValid(birthDate))
     {
       isValid = false;
-      et_age.setError(getString(R.string.invalid_age));
+      tv_chooseBirthDate.setError(getString(R.string.invalid_age));
     }
-    else { et_age.setError(null); }
+    else { tv_chooseBirthDate.setError(null); }
   
     // HEIGHT
     if (! inputValidator.isHeightValid(height))

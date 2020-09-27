@@ -7,8 +7,10 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -24,6 +26,8 @@ import com.sobow.smartscale.config.WebConfig;
 import com.sobow.smartscale.dto.UserDto;
 import com.sobow.smartscale.mapper.CustomMapper;
 import com.sobow.smartscale.validation.InputValidator;
+
+import org.threeten.bp.LocalDate;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -66,10 +70,10 @@ public class UserDataActivity extends AppCompatActivity
   TextView tv_currentUserName;
   @BindView(R.id.et_userName)
   EditText et_userName;
-  @BindView(R.id.tv_currentAge)
-  TextView tv_currentAge;
-  @BindView(R.id.et_age)
-  EditText et_age;
+  @BindView(R.id.tv_chooseYourBirthDate)
+  TextView tv_chooseBirthDate;
+  @BindView(R.id.datePicker1)
+  DatePicker datePicker;
   @BindView(R.id.tv_currentHeight)
   TextView tv_currentHeight;
   @BindView(R.id.et_height)
@@ -112,6 +116,22 @@ public class UserDataActivity extends AppCompatActivity
     // Apply the adapter to the spinner
     spinner_sex.setAdapter(dataAdapter);
   
+    spinner_sex.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+    {
+      @Override
+      public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id)
+      {
+        tv_chooseYourSex.setError(null);
+      }
+    
+      @Override
+      public void onNothingSelected(AdapterView<?> parentView)
+      {
+        // your code here
+      }
+    
+    });
+    
     updateUserDataUI();
   }
   
@@ -172,7 +192,7 @@ public class UserDataActivity extends AppCompatActivity
               String enteredPassword = input.getText().toString();
               if (enteredPassword.equals(user.getPassword()))
               {
-        
+  
                 // Display loading component
                 ProgressDialog progressDialog = new ProgressDialog(UserDataActivity.this,
                                                                    R.style.AppTheme_Dark_Dialog);
@@ -181,27 +201,27 @@ public class UserDataActivity extends AppCompatActivity
                 progressDialog.setMessage(getString(R.string.progress_please_wait));
                 progressDialog.setCancelable(false);
                 progressDialog.show();
-        
+  
                 new Handler().postDelayed(
                     () ->
                     {
                       // map user object to JSON string
-              
+  
                       String userJsonString = mapper.mapObjectToJSONString(user);
-              
+  
                       // create json request body
                       RequestBody body = RequestBody.create(MediaType.parse(getString(R.string.json_media_type)),
                                                             userJsonString);
-              
-              
+  
+  
                       String requestUrl = webConfig.getMeasurementControllerURL();
-              
+  
                       Request request = new Request.Builder()
                           .url(requestUrl)
                           .delete(body)
                           .build();
-              
-              
+  
+  
                       // Execute HTTP requests in background thread
                       client.newCall(request).enqueue(new Callback()
                       {
@@ -210,7 +230,7 @@ public class UserDataActivity extends AppCompatActivity
                         {
                           onServerResponseFailure(e);
                         }
-                
+  
                         @Override
                         public void onResponse(Call call, Response response) throws IOException
                         {
@@ -290,22 +310,22 @@ public class UserDataActivity extends AppCompatActivity
                 progressDialog.setMessage(getString(R.string.progress_please_wait));
                 progressDialog.setCancelable(false);
                 progressDialog.show();
-        
+  
                 new Handler().postDelayed(
                     () ->
                     {
-              
+  
                       String email = user.getEmail();
                       String password = user.getPassword();
-              
+  
                       String requestUrl = webConfig.getUserControllerURL() + "/" + email + "/" + password;
-              
+  
                       Request request = new Request.Builder()
                           .url(requestUrl)
                           .delete()
                           .build();
-              
-              
+  
+  
                       // Execute HTTP requests in background thread
                       client.newCall(request).enqueue(new Callback()
                       {
@@ -314,7 +334,7 @@ public class UserDataActivity extends AppCompatActivity
                         {
                           onServerResponseFailure(e);
                         }
-                
+  
                         @Override
                         public void onResponse(Call call, Response response) throws IOException
                         {
@@ -380,7 +400,7 @@ public class UserDataActivity extends AppCompatActivity
   {
     tv_currentEmail.setText(getString(R.string.current_email, user.getEmail()));
     tv_currentUserName.setText(getString(R.string.current_user_name, user.getUserName()));
-    tv_currentAge.setText(getString(R.string.current_age, user.getAge()));
+  
     tv_currentHeight.setText(getString(R.string.current_height, user.getHeight()));
     tv_currentSex.setText(getString(R.string.current_sex, user.getSex()));
   
@@ -388,7 +408,18 @@ public class UserDataActivity extends AppCompatActivity
     et_password.setText(user.getPassword());
     et_reEnterPassword.setText(user.getPassword());
     et_userName.setText(user.getUserName());
-    et_age.setText(String.valueOf(user.getAge()));
+    datePicker.init(user.getBirthDate().getYear(),
+                    user.getBirthDate().getMonthValue() - 1,
+                    user.getBirthDate().getDayOfMonth(),
+                    new DatePicker.OnDateChangedListener()
+                    {
+                      @Override
+                      public void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth)
+                      {
+                        tv_chooseBirthDate.setError(null);
+                      }
+                    });
+    
     et_height.setText(String.valueOf(user.getHeight()));
   
     String currentSex = user.getSex();
@@ -399,18 +430,18 @@ public class UserDataActivity extends AppCompatActivity
   private void updateData()
   {
     Log.d(TAG, "update data");
-  
+    
     String email = et_email.getText().toString();
     String password = et_password.getText().toString();
     String reEnteredPassword = et_reEnterPassword.getText().toString();
     String name = et_userName.getText().toString();
-    String age = et_age.getText().toString();
+    LocalDate birthDate = LocalDate.of(datePicker.getYear(), datePicker.getMonth() + 1, datePicker.getDayOfMonth());
     String height = et_height.getText().toString();
     int spinnerChoicePosition = spinner_sex.getSelectedItemPosition();
     String sex = spinner_sex.getItemAtPosition(spinnerChoicePosition).toString();
-  
-  
-    if (! validate(email, password, reEnteredPassword, name, age, height, sex))
+    
+    
+    if (! validate(email, password, reEnteredPassword, name, birthDate, height, sex))
     {
       return;
     }
@@ -433,7 +464,7 @@ public class UserDataActivity extends AppCompatActivity
           UserDto newUser = new UserDto();
           newUser.setUserName(name);
           newUser.setHeight(Integer.parseInt(height));
-          newUser.setAge(Integer.parseInt(age));
+          newUser.setBirthDate(birthDate);
           newUser.setSex(sex);
           newUser.setEmail(email);
           newUser.setPassword(password);
@@ -477,7 +508,7 @@ public class UserDataActivity extends AppCompatActivity
               {
                 onUpdateDataFailure(response);
               }
-  
+              
             }
           });
           
@@ -549,7 +580,8 @@ public class UserDataActivity extends AppCompatActivity
     finish();
   }
   
-  private boolean validate(String email, String password, String reEnteredPassword, String userName, String age,
+  private boolean validate(String email, String password, String reEnteredPassword, String userName, LocalDate
+      birthDate,
                            String height, String userSex)
   {
     boolean isValid = true;
@@ -586,12 +618,12 @@ public class UserDataActivity extends AppCompatActivity
     else { et_userName.setError(null); }
     
     // AGE
-    if (! inputValidator.isAgeValid(age))
+    if (! inputValidator.isBirthDateValid(birthDate))
     {
       isValid = false;
-      et_age.setError(getString(R.string.invalid_age));
+      tv_chooseBirthDate.setError(getString(R.string.invalid_age));
     }
-    else { et_age.setError(null); }
+    else { tv_chooseBirthDate.setError(null); }
     
     // HEIGHT
     if (! inputValidator.isHeightValid(height))

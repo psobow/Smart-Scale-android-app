@@ -1,6 +1,8 @@
 package com.sobow.smartscale.validation;
 
 
+import org.threeten.bp.LocalDate;
+
 // TODO: Implement validation logic here!
 // TODO: Implement singleton
 public class InputValidator
@@ -49,20 +51,16 @@ public class InputValidator
     return userName.matches(USER_NAME_REGEX);
   }
   
-  public boolean isAgeValid(String age)
+  public boolean isBirthDateValid(LocalDate birthDate)
   {
     boolean isValid = true;
-    int ageParsed = 0;
-    try
-    {
-      ageParsed = Integer.parseInt(age);
-    }
-    catch (NumberFormatException e)
+  
+    if (birthDate.isAfter(LocalDate.now()) || birthDate.isEqual(LocalDate.now()))
     {
       isValid = false;
     }
-    
-    return isValid ? (ageParsed >= AGE_LOWER_LIMIT && ageParsed <= AGE_UPPER_LIMIT) : false;
+  
+    return isValid;
   }
   
   public boolean isHeightValid(String height)
@@ -85,4 +83,6 @@ public class InputValidator
   {
     return userSex.matches(SEX_REGEX);
   }
+  
+  
 }

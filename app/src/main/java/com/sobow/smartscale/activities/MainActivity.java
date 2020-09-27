@@ -56,8 +56,11 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 
-// TODO: Implement Forgot Password functionality
 // TODO: Implement print chart functionality
+// TODO: Implement Forgot Password functionality
+// TODO: Implement Keep me signed in functionality
+// TODO: Implement functionality to display information Login failed for some reason, pleas log in again. disable buttons.
+// do it in case if returned result is not RESULT_OK
 
 // TODO: implement feature for sending request for validation constraints on each field. Constraints will be stored in one place then. less important
 // TODO: find better way to handle requests in background thread. how to wait for the response? less important

@@ -17,7 +17,7 @@
     <!-- Sign up activity -->
     <string name="re_enter_password">Re-enter Password</string>
     <string name="user_name">User name</string>
-    <string name="age">Age</string>
+    <string name="choose_your_birth_date">Choose birth date</string>
     <string name="height_cm">Height (CM)</string>
     <string name="choose_your_sex">Choose your sex</string>
     <string name="spinner_default_choice">Your choice...</string>
@@ -119,7 +119,7 @@
     <string name="invalid_sex_choice">Invalid sex choice!</string>
     <string name="invalid_user_name">Invalid user name!\nEnter from 3 to 20 alphanumeric characters.</string>
     <string name="invalid_height">Invalid height!\nEnter number of centimetres from 1 to 300.</string>
-    <string name="invalid_age">Invalid age!\nEnter number from 1 to 150.</string>
+    <string name="invalid_age">Invalid birth date!\nBirth date has to be past date.</string>
     <string name="passwords_do_not_match">Passwords do not match!</string>
 
     <!-- Main activity input validators -->

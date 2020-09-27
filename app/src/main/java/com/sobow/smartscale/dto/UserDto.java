@@ -1,6 +1,12 @@
 package com.sobow.smartscale.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.sobow.smartscale.serialization.LocalDateDeserializer;
+import com.sobow.smartscale.serialization.LocalDateSerializer;
+
+import org.threeten.bp.LocalDate;
 
 import java.io.Serializable;
 import java.util.List;
@@ -14,6 +20,10 @@ public class UserDto implements Serializable
   private String userName;
   
   private int age;
+  
+  @JsonDeserialize(using = LocalDateDeserializer.class)
+  @JsonSerialize(using = LocalDateSerializer.class)
+  private LocalDate birthDate;
   
   private int height;
   
@@ -107,5 +117,15 @@ public class UserDto implements Serializable
   public void setMeasurementIds(List<Long> measurementIds)
   {
     this.measurementIds = measurementIds;
+  }
+  
+  public LocalDate getBirthDate()
+  {
+    return birthDate;
+  }
+  
+  public void setBirthDate(LocalDate birthDate)
+  {
+    this.birthDate = birthDate;
   }
 }
